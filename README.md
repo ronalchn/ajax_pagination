@@ -1,5 +1,5 @@
 # AJAX Pagination
-*TO BE RELEASED*
+**TO BE RELEASED**
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
 ## Introduction
@@ -21,9 +21,9 @@ Add to your Gemfile:
 and run the bundle install command.
 
 Then add to your assets/javascripts/application.js,
-'''javascript
+```javascript
 //= require ajax_pagination
-'''
+```
 
 ## Getting started
 
@@ -34,55 +34,55 @@ Move the content to be paginated into a partial. If you are using the will_pagin
 By default, AJAX Pagination looks for the pagination content in the partial with filename matching the name of the pagination (by default "page"), so it is a good idea to use this name. If multiple views have pagination content in the same controller (especially if for the same pagination set), you will need to use different filenames for them.
 
 Then, instead of the paginated content, put the following in your view:
-'''ruby
+```ruby
 <%= ajax_pagination %>
-'''
+```
 
 If the pagination name is not "page", pass the new pagination name in.
-'''ruby
+```ruby
 <%= ajax_pagination :pagination => "page" %>
-'''
+```
 If the partial is not named the same, pass it the new name as an option:
-'''ruby
+```ruby
 <%= ajax_pagination :partial => "mypartial" %>
-'''
+```
 This will case it to display content in the _mypartial.* view.
 
 If you are using will_paginate, and the links are wrapped in a div with class="pagination", the links will be ajaxified automatically.
 
 Otherwise, you should wrap the links with a container. We recommend that the class given is "ajaxpagination". For example:
-'''html
+```html
 <div class="ajaxpagination"><a href="#">My ajaxified link</a></div>
-'''
+```
 
 If you are using will_paginate, you can simply put this in the partial (so that the new links get reloaded when the page changes):
-'''erb
+```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
-'''
+```
 Note: It is recommended to set the pagination parameter to nil. When AJAX pagination calls the controller with a request for the partial, it appends ?pagination=NAMEOFPAGINATION. If the parameter is not set, AJAX Pagination will not respond to the AJAX call. will_paginate by default keeps any parameters in the query string. However, because this parameter is for internal use only, setting it to nil will keep the parameter from showing up in the url, making it look nicer (also better for caching).
 
 Now, AJAX pagination will automatically call the controller for new content when an ajaxified link is clicked.
 
 However, the controller needs to be told how to respond. Add a call to ajax_pagination(format) in the controller action, which will return javascript containing the partial.
-'''ruby
+```ruby
 respond_to do |format|
   format.html # index.html.erb
   ajax_pagination(format)
 end
-'''
+```
 If either the pagination name or the partial filename is not the default, you will need to pass these in as options.
-'''ruby
+```ruby
 ajax_pagination format, :pagination => "page", :partial => "mypartial"
-'''
+```
 The pagination should now work.
 
 AJAX Pagination can also add a loading image and partially blanking out of the paginated content. To do this, wrap all the content you want to cover with ajax_pagination_loadzone. For example, in the partial, you might have:
-'''erb
+```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
 <%= ajax_pagination_loadzone do %>
   All content here is convered by a semi-transparent white rectangle, a loading image is displayed on top, and any links here are unclickable
 <% end %>
-'''
+```
 Links outside are still clickable (such as the will_paginate links).
 
 The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. (TODO: add default loader image, and make the location changeable)
