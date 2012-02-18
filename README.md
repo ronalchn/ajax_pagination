@@ -38,19 +38,19 @@ By default, AJAX Pagination looks for the pagination content in the partial with
 
 Then, instead of the paginated content, put the following in your view:
 
-```ruby
+```erb
 <%= ajax_pagination %>
 ```
 
 If the pagination name is not "page", pass the new pagination name in.
 
-```ruby
+```erb
 <%= ajax_pagination :pagination => "page" %>
 ```
 
 If the partial is not named the same, pass it the new name as an option:
 
-```ruby
+```erb
 <%= ajax_pagination :partial => "mypartial" %>
 ```
 
@@ -96,7 +96,8 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 ```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
 <%= ajax_pagination_loadzone do %>
-  All content here is convered by a semi-transparent white rectangle, a loading image is displayed on top, and any links here are unclickable
+  All content here is covered by a semi-transparent white rectangle.
+  A loading image is displayed on top, and any links here are unclickable
 <% end %>
 ```
 
@@ -105,7 +106,9 @@ Links outside are still clickable (such as the will_paginate links).
 The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. (TODO: add default loader image, and make the location changeable)
 
 ## Javascript Dependency
-As well as the included ajax_pagination.js file, 
+As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js, a jquery plugin. This is included in the gem as an asset already to simplify installation. ajax_pagination.js will automatically require jquery.ba-bbq.js.
+
+However, if you are already using this (especially a different version of this), simply ensure that your file is named jquery.ba-bbq.js as well, so that it overrides the file in the gem.
 
 ## Development
 You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination, however, please be aware that submitting a pull request is assumed to grant non-exclusive, perpetual rights to the use of the software for any use whatsoever. This allows me to release the software under a more permissible license in the future if I want.
