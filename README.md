@@ -150,7 +150,7 @@ As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js,
 However, if you are already using this (especially a different version of this), simply ensure that your file is named jquery.ba-bbq.js as well, so that it overrides the file in the gem.
 
 ## Development
-You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination, however, please be aware that submitting a pull request is assumed to grant non-exclusive, perpetual rights to the use of the software for any use whatsoever. This allows me to release the software under a more permissible license in the future if I want.
+You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination, however, please be aware that submitting a pull request is assumed to grant to me non-exclusive, perpetual rights to the use of the software for any use whatsoever. This allows me to release the software under a more permissible license in the future if I want.
 
 If you do not submit a pull request, your modifications will not be merged into the codebase.
 
