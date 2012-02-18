@@ -157,7 +157,7 @@ If you do not submit a pull request, your modifications will not be merged into 
 ## License
 Copyright © 2012 Ronald Ping Man Chan
 If you want to use this program under a different license, please contact me.
-All pull requests to my repository will be assumed to assign non-exclusive rights for perpertual usage for any use whatsoever for those modifications to Ronald Ping Man Chan. If you do not have the power to assign that right, do not submit a pull request. This allows me to release the software under a more permissible license in the future if I want.
+All pull requests to my repository will be assumed to assign to me non-exclusive rights for perpertual usage for any use whatsoever for those modifications to Ronald Ping Man Chan. If you do not have the power to assign that right, do not submit a pull request. This allows me to release the software under a more permissible license in the future if I want.
 Ronald
 
 The software is released under LGPL. The LGPL License on this software means that this Gem can be used in any software (proprietary or otherwise), by using the gem command. However, the gem cannot be included directly in proprietary software (eg. as a plugin), without distributions of the software being under LGPL. Distribution of this Gem must be released under the LGPL as well.
