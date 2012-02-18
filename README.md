@@ -10,7 +10,7 @@ Please note, this is not a pagination solution by itself. You should use a pagin
 ## Background
 This gem depends on Rails 3.1+, jQuery and jquery-historyjs. The gem was extracted from http://github.com/xrymbos/nztrain-v2/, and further development will be tied to the needs of the application. Therefore, some dependencies are because the application uses a particular version of these other gems. If you need to use this in other versions/javascript frameworks, I would welcome any pull requests. They are not currently supported because I do not need to use this gem in those other frameworks.
 
-The original AJAX pagination functionality was inspired by the RailsCasts on pagination with AJAX. However, other functionality was added to the pagination, add more modular code was desired, especially when many different controllers need pagination.
+The original AJAX pagination functionality was inspired by the RailsCasts on pagination with AJAX. However, other functionality was added to the pagination, and more modular code was desired, especially when many different controllers need pagination. Added functionality includes loading cues and support of multiple pagination areas on the same webpage.
 
 Because the code became more modular, it also made it suitable to turn into a Ruby Gem, so that others can create AJAX pagination without fiddling with the details.
 
@@ -142,6 +142,26 @@ Instead of passing in the Array/Hash Ruby object, a string in json form is accep
 
 ```erb
 <%= ajax_pagination :reload => '[{"urlregex":"page=([0-9]+)","regexindex":1},{"query":"page"}]' %>
+```
+
+## AJAX Call
+The AJAX Call is triggered by a link wrapped in any container with a certain class. The AJAX Call is to the same address, but with the ?pagination=NAME parameter added. The format requested is javascript. If the controller also returns javascript for other uses, AJAX Pagination does not necessarily prevent such uses. The ajax_pagination(format, :pagination => "page") function in the controller handles the AJAX Call when the format is javascript, and the ?pagination parameter is set to the correct string. It also returns true if the pagination parameter matches. Therefore, you can use use the javascript format when it does not match, as shown below:
+
+```ruby
+respond_to do |format|
+  format.html # index.html.erb
+  format.js unless ajax_pagination(format)
+end
+```
+
+Note that **unless** does not need to be used, since respond_to is actually sensitive to the ordering, so an equivalent effect is achieved with:
+
+```ruby
+respond_to do |format|
+  format.html # index.html.erb
+  ajax_pagination(format)
+  format.js # index.js.erb
+end
 ```
 
 ## Javascript Dependency
