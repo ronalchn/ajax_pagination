@@ -29,6 +29,13 @@ Then add to your assets/javascripts/application.js,
 //= require ajax_pagination
 ```
 
+AJAX Pagination depends on jquery-rails and jquery-historyjs, so if their javascript files are not already included, also include to following in your assets/javascripts/application.js file:
+
+```javascript
+//= require jquery
+//= require history
+```
+
 ## Getting started
 
 The pagination needs a name (in case you have multiple sets of AJAX pagination on the same webpage). By default, the name is "page". If you only intend to use a single set of pagination links, then leave it as "page". The name is used to distinguish different sets of pagination links, and is also used as a default for other functionaility.
