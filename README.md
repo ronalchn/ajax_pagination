@@ -169,6 +169,8 @@ As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js,
 
 However, if you are already using this (especially a different version of this), simply ensure that your file is named jquery.ba-bbq.js as well, so that it overrides the file in the gem.
 
+The other javascript dependencies rely on gems: jquery-rails, and jquery-historyjs. So if they are used, AJAX Pagination should play well with other gems using the libraries.
+
 ## Development
 You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination, however, please be aware that submitting a pull request is assumed to grant to me non-exclusive, perpetual rights to the use of the software for any use whatsoever. This allows me to release the software under a more permissible license in the future if I want.
 
@@ -176,6 +178,7 @@ If you do not submit a pull request, your modifications will not be merged into 
 
 ## License
 Copyright © 2012 Ronald Ping Man Chan
+
 If you want to use this program under a different license, please contact me.
 All pull requests to my repository will be assumed to assign to me non-exclusive rights for perpertual usage for any use whatsoever for those modifications to Ronald Ping Man Chan. If you do not have the power to assign that right, do not submit a pull request. This allows me to release the software under a more permissible license in the future if I want.
 Ronald
