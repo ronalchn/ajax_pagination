@@ -4,7 +4,9 @@
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
 ## Introduction
-This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page in javascript format. The result will replace the content in a container for the content. this gem is tested to work for will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
+This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page in javascript format. The result will replace the content in a container for the content. this gem is tested to work with will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
+
+Please note, this is not a pagination solution by itself. You should use a pagination solution such as will_paginate and Kaminari, or a menu builder such as Simple-navigation or Semantic-menu, or you can roll your own. After that is implemented, you can use AJAX Pagination to ajaxify it, so that when users change pages, they do not have the reload the whole page.
 
 ## Background
 This gem depends on Rails 3.1+, jQuery and jquery-historyjs. The gem was extracted from http://github.com/xrymbos/nztrain-v2/, and further development will be tied to the needs of the application. Therefore, some dependencies are because the application uses a particular version of these other gems. If you need to use this in other versions/javascript frameworks, I would welcome any pull requests. They are not currently supported because I do not need to use this gem in those other frameworks.
@@ -30,7 +32,9 @@ Then add to your assets/javascripts/application.js,
 
 ## Getting started
 
-The pagination needs a name (in case you have multiple sets of AJAX pagination on the same webpage). By default, the name is "page". If you only intend to use a single set of pagination links, then leave it as "page".
+The pagination needs a name (in case you have multiple sets of AJAX pagination on the same webpage). By default, the name is "page". If you only intend to use a single set of pagination links, then leave it as "page". The name is used to distinguish different sets of pagination links, and is also used as a default for other functionaility.
+
+### Ajaxifying the content
 
 Move the content to be paginated into a partial. If you are using the will_paginate gem (or similar), there is only one set of content to put into a partial. If you are using this to paginate between distinct views or even different controllers, you will need to move each set of content into a different partial.
 
@@ -54,7 +58,7 @@ If the partial is not named the same, pass it the new name as an option:
 <%= ajax_pagination :partial => "mypartial" %>
 ```
 
-This will case it to display content in the _mypartial.* view.
+This will cause it to display content in the _mypartial.* view.
 
 If you are using will_paginate, and the links are wrapped in a div with class="pagination", the links will be ajaxified automatically.
 
@@ -72,9 +76,11 @@ If you are using will_paginate, you can simply put this in the partial (so that 
 
 Note: It is recommended to set the pagination parameter to nil. When AJAX pagination calls the controller with a request for the partial, it appends ?pagination=NAMEOFPAGINATION. If the parameter is not set, AJAX Pagination will not respond to the AJAX call. will_paginate by default keeps any parameters in the query string. However, because this parameter is for internal use only, setting it to nil will keep the parameter from showing up in the url, making it look nicer (also better for caching).
 
-Now, AJAX pagination will automatically call the controller for new content when an ajaxified link is clicked.
+Now, AJAX Pagination will automatically call the controller for new content when an ajaxified link is clicked.
 
-However, the controller needs to be told how to respond. Add a call to ajax_pagination(format) in the controller action, which will return javascript containing the partial.
+### Controller responder
+
+However, the controller needs to be told how to respond. Add a call to <tt>ajax_pagination(format)</tt> in the controller action, which will return javascript containing the partial.
 
 ```ruby
 respond_to do |format|
@@ -91,7 +97,9 @@ ajax_pagination format, :pagination => "page", :partial => "mypartial"
 
 The pagination should now work.
 
-AJAX Pagination can also add a loading image and partially blanking out of the paginated content. To do this, wrap all the content you want to cover with ajax_pagination_loadzone. For example, in the partial, you might have:
+### Loading visualization
+
+AJAX Pagination can also add a loading image and partially blanking out of the paginated content. To do this, wrap all the content you want to cover with <tt>ajax_pagination_loadzone</tt>. For example, in the partial, you might have:
 
 ```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
@@ -104,6 +112,38 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 Links outside are still clickable (such as the will_paginate links).
 
 The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. (TODO: add default loader image, and make the location changeable)
+
+### Content reloading
+
+The back and forward buttons on your browser may not work properly yet. It will work as long as the link includes distinct query parameter with the same name as the pagination name for the set. For example, if the name of the pagination set is "page" (the default), when the browser url changes, AJAX Pagination looks for a change in the links query parameter with the same name, such as if the url changes from /path/to/controller?page=4 to /path/to/controller?page=9, then AJAX Pagination knows that the content corresponding to the pagination set needs reloading. The absence of the parameter is a distinct state, so changes such as /path/to/controller to /path/to/controller?page=0 are detected.
+
+However, if the pagination is to different controllers, eg. url changes from /ControllerA to /ControllerB, AJAX Pagination will not reload the content, because the name of the pagination set is "page", and the url ?page=... parameter has not changed. There are some options that can be passed to ajax_pagination, through the reload option.
+
+```erb
+<%= ajax_pagination :reload => {:query => "watching"} %>
+```
+
+By passing reload a hash, mapping query to watching, AJAX Pagination will reload the content if the query parameter named "watching" changes. For example, if the url changes from ?watching=A to ?watching=B.
+
+For more flexibility, a regular expression can be passed like so:
+
+```erb
+<%= ajax_pagination :reload => {:urlregex => "page=([0-9]+)", :regexindex => 1} %>
+```
+
+Which applies the regex expression /page=([0-9]+)/ to the url. The parameter regexindex then selects the nth matching subexpression, on which changes are detected. The subexpression indexed 0 is the complete match. The subexpression index 1 is the page number in this case. So when that changes, the page is reloaded.
+
+For more flexibility, a number of conditions can be passed in an array. If any of them change, the content is reloaded.
+
+```erb
+<%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
+```
+
+Instead of passing in the Array/Hash Ruby object, a string in json form is accepted:
+
+```erb
+<%= ajax_pagination :reload => '[{"urlregex":"page=([0-9]+)","regexindex":1},{"query":"page"}]' %>
+```
 
 ## Javascript Dependency
 As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js, a jquery plugin. This is included in the gem as an asset already to simplify installation. ajax_pagination.js will automatically require jquery.ba-bbq.js.
