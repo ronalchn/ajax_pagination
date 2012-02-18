@@ -1,0 +1,100 @@
+//= require jquery.ba-bbq.min
+
+if (History && History.enabled) {
+  var ajaxPagination;
+  $(document).ready(function () {
+    ajaxPagination = new function() {
+      this.pagination_loader_state = new Array(); // the page we are waiting for
+      //this.pagination_stack = new Array(); // stack of request urls in history (to get state of url we came from)
+      this.pagination_url = location.href; // url we came from, so we can see transitions of the url
+
+      function display_pagination_loader(pagination_name) {
+        if (this.pagination_loader_state[pagination_name] != undefined) return; // if already loading, don't reshow loader
+        var paginated_section = $('#' + pagination_name + '_paginated_section');
+        var paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
+        var height = paginated_content.height();
+        // setup loading look
+        var img = document.createElement("IMG");
+        img.src = "<%= asset_path "ajax-loader.gif" %>";
+        var margin = Math.round(height>400?100:(height/4));
+        $(img).css({'margin': margin + 'px', 'max-height': (height/2) + 'px'});
+        var div = document.createElement("DIV");
+        $(div).append(img);
+        $(div).css({'position': 'absolute', 'left': 0, 'top': 0, 'width': '100%', 'height': '100%', 'background-color': 'rgba(255,255,255,0.7)', 'text-align': 'center', 'opacity': 0.9});
+        paginated_content.append(div);
+
+        // scroll to top of paginated_section if it is not visible
+        if ($('body').scrollTop() > paginated_section.offset().top) {
+          $('body').scrollTop(paginated_section.offset().top);
+        }
+      }
+
+      this.display_pagination_content = function(pagination_name,requesturl,content) {
+        if (this.pagination_loader_state[pagination_name] == requesturl) {
+          //pagination_content_state[pagination_name] = pagination_loader_state[pagination_name];
+          delete this.pagination_loader_state[pagination_name]; // not waiting for page anymore
+          $("#" + pagination_name + "_paginated_section").html(content);
+        }
+        // else content is stale
+      };
+
+      function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl
+        display_pagination_loader.call(this,pagination_name);
+        this.pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
+        $.ajax(requesturl,{dataType:'script',cache:true});
+      }
+      $('body').on("click", ".pagination a, .ajaxpagination a", function() {
+        var pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id"))[1];
+        if (pagination_name == null) return; // pagination not set up properly
+        var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
+        swapPage.call(ajaxPagination,pagination_name,requesturl);
+        ajaxPagination.pagination_url = this.href;
+        History.pushState(null,document.title,this.href);
+        return false;
+      });
+
+      History.Adapter.bind(window,'popstate',function(){ // popstate, but can work with hash changes as well
+        var from = ajaxPagination.pagination_url, to = location.href; // from what state to what other state
+
+        $(".paginated_section").each(function(){
+          var pagination_name = /^(.*)_paginated_section$/.exec($(this).attr("id"))[1];
+          if (pagination_name == null) return; // pagination not set up properly
+
+          // if data-reload is not defined, the use default reload test
+          if ($(this).data('reload') === undefined) {
+            // if ?pagination_name=ABC, where ABC is the same for both urls, then don't need to reload
+            if ($.deparam.querystring(from)[pagination_name] === $.deparam.querystring(to)[pagination_name]) return;
+          }
+          else { // otherwise parse json and perform tests
+            var reload = $(this).data('reload');
+            if (!(reload instanceof Array)) reload = new Array(reload);
+            var changed = false;
+            for (i=0;i<reload.length;i++) {
+              if (reload[i].query !== undefined) {
+                if ($.deparam.querystring(from)[reload[i].query] !== $.deparam.querystring(to)[reload[i].query]) changed = true;
+              }
+              if (reload[i].urlregex !== undefined) {
+                var index = 0;
+                if (reload[i].regexindex !== undefined) index = reload[i].regexindex;
+                var regex = new RegExp(reload[i].urlregex);
+                var frommatch = regex.exec(from), tomatch = regex.exec(to);
+                if (frommatch != null && frommatch.length>=index) frommatch = frommatch[index];
+                if (tomatch != null && tomatch.length>=index) tomatch = tomatch[index];
+                if (frommatch !== tomatch) changed = true;
+              }
+              if (changed) break;
+            }
+            if (!changed) return; // otherwise it has changed, and we must reload
+          }
+          var requesturl = $.param.querystring(location.href,{pagination:pagination_name}); // by default, adds ?pagination=page
+          swapPage.call(ajaxPagination,pagination_name,requesturl);
+        });
+
+        ajaxPagination.pagination_url = location.href; // update url (new url recognised)
+      });
+
+      //History.Adapter.trigger(window,"popstate"); // update stuff on page load
+    };
+  });
+}
+

@@ -1,0 +1,2 @@
+require 'ajax_pagination'
+
