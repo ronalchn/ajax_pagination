@@ -79,7 +79,9 @@ module AjaxPagination
     #
     def ajax_pagination_loadzone()
       content_tag :div, :class => "paginated_content", :style => "position: relative" do
-        yield
+        content_tag :div do # for changing the opacity
+          yield
+        end
       end
     end
   end

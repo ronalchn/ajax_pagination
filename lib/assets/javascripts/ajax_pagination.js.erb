@@ -23,8 +23,8 @@ if (History && History.enabled) {
         var div = document.createElement("DIV");
         $(div).append(img);
         $(div).css({'position': 'absolute', 'left': 0, 'top': 0, 'width': '100%', 'height': '100%', 'text-align': 'center', 'opacity': 0.9});
+        paginated_content.children().css({'opacity': 0.4});
         paginated_content.append(div);
-        paginated_content.css({'opacity': 0.4});
 
         // scroll to top of paginated_section if it is not visible
         if ($('body').scrollTop() > paginated_section.offset().top) {
