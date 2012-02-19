@@ -154,7 +154,7 @@ Instead of passing in the Array/Hash Ruby object, a string in json form is accep
 ## Example Application
 This gem contains an example application (actually, it is there also for testing purposes), however it is nevertheless a good example.
 
-Clone this repository using:
+Clone this repository, and run the server, using:
 
 ```sh
 git clone git://github.com/ronalchn/ajax_pagination.git
