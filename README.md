@@ -159,7 +159,7 @@ Clone this repository, and run the server, using:
 ```sh
 git clone git://github.com/ronalchn/ajax_pagination.git
 cd ajax_pagination
-cd test/rails_app
+cd spec/rails_app
 bundle install
 bundle exec rails server
 ```
