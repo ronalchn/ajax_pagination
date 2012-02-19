@@ -19,11 +19,11 @@ module AjaxPagination
     #
     # Options:
     # [:+pagination+]
-    #   Changes the pagination name triggering this response. Triggered when +params[:pagination]+ == +options[:pagination]+.
+    #   Changes the pagination name triggering this response. Triggered when +params&#91;:pagination&#93;+ == +options&#91;:pagination&#93;+.
     #   Defaults to "page"
     #
     # [:+partial+]
-    #   Changes the partial that is returned by this response. Defaults to +options[:pagination]+.
+    #   Changes the partial that is returned by this response. Defaults to +options&#91;:pagination&#93;+.
     #
     def ajax_pagination(format,options = {})
       if params[:pagination] == (options[:pagination] || 'page')
