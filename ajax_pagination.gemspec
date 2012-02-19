@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "activerecord-jdbcsqlite3-adapter" if s.platform.to_s == 'java'
 
   s.add_runtime_dependency "rails", '>= 3.1'
   s.add_runtime_dependency "jquery-rails", '>= 1.0'
