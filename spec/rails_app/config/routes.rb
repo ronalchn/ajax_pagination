@@ -1,6 +1,9 @@
 RailsApp::Application.routes.draw do
   resources :posts
 
+  namespace :changelog do
+    get '' => 'changelog#index'
+  end
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

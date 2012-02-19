@@ -1,6 +1,7 @@
 ## v0.0.3 TO BE RELEASED
 * Added functional tests for controller and helper additions
 * Mocked up a rails application using ajax_pagination, at spec/rails_app/. You can run this example application using:
+* Added more mock changelog model and controller to test application
 
 ```sh
 bundle install

@@ -3,7 +3,7 @@
 <h1>
   <%= @post.title %>
 </h1>
-<i>Published <%= @post.created_at.strftime('%d %B %Y') %></i>
+<i>Published <%= @post.published_at.strftime('%d %B %Y') %></i>
 <p>
   <%= simple_format(@post.content) %>
 </p>

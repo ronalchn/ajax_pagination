@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.order('created_at DESC').paginate(:page => params[:page], :per_page => 2)
+    @posts = Post.order('published_at DESC').paginate(:page => params[:page], :per_page => 2)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -36,12 +36,14 @@ class PostsController < ApplicationController
   # GET /posts/1/edit
   def edit
     @post = Post.find(params[:id])
+    @post.published_at = @post.created_at if @post.published_at.nil?
   end
 
   # POST /posts
   # POST /posts.json
   def create
     @post = Post.new(params[:post])
+    @post.published_at = @post.created_at if @post.published_at.nil?
 
     respond_to do |format|
       if @post.save
