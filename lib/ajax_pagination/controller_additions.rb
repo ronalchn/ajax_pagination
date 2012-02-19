@@ -1,7 +1,7 @@
 module AjaxPagination
   # This module is automatically added to all controllers
   module ControllerAdditions
-    # Registers a javascript format when params[:pagination] matches options[:pagination] ( = "page" by default).
+    # Registers a javascript format when params [:pagination] matches options [:pagination] ( = "page" by default).
     # AJAX Pagination uses this response to render only the content which has changed. When this format is triggered,
     # a partial is passed back, and sent to AJAX Pagination as a function argument in javascript.
     #
@@ -19,11 +19,11 @@ module AjaxPagination
     #
     # Options:
     # [:+pagination+]
-    #   Changes the pagination name triggering this response. Triggered when +params&#91;:pagination&#93;+ == +options&#91;:pagination&#93;+.
+    #   Changes the pagination name triggering this response. Triggered when params [:pagination] == options [:pagination].
     #   Defaults to "page"
     #
     # [:+partial+]
-    #   Changes the partial that is returned by this response. Defaults to +options&#91;:pagination&#93;+.
+    #   Changes the partial that is returned by this response. Defaults to options [:pagination].
     #
     def ajax_pagination(format,options = {})
       if params[:pagination] == (options[:pagination] || 'page')

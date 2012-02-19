@@ -110,8 +110,9 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 ```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
 <%= ajax_pagination_loadzone do %>
-  All content here is covered by a semi-transparent white rectangle.
-  A loading image is displayed on top, and any links here are unclickable
+  While this partial is being loaded with other content,
+  all content here has opacity reduced, and is covered by a transparent rectangle,
+  a loading image is displayed on top, and any links here are unclickable
 <% end %>
 ```
 

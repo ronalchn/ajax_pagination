@@ -20,7 +20,7 @@ module AjaxPagination
     #   respond_to block. Defaults to "page".
     #
     # [:+partial+]
-    #   Changes the partial which is rendered. Defaults to +options[:pagination]+. The partial should generally
+    #   Changes the partial which is rendered. Defaults to +options [:pagination]+. The partial should generally
     #   be the same as that given in the controller respond_to block, unless you are doing something strange.
     #
     # [:+reload+]
@@ -43,7 +43,7 @@ module AjaxPagination
     #   
     #     <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
     #   
-    #   If nil, AJAX Pagination acts as if it was passed {:query => options[:pagination]}.
+    #   If nil, AJAX Pagination acts as if it was passed {:query => options [:pagination]}.
     #
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
