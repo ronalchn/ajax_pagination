@@ -12,4 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require history
+//= require ajax_pagination
 //= require_tree .

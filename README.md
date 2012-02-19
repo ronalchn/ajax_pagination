@@ -151,6 +151,20 @@ Instead of passing in the Array/Hash Ruby object, a string in json form is accep
 ```erb
 <%= ajax_pagination :reload => '[{"urlregex":"page=([0-9]+)","regexindex":1},{"query":"page"}]' %>
 ```
+## Example Application
+This gem contains an example application (actually, it is there also for testing purposes), however it is nevertheless a good example.
+
+Clone this repository using:
+
+```sh
+git clone git://github.com/ronalchn/ajax_pagination.git
+cd ajax_pagination
+cd test/rails_app
+bundle install
+bundle exec rails server
+```
+
+Then point your browser to http://localhost:3000/
 
 ## AJAX Call
 The AJAX Call is triggered by a link wrapped in any container with a certain class. The AJAX Call is to the same address, but with the ?pagination=NAME parameter added. The format requested is javascript. If the controller also returns javascript for other uses, AJAX Pagination does not necessarily prevent such uses. The ajax_pagination(format, :pagination => "page") function in the controller handles the AJAX Call when the format is javascript, and the ?pagination parameter is set to the correct string. It also returns true if the pagination parameter matches. Therefore, you can use use the javascript format when it does not match, as shown below:

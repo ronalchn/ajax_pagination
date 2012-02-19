@@ -3,7 +3,7 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 
 Bundler.require
-require "ajax_pagination"
+#require "ajax_pagination"
 
 module RailsApp
   class Application < Rails::Application

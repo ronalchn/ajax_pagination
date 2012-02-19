@@ -1,0 +1,12 @@
+<%= will_paginate @posts, :params => { :pagination => nil } %>
+<%= ajax_pagination_loadzone do %>
+  <% @posts.each do |post| %>
+    <div style="border-bottom: 1px solid black; padding-bottom: 10px;">
+      <p><h2><%= post.title %></h2><i>Published <%= post.created_at.strftime('%d %B %Y') %></i></p>
+      <%= simple_format(post.content) %>
+      <%= link_to 'Show', post %> | <%= link_to 'Edit', edit_post_path(post) %> |
+      <%= link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete %>
+    </div>
+  <% end %>
+<% end %>
+<%= will_paginate @posts, :params => { :pagination => nil } %>
