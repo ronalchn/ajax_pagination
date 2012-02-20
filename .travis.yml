@@ -13,4 +13,4 @@ rvm:
 before_script: # for Selenium RSpec tests
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-script: bundle exec rake travis
+script: rake travis # bundle exec command used inside rake script, so not need to bundle exec (otherwise nested bundles causes problems)

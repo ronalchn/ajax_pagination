@@ -35,7 +35,7 @@ if (History && History.enabled) {
         var img = document.createElement("IMG");
         img.src = "<%= asset_path "ajax-loader.gif" %>";
         var margin = Math.round(height>400?100:(height/4));
-        $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'});
+        $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'}).addClass('ajaxloader');
         var div = document.createElement("DIV");
         $(div).append(img);
         $(div).css({'position': 'absolute', 'left': 0, 'top': 0, 'width': '100%', 'height': '100%', 'text-align': 'center', 'opacity': 0.9});
