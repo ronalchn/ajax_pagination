@@ -15,4 +15,5 @@ before_script: # for Selenium RSpec tests
   - "sh -e /etc/init.d/xvfb start"
   - "(cd spec/rails_app/ && bundle install > /dev/null 2>&1 && RAILS_ENV=development bundle exec rails server -d --port=3001)"
   - "cp spec/rails_app/db/development.sqlite3 spec/rails_app/db/test.sqlite3"
-script: bundle exec rake spec # bundle exec command used inside rake script, so not need to bundle exec (otherwise nested bundles causes problems)
+script:
+  - "export DISPLAY=:99.0 && bundle exec rake spec"
