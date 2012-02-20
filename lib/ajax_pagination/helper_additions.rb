@@ -92,7 +92,15 @@ module AjaxPagination
         divoptions[:style] = "position: relative;"
       end
       content_tag :div, divoptions do
-        content_tag :div do # for changing the opacity if whole section is a loadzone
+        if options[:loadzone]
+          content_tag :div do # for changing the opacity as whole section is a loadzone
+            if block_given?
+              yield
+            else
+              render partial
+            end
+          end
+        else
           if block_given?
             yield
           else
