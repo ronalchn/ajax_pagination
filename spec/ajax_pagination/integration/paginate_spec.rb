@@ -1,9 +1,8 @@
 require 'spec_helper'
 
-describe 'paginating', :type => :request, :driver => :selenium, :js => true do
+describe 'paginating with javascript on', :type => :request, :driver => :selenium, :js => true do
   it 'works' do
     visit("http://localhost:#{SERVERPORT}") # goes to welcome page
-    page.should have_selector('#welcomepagetitle')
     page.should have_no_selector('#aboutpagetitle')
     click_link 'About'
     page.should have_selector('#aboutpagetitle')
@@ -12,7 +11,7 @@ describe 'paginating', :type => :request, :driver => :selenium, :js => true do
     page.should have_selector('#readmepagetitle')
     page.should have_no_selector('#aboutpagetitle')
   end
-  it 'still works with nested and multiple paginated sections' do
+  it 'works with nested and multiple paginated sections' do
     visit("http://localhost:#{SERVERPORT}/changelog")
     page.should have_selector('.previous_page.disabled')
     find('#page_paginated_section').find('.next_page').click
@@ -24,6 +23,7 @@ describe 'paginating', :type => :request, :driver => :selenium, :js => true do
     page.should have_no_selector('#page_paginated_section .previous_page.disabled')
     page.should have_selector('#upcomingpage_paginated_section .previous_page.disabled')
     find('#upcomingpage_paginated_section').find('.next_page').click
+    sleep(0.5)
     page.should have_no_selector('#upcomingpage_paginated_section .previous_page.disabled')
     page.should have_no_selector('#page_paginated_section .previous_page.disabled')
   end
