@@ -8,8 +8,8 @@ task :travis do
   system("cp spec/rails_app/db/development.sqlite3 spec/rails_app/db/test.sqlite3") # take a copy of the development database
   # && bundle install > /dev/null 2>&1
   system("(cd spec/rails_app/ && RAILS_ENV=development bundle exec rails server -d --port=#{serverport})") # daemonized rails server
-  system("bundle install > /dev/null 2>&1")
-  #system("bundle exec rake spec")
+  #system("bundle install > /dev/null 2>&1")
+  system("bundle exec rake spec")
   result = $?.exitstatus
   system("kill -9 `lsof -t -i :#{serverport}`") # kills rails server
   raise "spec failed!" unless result == 0
