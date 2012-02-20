@@ -26,5 +26,5 @@ end
 
 include Capybara::DSL
 
-
+SERVERPORT = IO.read(File.expand_path("../PORT",__FILE__)) # port number that we are using
 
