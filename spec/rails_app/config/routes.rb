@@ -1,8 +1,17 @@
 RailsApp::Application.routes.draw do
   resources :posts
 
-  namespace :changelog do
-    get '' => 'changelog#index'
+  namespace :pages do
+    get '' => 'pages#welcome'
+    get 'about'
+    get 'readme'
+  end
+
+  get 'changelog' => 'changelog#index'
+
+  namespace :sessions do
+    get 'signin'
+    get 'signout'
   end
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -53,7 +62,7 @@ RailsApp::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'posts#index'
+  root :to => 'pages#welcome'
 
   # See how all your routes lay out with "rake routes"
 

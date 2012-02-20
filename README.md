@@ -69,13 +69,13 @@ This will cause it to display content in the _mypartial.* view.
 
 If you are using will_paginate, and the links are wrapped in a div with class="pagination", the links will be ajaxified automatically.
 
-Otherwise, you should wrap the links with a container. We recommend that the class given is "ajaxpagination". For example:
+Otherwise, you should wrap the links with a container. We recommend that the class given is "ajaxpagination". You can put the links inside the partial, for example:
 
 ```html
 <div class="ajaxpagination"><a href="#">My ajaxified link</a></div>
 ```
 
-If you are using will_paginate, you can simply put this in the partial (so that the new links get reloaded when the page changes):
+If you are using will_paginate, you can simply put the links inside the partial (so that the new links get reloaded when the page changes):
 
 ```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
@@ -84,6 +84,25 @@ If you are using will_paginate, you can simply put this in the partial (so that 
 Note: It is recommended to set the pagination parameter to nil. When AJAX pagination calls the controller with a request for the partial, it appends ?pagination=NAMEOFPAGINATION. If the parameter is not set, AJAX Pagination will not respond to the AJAX call. will_paginate by default keeps any parameters in the query string. However, because this parameter is for internal use only, setting it to nil will keep the parameter from showing up in the url, making it look nicer (also better for caching).
 
 Now, AJAX Pagination will automatically call the controller for new content when an ajaxified link is clicked.
+
+If the links are outside the partial, you will need to also let AJAX Pagination know what content container should be reloaded when the links are followed. In this case, the div with ajaxpagination class should define the data-pagination attribute, the value corresponding to the name of the pagination content, for example you can do the following (which ajaxifies the menu navigation links):
+
+```erb
+<div class="ajaxpagination menu" data-pagination="menu">
+  <ul>
+    <li><%= link_to "Home", root_url %></li>
+    <li><%= link_to "Posts", posts_url %></li>
+    <li><%= link_to "Changelog", changelog_url %></li>
+    <li><%= link_to "Readme", pages_readme_url %></li>
+    <li><%= link_to "About", pages_about_url %></li>
+  </ul>
+</div>
+<%= ajax_pagination :pagination => "menu", :reload => {:urlpart => "path", :urlregex => "^.*$"} do %>
+  <%= yield %>
+<% end %>
+```
+
+Incidentally, this example also presents an alternative to passing in a :partial option to <tt>ajax_pagination</tt>. Instead, you can pass it a block, in which case you can call the render helper yourself, or any other function (in this case, yield). If a block is passed, any :partial option is ignored.
 
 ### Controller responder
 
@@ -106,7 +125,7 @@ The pagination should now work.
 
 ### Loading visualization
 
-AJAX Pagination can also add a loading image and partially blanking out of the paginated content. To do this, wrap all the content you want to cover with <tt>ajax_pagination_loadzone</tt>. For example, in the partial, you might have:
+AJAX Pagination can also add a loading image and partially blanking out of the paginated content. To do this, you can wrap all the content you want to cover with <tt>ajax_pagination_loadzone</tt>. For example, in the partial, you might have:
 
 ```erb
 <%= will_paginate @objects, :params => { :pagination => nil } %>
@@ -120,6 +139,16 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 Links outside are still clickable (such as the will_paginate links).
 
 The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. (TODO: add default loader image, and make the location changeable)
+
+If you want all the content in the partial (or otherwise wrapped by the ajax_pagination helper method) to be included as a loading zone (with the visual loading cues), you can instead, set the :loadzone option to true, eg:
+
+```erb
+<%= ajax_pagination :pagination => "menu", :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
+  <%= yield %>
+<% end %>
+```
+
+In this case, whatever is inside the yield will not need to call ajax_pagination_loadzone.
 
 ### Content reloading
 
@@ -188,9 +217,9 @@ end
 ```
 
 ## Javascript Dependency
-As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js, a jquery plugin. This is included in the gem as an asset already to simplify installation. ajax_pagination.js will automatically require jquery.ba-bbq.js.
+As well as the included ajax_pagination.js file, this gem uses jquery.ba-bbq.js and jquery.url.js, which are jquery plugins. They are included in the gem as assets already to simplify installation. ajax_pagination.js will automatically require jquery.ba-bbq.js, and jquery.url.js.
 
-However, if you are already using this (especially a different version of this), simply ensure that your file is named jquery.ba-bbq.js as well, so that it overrides the file in the gem.
+However, if you are already using them (especially if using a different version), simply ensure that your assets directory contains javascript files of the same name to shadow/override the file in the gem.
 
 The other javascript dependencies rely on gems: jquery-rails, and jquery-historyjs. So if they are used, AJAX Pagination should play well with other gems using the libraries.
 

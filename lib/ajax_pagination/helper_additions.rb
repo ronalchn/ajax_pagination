@@ -1,3 +1,8 @@
+begin
+  require 'will_paginate' if Gem::Specification.find_by_name('will_paginate') # needed for testing dummy application
+rescue Gem::LoadError # in case using version without fix for this
+end
+
 module AjaxPagination
   # This module is automatically added to all views, providing helper methods.
   module HelperAdditions
@@ -13,6 +18,23 @@ module AjaxPagination
     #   
     #   <%= link_to 'New Comment', new_comment_path %>
     #
+    # If you prefer to can render yourself, or call another function instead (useful for using this in the
+    # application layout), you can pass in a block. Any content wrapped by the pagination tag will be changed
+    # when paginating. A possible way to use this function by passing a block in an application layout is shown:
+    # 
+    #   <div class="ajaxpagination menu" data-pagination="menu">
+    #     <ul>
+    #       <li><%= link_to "Home", root_url %></li>
+    #       <li><%= link_to "Posts", posts_url %></li>
+    #       <li><%= link_to "Changelog", changelog_url %></li>
+    #       <li><%= link_to "Readme", pages_readme_url %></li>
+    #       <li><%= link_to "About", pages_about_url %></li>
+    #     </ul>
+    #   </div>
+    #   <%= ajax_pagination :pagination => "menu", :reload => {:urlpart => "path", :urlregex => "^.*$"} do %>
+    #     <%= yield %>
+    #   <% end %>
+    #
     # Options:
     # [:+pagination+]
     #   Changes the pagination name, which is used for requesting new content, and to uniquely identify the
@@ -21,7 +43,8 @@ module AjaxPagination
     #
     # [:+partial+]
     #   Changes the partial which is rendered. Defaults to +options [:pagination]+. The partial should generally
-    #   be the same as that given in the controller respond_to block, unless you are doing something strange.
+    #   be the same as that given in the controller respond_to block, unless you are doing something strange. If a
+    #   block is passed to the function, this option is ignored.
     #
     # [:+reload+]
     #   Used to detect whether the partial needs reloading, based on how the url changes. When pagination links are
@@ -37,13 +60,21 @@ module AjaxPagination
     #   If passed a hash of the form :+urlregex+ => "regularexpression", AJAX Pagination will apply the regular
     #   expression to the url. If a particular subexpression of the match changes, the partial is reloaded. The
     #   subexpression used defaults to the whole match. If the hash includes :+regexindex+ => N, the Nth subexpression
-    #   is used.
+    #   is used. If the hash also includes :+urlpart+, then the regular expression will only be applied to part of the
+    #   url. The part it is applied to depends on the string passed. Allowed strings are any attributes as given at
+    #   https://github.com/allmarkedup/jQuery-URL-Parser. Possible attributes include: "source", "protocol", "host",
+    #   "port", "relative", "path", "directory", "file", "query". Notice in the above example for the application
+    #   layout, how :urlpart => "path" is passed as a reload condition.
     #   
     #   Different parts of the url can be watched for any changes, by passing an array of hashes. For example:
     #   
     #     <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
     #   
     #   If nil, AJAX Pagination acts as if it was passed {:query => options [:pagination]}.
+    #
+    # [:+loadzone+]
+    #   Instead of using the ajax_pagination_loadzone tag, this option can be set to true. Everything inside this tag
+    #   will then be regarded as a loading zone, and the visual loading cues will apply to all the content here.
     #
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
@@ -56,8 +87,18 @@ module AjaxPagination
       when "Hash", "Array"
         divoptions["data-reload"] = reload.to_json
       end
+      if options[:loadzone]
+        divoptions[:class] = "paginated_section paginated_content"
+        divoptions[:style] = "position: relative;"
+      end
       content_tag :div, divoptions do
-        render partial
+        content_tag :div do # for changing the opacity if whole section is a loadzone
+          if block_given?
+            yield
+          else
+            render partial
+          end
+        end
       end
     end
 
@@ -78,7 +119,7 @@ module AjaxPagination
     #   <% end %>
     #
     def ajax_pagination_loadzone()
-      content_tag :div, :class => "paginated_content", :style => "position: relative" do
+      content_tag :div, :class => "paginated_content", :style => "position: relative;" do
         content_tag :div do # for changing the opacity
           yield
         end

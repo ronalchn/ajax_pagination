@@ -1,4 +1,5 @@
 //= require jquery.ba-bbq
+//= require jquery.url
 
 /* 
  * AJAX Pagination: Ajaxifying your pagination links
@@ -8,23 +9,33 @@
  * Distributed under the LGPL license
  */
 if (History && History.enabled) {
-  var ajaxPagination;
-  $(document).ready(function () {
-    ajaxPagination = new function() {
-      this.pagination_loader_state = new Array(); // the page we are waiting for
-      //this.pagination_stack = new Array(); // stack of request urls in history (to get state of url we came from)
-      this.pagination_url = location.href; // url we came from, so we can see transitions of the url
+  jQuery(document).ready(function () {
+    (function( $ ) {
+      var pagination_loader_state = new Array(); // the page we are waiting for
+      var pagination_url = location.href; // url we came from, so we can see transitions of the url
 
+      // semi-public API function - registers new content just loaded to display (if not stale)
+      // not actually public, because it is used by the AJAX Pagination gem itself. However, the other variables/functions should not be accessible by other parts of the gem, whereas this function is accessible by newly loaded scripts.
+      $.ajaxPagination = function(pagination_name,requesturl,content) {
+        if (pagination_loader_state[pagination_name] == requesturl) {
+          //pagination_content_state[pagination_name] = pagination_loader_state[pagination_name];
+          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+          $("#" + pagination_name + "_paginated_section").html(content);
+        }
+        // else content is stale
+      };
       function display_pagination_loader(pagination_name) {
-        if (this.pagination_loader_state[pagination_name] != undefined) return; // if already loading, don't reshow loader
+        if (pagination_loader_state[pagination_name] != undefined) return; // if already loading, don't reshow loader
         var paginated_section = $('#' + pagination_name + '_paginated_section');
-        var paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
+        var paginated_content;
+        if (paginated_section.hasClass("paginated_content")) paginated_content = paginated_section; // if the whole section is a loading zone
+        else paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
         var height = paginated_content.height();
         // setup loading look
         var img = document.createElement("IMG");
         img.src = "<%= asset_path "ajax-loader.gif" %>";
         var margin = Math.round(height>400?100:(height/4));
-        $(img).css({'margin': margin + 'px', 'max-height': (height/2) + 'px'});
+        $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'});
         var div = document.createElement("DIV");
         $(div).append(img);
         $(div).css({'position': 'absolute', 'left': 0, 'top': 0, 'width': '100%', 'height': '100%', 'text-align': 'center', 'opacity': 0.9});
@@ -36,33 +47,26 @@ if (History && History.enabled) {
           $('body').scrollTop(paginated_section.offset().top);
         }
       }
-
-      this.display_pagination_content = function(pagination_name,requesturl,content) {
-        if (this.pagination_loader_state[pagination_name] == requesturl) {
-          //pagination_content_state[pagination_name] = pagination_loader_state[pagination_name];
-          delete this.pagination_loader_state[pagination_name]; // not waiting for page anymore
-          $("#" + pagination_name + "_paginated_section").html(content);
-        }
-        // else content is stale
-      };
-
       function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl
-        display_pagination_loader.call(this,pagination_name);
-        this.pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
+        display_pagination_loader(pagination_name);
+        pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
         $.ajax(requesturl,{dataType:'script',cache:true});
       }
       $('body').on("click", ".pagination a, .ajaxpagination a", function() {
-        var pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id"))[1];
-        if (pagination_name == null) return; // pagination not set up properly
+        var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
+        var pagination_name = pagination_container.data('pagination');
+        if (pagination_name === undefined) pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id"))[1]; // if data-pagination not present, search up the tree for a suitable section
+        if ($("#" + pagination_name + "_paginated_section").length != 1) return true; // something wrong, cannot find unique section to load page into
+        if (pagination_name == null) return true; // pagination not set up properly
         var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
-        swapPage.call(ajaxPagination,pagination_name,requesturl);
-        ajaxPagination.pagination_url = this.href;
+        swapPage(pagination_name,requesturl);
+        pagination_url = this.href;
         History.pushState(null,document.title,this.href);
         return false;
       });
 
       History.Adapter.bind(window,'popstate',function(){ // popstate, but can work with hash changes as well
-        var from = ajaxPagination.pagination_url, to = location.href; // from what state to what other state
+        var from = pagination_url, to = location.href; // from what state to what other state
 
         $(".paginated_section").each(function(){
           var pagination_name = /^(.*)_paginated_section$/.exec($(this).attr("id"))[1];
@@ -82,10 +86,16 @@ if (History && History.enabled) {
                 if ($.deparam.querystring(from)[reload[i].query] !== $.deparam.querystring(to)[reload[i].query]) changed = true;
               }
               if (reload[i].urlregex !== undefined) {
+                var fstr = from, tstr = to;
+                if (reload[i].urlpart !== undefined) {
+                  fstr = $.url(from).attr(reload[i].urlpart);
+                  tstr = $.url(to).attr(reload[i].urlpart);
+                  if (typeof(fstr)!="string" || typeof(tstr)!="string") continue; // skip
+                }
                 var index = 0;
                 if (reload[i].regexindex !== undefined) index = reload[i].regexindex;
                 var regex = new RegExp(reload[i].urlregex);
-                var frommatch = regex.exec(from), tomatch = regex.exec(to);
+                var frommatch = regex.exec(fstr), tomatch = regex.exec(tstr);
                 if (frommatch != null && frommatch.length>=index) frommatch = frommatch[index];
                 if (tomatch != null && tomatch.length>=index) tomatch = tomatch[index];
                 if (frommatch !== tomatch) changed = true;
@@ -95,14 +105,14 @@ if (History && History.enabled) {
             if (!changed) return; // otherwise it has changed, and we must reload
           }
           var requesturl = $.param.querystring(location.href,{pagination:pagination_name}); // by default, adds ?pagination=page
-          swapPage.call(ajaxPagination,pagination_name,requesturl);
+          swapPage(pagination_name,requesturl);
         });
 
-        ajaxPagination.pagination_url = location.href; // update url (new url recognised)
+        pagination_url = location.href; // update url (new url recognised)
       });
 
-      //History.Adapter.trigger(window,"popstate"); // update stuff on page load
-    };
+      History.Adapter.trigger(window,"popstate"); // update stuff on page load
+    })( jQuery );
   });
 }
 

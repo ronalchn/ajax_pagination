@@ -9,7 +9,7 @@ class Changelog < ActiveRecord::Base
     @content = content
   end
   def self.all
-    changelogs = IO.read("../../CHANGELOG.md").split(/^## /).map{|str| Changelog.new(str.split(/$/,2)[0],str.split(/$/,2)[1])}
+    changelogs = IO.read(File.expand_path("../../../../../CHANGELOG.md",__FILE__)).split(/^## /).map{|str| Changelog.new(str.split(/$/,2)[0],str.split(/$/,2)[1])}
     changelogs.slice!(0)
     changelogs
   end

@@ -2,7 +2,7 @@
 <%= ajax_pagination_loadzone do %>
   <% @changelogs.each do |changelog| %>
     <%= content_tag :div, :style => "border-bottom: 1px solid black;" do %>
-      <h2><%= simple_format(changelog.title) %></h2>
+      <h3><%= simple_format(changelog.title) %></h3>
       <%= simple_format(changelog.content) %>
     <% end %>
   <% end %>

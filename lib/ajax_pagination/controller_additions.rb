@@ -23,12 +23,23 @@ module AjaxPagination
     #   Defaults to "page"
     #
     # [:+partial+]
-    #   Changes the partial that is returned by this response. Defaults to options [:pagination].
+    #   Changes the partial that is returned by this response. Defaults to options [:pagination]. The value can be any object,
+    #   and is rendered directly. Therefore, it need not be a string (which renders _page.html.erb for example). Often,
+    #   the view to be rendered is not a partial. This is the case if AJAX Pagination is used for menu navigation links.
+    #   In this case, each controller action will need to be able to handle AJAX calls and render the full view. To do this,
+    #   pass a hash, specifying a file as shown below. That way, a view file without a leading underscore is rendered.
+    #
+    #     def welcome
+    #       respond_to do |format|
+    #         format.html
+    #         ajax_pagination format, :pagination => :menu, :partial => {:file => "pages/welcome"}
+    #       end
+    #     end
     #
     def ajax_pagination(format,options = {})
       if params[:pagination] == (options[:pagination] || 'page').to_s
         partial = options[:partial] || params[:pagination]
-        format.js { render :inline => "ajaxPagination.display_pagination_content(\"#{params[:pagination]}\",\"#{request.url}\",\"<%= raw escape_javascript(render(\"#{partial}\")) %>\");" }
+        format.js { render :inline => "jQuery.ajaxPagination(\"#{params[:pagination]}\",\"#{request.url}\",\"<%= raw escape_javascript(render(partial)) %>\");", :locals => { :partial => partial } }
         return true
       else
         return false

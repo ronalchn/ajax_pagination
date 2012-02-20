@@ -2,12 +2,14 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.order('published_at DESC').paginate(:page => params[:page], :per_page => 2)
-
+    @posts = Post.published.order('published_at DESC').paginate(:page => params[:page], :per_page => 3)
+    @upcomingposts = Post.unpublished.order('published_at ASC').paginate(:page => params[:upcomingpage], :per_page => 2)
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @posts }
       ajax_pagination(format)
+      ajax_pagination format, :pagination => :upcomingpage
+      ajax_pagination format, :pagination => :menu, :partial => {:file => "posts/index"}
     end
   end
 
@@ -25,6 +27,7 @@ class PostsController < ApplicationController
   # GET /posts/new
   # GET /posts/new.json
   def new
+    redirect_to posts_url, :alert => "Access Denied" and return if !session[:admin]
     @post = Post.new
 
     respond_to do |format|
@@ -35,6 +38,7 @@ class PostsController < ApplicationController
 
   # GET /posts/1/edit
   def edit
+    redirect_to post_url(params[:id]), :alert => "Access Denied" and return if !session[:admin]
     @post = Post.find(params[:id])
     @post.published_at = @post.created_at if @post.published_at.nil?
   end
@@ -42,11 +46,14 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
+    redirect_to posts_url, :alert => "Access Denied" and return if !session[:admin]
     @post = Post.new(params[:post])
     @post.published_at = @post.created_at if @post.published_at.nil?
 
     respond_to do |format|
       if @post.save
+        @post.published_at = @post.created_at if @post.published_at.nil?
+        @post.save
         format.html { redirect_to @post, :notice => 'Post was successfully created.' }
         format.json { render :json => @post, :status => :created, :location => @post }
       else
@@ -59,6 +66,7 @@ class PostsController < ApplicationController
   # PUT /posts/1
   # PUT /posts/1.json
   def update
+    redirect_to post_url(params[:id]), :alert => "Access Denied" and return if !session[:admin]
     @post = Post.find(params[:id])
 
     respond_to do |format|
@@ -75,6 +83,7 @@ class PostsController < ApplicationController
   # DELETE /posts/1
   # DELETE /posts/1.json
   def destroy
+    redirect_to post_url(params[:id]), :alert => "Access Denied" and return if !session[:admin]
     @post = Post.find(params[:id])
     @post.destroy
 

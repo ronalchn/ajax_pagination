@@ -1,3 +1,12 @@
+<h2>Posts</h2>
+
+<% if session[:admin] %>
+  <%= content_tag :div, :style => "border: 1px solid blue; background-color: rgba(0,0,255,0.1); padding-left: 40px; padding-right: 40px;" do %>
+    <h3>Upcoming</h3>
+    <%= ajax_pagination :pagination => "upcomingpage" %>
+  <% end %>
+  <h3>Published</h3>
+<% end %>
 
 <%= ajax_pagination %>
 
