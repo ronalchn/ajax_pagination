@@ -1,3 +1,6 @@
+## v0.1.1.alpha
+* Fix jquery_rails dependency, requires jQuery 1.7+
+
 ## v0.1.0
 * Added functional tests for controller and helper additions.
 * Mocked up a rails application using ajax_pagination, at spec/rails_app/. You can run this example application using:

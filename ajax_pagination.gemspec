@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "capybara"
 
   s.add_runtime_dependency "rails", '>= 3.1'
-  s.add_runtime_dependency "jquery-rails", '>= 1.0'
+  s.add_runtime_dependency "jquery-rails", '>= 1.0.17' # require jQuery 1.7+
   s.add_runtime_dependency "jquery-historyjs"
 
 end
