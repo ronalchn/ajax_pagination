@@ -1,4 +1,5 @@
 class PostsController < ApplicationController
+
   # GET /posts
   # GET /posts.json
   def index
@@ -9,7 +10,7 @@ class PostsController < ApplicationController
       format.json { render :json => @posts }
       ajax_pagination(format)
       ajax_pagination format, :pagination => :upcomingpage
-      ajax_pagination format, :pagination => :menu, :partial => {:file => "posts/index"}
+      ajax_pagination format, :pagination => :menu
     end
   end
 
@@ -17,7 +18,6 @@ class PostsController < ApplicationController
   # GET /posts/1.json
   def show
     @post = Post.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render :json => @post }

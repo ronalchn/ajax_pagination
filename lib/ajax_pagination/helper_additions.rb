@@ -41,10 +41,11 @@ module AjaxPagination
     #   wrapping div tag. The name passed here should be the same as the pagination name used in the controller
     #   respond_to block. Defaults to "page".
     #
-    # [:+partial+]
+    # [:+render+]
     #   Changes the partial which is rendered. Defaults to +options [:pagination]+. The partial should generally
     #   be the same as that given in the controller respond_to block, unless you are doing something strange. If a
-    #   block is passed to the function, this option is ignored.
+    #   block is passed to the function, this option is ignored. You can also pass options instead to render other
+    #   files, in which case, the behaviour is the same as the render method in views.
     #
     # [:+reload+]
     #   Used to detect whether the partial needs reloading, based on how the url changes. When pagination links are
@@ -78,7 +79,7 @@ module AjaxPagination
     #
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
-      partial = options[:partial] || pagination # default partial rendered is the name of the pagination
+      partial = options[:render] || pagination # default partial rendered is the name of the pagination
       reload = options[:reload]
       divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
       case reload.class.to_s
@@ -92,20 +93,10 @@ module AjaxPagination
         divoptions[:style] = "position: relative;"
       end
       content_tag :div, divoptions do
-        if options[:loadzone]
-          content_tag :div do # for changing the opacity as whole section is a loadzone
-            if block_given?
-              yield
-            else
-              render partial
-            end
-          end
+        if block_given?
+          yield
         else
-          if block_given?
-            yield
-          else
-            render partial
-          end
+          render partial
         end
       end
     end
@@ -128,9 +119,7 @@ module AjaxPagination
     #
     def ajax_pagination_loadzone()
       content_tag :div, :class => "paginated_content", :style => "position: relative;" do
-        content_tag :div do # for changing the opacity
-          yield
-        end
+        yield
       end
     end
   end

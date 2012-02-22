@@ -14,16 +14,6 @@ if (History && History.enabled) {
       var pagination_loader_state = new Array(); // the page we are waiting for
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
 
-      // semi-public API function - registers new content just loaded to display (if not stale)
-      // not actually public, because it is used by the AJAX Pagination gem itself. However, the other variables/functions should not be accessible by other parts of the gem, whereas this function is accessible by newly loaded scripts.
-      $.ajaxPagination = function(pagination_name,requesturl,content) {
-        if (pagination_loader_state[pagination_name] == requesturl) {
-          //pagination_content_state[pagination_name] = pagination_loader_state[pagination_name];
-          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
-          $("#" + pagination_name + "_paginated_section").html(content);
-        }
-        // else content is stale
-      };
       function display_pagination_loader(pagination_name) {
         if (pagination_loader_state[pagination_name] != undefined) return; // if already loading, don't reshow loader
         var paginated_section = $('#' + pagination_name + '_paginated_section');
@@ -50,7 +40,21 @@ if (History && History.enabled) {
       function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl
         display_pagination_loader(pagination_name);
         pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
-        $.ajax(requesturl,{dataType:'script',cache:true});
+        //$.ajax(requesturl,{dataType:'script',cache:true});
+        $.ajax({url: requesturl, data: {pagination:pagination_name},
+          dataType: 'html',
+          success: function(data) {
+            var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+            // find matching element id in data, after removing script tags
+            var content = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"")).find(id);
+            if (content.length>0) $(id).html(content.html());
+            else $(id).html(data); // otherwise use all the content
+            delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            $(id).html(jqXHR.responseText);
+          }
+        });
       }
       $('body').on("click", ".pagination a, .ajaxpagination a", function() {
         var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
@@ -58,8 +62,8 @@ if (History && History.enabled) {
         if (pagination_name === undefined) pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id"))[1]; // if data-pagination not present, search up the tree for a suitable section
         if ($("#" + pagination_name + "_paginated_section").length != 1) return true; // something wrong, cannot find unique section to load page into
         if (pagination_name == null) return true; // pagination not set up properly
-        var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
-        swapPage(pagination_name,requesturl);
+        //var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
+        swapPage(pagination_name,this.href);
         pagination_url = this.href;
         History.pushState(null,document.title,this.href);
         return false;
