@@ -241,7 +241,7 @@ Instead of passing in the Array/Hash Ruby object, a string in json form is accep
 ```
 
 ### Initializer
-You can configure AJAX Pagination in the initializer. Run ```sh
+You can configure AJAX Pagination in the initializer. Run ```
 rails generate ajax_pagination:install
 ``` to get the initializer file.
 

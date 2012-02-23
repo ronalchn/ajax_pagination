@@ -21,6 +21,7 @@ describe 'paginating with javascript on', :js => true do
     page.should have_no_selector('.ajaxloader')
     find('#signin').click
     visit("http://localhost:#{SERVERPORT}/posts")
+    sleep(2)
     find('#page_paginated_section').find('.next_page').click
     page.should have_selector('.ajaxloader')
     sleep(0.5)
@@ -42,7 +43,7 @@ describe 'paginating with javascript on', :js => true do
     click_link 'About'
     sleep(0.5)
     click_link 'Readme'
-    sleep(0.5)
+    sleep(2)
     page.should have_no_selector('.ajaxloader')
     page.should have_selector('#readmepagetitle')
     page.evaluate_script('window.history.back();') # back to About
