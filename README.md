@@ -40,10 +40,10 @@ AJAX Pagination depends on jquery-rails and jquery-historyjs, so if their javasc
 ## Getting Started
 The next section presents the usage of the functions in detail. However, it also presents the different options that can be chosen. For a simpler overview of how you can easily use this gem, please read one of the more specific guides below (found in the wiki):
 
-* [Add AJAX to will_paginate](wiki/Adding-AJAX-to-will_paginate)
-* [Add AJAX to site navigation](wiki/Adding-AJAX-to-site-navigation)
+* [Add AJAX to will_paginate](https://github.com/ronalchn/ajax_pagination/wiki/Adding-AJAX-to-will_paginate)
+* [Add AJAX to site navigation](https://github.com/ronalchn/ajax_pagination/wiki/Adding-AJAX-to-site-navigation)
 
-and much [more](wiki/Home).
+and much [more](https://github.com/ronalchn/ajax_pagination/wiki/Home).
 
 ## Usage
 
