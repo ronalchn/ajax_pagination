@@ -37,7 +37,15 @@ AJAX Pagination depends on jquery-rails and jquery-historyjs, so if their javasc
 //= require history
 ```
 
-## Getting started
+## Getting Started
+The next section presents the usage of the functions in detail. However, it also presents the different options that can be chosen. For a simpler overview of how you can easily use this gem, please read one of the more specific guides below (found in the wiki):
+
+* [Add AJAX to will_paginate](wiki/Adding-AJAX-to-will_paginate)
+* [Add AJAX to site navigation](wiki/Adding-AJAX-to-site-navigation)
+
+and much [more](wiki/Home).
+
+## Usage
 
 The pagination needs a name (in case you have multiple sets of AJAX pagination on the same webpage). By default, the name is "page". If you only intend to use a single set of pagination links, then leave it as "page". The name is used to distinguish different sets of pagination links, and is also used as a default for other functionaility.
 
@@ -62,7 +70,7 @@ If the pagination name is not "page", pass the new pagination name in.
 If the partial is not named the same, pass it the new name as an option:
 
 ```erb
-<%= ajax_pagination :partial => "mypartial" %>
+<%= ajax_pagination :render => "mypartial" %>
 ```
 
 This will cause it to display content in the _mypartial.* view.
@@ -102,11 +110,17 @@ If the links are outside the partial, you will need to also let AJAX Pagination 
 <% end %>
 ```
 
-Incidentally, this example also presents an alternative to passing in a :partial option to <tt>ajax_pagination</tt>. Instead, you can pass it a block, in which case you can call the render helper yourself, or any other function (in this case, yield). If a block is passed, any :partial option is ignored.
+Incidentally, this example also presents an alternative to passing in a :render option to <tt>ajax_pagination</tt>. Instead, you can pass it a block, in which case you can call the render helper yourself, or any other function (in this case, yield). If a block is passed, any :render option is ignored.
 
 ### Controller responder
 
-However, the controller needs to be told how to respond. Add a call to <tt>ajax_pagination(format)</tt> in the controller action, which will return javascript containing the partial.
+However, the controller needs to be told how to respond. If we do not indicate the response, it will render the whole html page as usual. This will still work (and only display the new content required), but it will send all the page content. By default, when this happens in development, an alert will pop up warning that this is not the best solution. AJAX Pagination works around this by detecting that you want to load new content into a section called "page" for example, but the new content actually contains a section called "page". Therefore, it replaces the old content with only the content of the response inside the section "page".
+
+This behaviour makes it easy to get AJAX Pagination working. And if you are not worried about efficiency (sending all the page content all the time), or if you are doing this for page caching purposes, you can leave it as is. To turn off the warning in development mode, simply generate an initializer, and set ```ruby
+config.warnings = false
+```.
+
+To only send the data that is required (not including the page layout etc.), add a call to <tt>ajax_pagination(format)</tt> in the controller action.
 
 ```ruby
 respond_to do |format|
@@ -115,13 +129,57 @@ respond_to do |format|
 end
 ```
 
-If either the pagination name or the partial filename is not the default, you will need to pass these in as options.
+If either the pagination name or the partial filename is not the default (a partial named whatever :pagination is, "_page" in this case), you will need to pass these in as options.
 
 ```ruby
-ajax_pagination format, :pagination => "page", :partial => "mypartial"
+ajax_pagination format, :pagination => "page", :render => "mytemplate"
 ```
 
-The pagination should now work.
+This will render controller/mytemplate. If you want a partial to be rendered, use:
+
+```ruby
+ajax_pagination format, :pagination => "page", :render => {:partial => "mytemplate"}
+```
+
+In both cases, the layout is off by default. You can pass in a layout to use in the render by the usual means.
+
+The pagination should now be more efficient.
+
+### Default controller responder
+
+Although it is fine if used for a single action, eg. with will_paginate, individually adding a respond_to line for every controller and action might take a while, if used for site navigation, or navigating between the different actions of a single controller.
+
+There is also a class method defined for ActionController, also named ajax_pagination. If we are using it for site navigation, and the pagination name is "menu", then we can simply call:
+
+```ruby
+class ApplicationController < ActionController:Base
+  ajax_pagination :pagination => "menu"
+end
+```
+
+We can, as with the instance method, also pass in a ```ruby
+:render => { :template => "myview", :layout => "mylayout" }
+``` option. However, in this case, it is actually designed to be used without specifying the view template displayed. The reason is that when it is not defined, the default behaviour is normally what you want. Suppose you accessed a page at the url /controller/action?pagination=menu. The pagination=menu query argument indicates that this is a special AJAX request. If pagination is not defined exactly as "menu" in this example, the rendering does not trigger.
+
+AJAX Pagination first tries to render "controller/_menu", :layout => false, if it exists. If it does not, then it will render "controller/action", :layout => false.
+
+Therefore, when used for site navigation, it will by default, render the same page it would otherwise have rendered, only without the layout. Sometimes, we have parts of the page we want to render again (and is wrapped by the ajax_pagination container which identifies the section of the page which is reloaded), but exists in the layout. To deal with this case, we can set the layout to a special layout. This is used if, for example, we have flash notices or alerts we want to be removed, or displayed as appropriate for each AJAX call.
+
+In this case, we create a layout in layouts/flash_layout.html.erb for example, which renders the flash notices. Then, we can pass the layout in as follows:
+
+```ruby
+class ApplicationController < ActionController:Base
+  ajax_pagination :pagination => "menu", :render => { :layout => "flash_layout" }
+end
+```
+
+Notice that no template file is specified. By not specifying the view template file, the controller/action view will be rendered.
+
+If we want to navigate within a controller, we can use this in the specific controller instead of the ApplicationController.
+
+Please note that the class method only specifies the default behaviour, by defining default_render (but it only triggers on the AJAX calls, otherwise it calls the original default_render function to handle the rendering). This default can be overrided by calling the instance method within an action, allowing you to use this for special cases (controllers or actions).
+
+Because the default_render method is used, if you subsequently define default_render, you may clobber the behaviour defined by AJAX Pagination. To deal with this, make sure that the call to the ajax_pagination class method is after any other definition. AJAX Pagination will not clobber any default_render method already defined. Requests which are not AJAX calls will be passed on to the original default_render method.
 
 ### Loading visualization
 
@@ -138,7 +196,7 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 
 Links outside are still clickable (such as the will_paginate links).
 
-The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. (TODO: add default loader image, and make the location changeable)
+The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. You can specify a new default filename in your initializer.
 
 If you want all the content in the partial (or otherwise wrapped by the ajax_pagination helper method) to be included as a loading zone (with the visual loading cues), you can instead, set the :loadzone option to true, eg:
 
@@ -181,6 +239,12 @@ Instead of passing in the Array/Hash Ruby object, a string in json form is accep
 ```erb
 <%= ajax_pagination :reload => '[{"urlregex":"page=([0-9]+)","regexindex":1},{"query":"page"}]' %>
 ```
+
+### Initializer
+You can configure AJAX Pagination in the initializer. Run ```sh
+rails generate ajax_pagination:install
+``` to get the initializer file.
+
 ## Example Application
 This gem contains an example application (actually, it is there also for testing purposes), however it is nevertheless a good example.
 
