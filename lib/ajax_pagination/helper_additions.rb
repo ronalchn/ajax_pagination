@@ -124,9 +124,4 @@ module AjaxPagination
     end
   end
 end
-if defined? ActionView
-  ActionView::Base.class_eval do
-    include AjaxPagination::HelperAdditions
-  end
-end
 

@@ -129,9 +129,4 @@ module AjaxPagination
     end
   end
 end
-if defined? ActionController
-  ActionController::Base.class_eval do
-    include AjaxPagination::ControllerAdditions
-  end
-end
 
