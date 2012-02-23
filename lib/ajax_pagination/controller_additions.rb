@@ -5,7 +5,8 @@ module AjaxPagination
       # Adds default render behaviour for requests with a pagination parameter matching a certain name. By default, this name is the empty string. However, it can be changed.
       # Options:
       # [:+pagination+]
-      #   The pagination name which should be matched to invoke AJAX Pagination response. Defaults to the empty string ""
+      #   The pagination name which should be matched to invoke AJAX Pagination response. Defaults to the empty string "". This is unlike other
+      #   methods which default to "page". However, this is a better default in this case because this affects more than one controller/action.
       #
       # [:+render+]
       #   Overrides default render behaviour for AJAX Pagination, which is to render the partial with name matching the pagination option,
@@ -20,9 +21,9 @@ module AjaxPagination
           if params[:pagination] && params[:pagination] == pagination && request.format == "html" # override if calling AJAX Pagination
             unless view
               if lookup_context.find_all("#{params[:controller]}/_#{params[:pagination]}").any?
-                view = {:partial => params[:pagination]}
+                view = { :partial => params[:pagination] } # render partial, layout is off
               else
-                default_render.bind(self).call(*args) and return # just render default view
+                view = { :layout => false } # render default view, but turn off layout
               end
             end
             respond_to do |format|
@@ -62,7 +63,8 @@ module AjaxPagination
     #   Changes the default template/partial that is rendered by this response. The value can be any object,
     #   and is rendered directly. The render behaviour is the same as the render method in controllers. If this option is not used,
     #   then the default is a partial of the same name as :pagination, if it exists, otherwise, if it does not,
-    #   the default template is rendered (ie. the :controller/:action.:format view file).
+    #   the default template is rendered (ie. the :controller/:action.:format view file). By default, no layout is used
+    #   to render the template/partial. It can be set by passing in a layout key.
     #
     #     def welcome
     #       respond_to do |format|
@@ -78,8 +80,9 @@ module AjaxPagination
         elsif lookup_context.find_all(params[:controller] + "/_" + params[:pagination]).any?
           view = {:partial => params[:pagination]} # render partial of the same name as pagination
         else # render usual view
-          format.html and return true
+          view = {}
         end
+        view = { :layout => false }.merge(view); # set default of no layout rendered
         format.html { render view }
         return true
       else
