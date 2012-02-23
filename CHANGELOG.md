@@ -6,7 +6,7 @@
 * added class method to ActionController which can add AJAX Pagination behaviour to the default_render method. This can be called at the ApplicationController level or for a specific controller. However, this is probably most useful at the application level for AJAX menu navigation (so that ajax_pagination does not need to be called in each controller/action)
 * Warnings added when AJAX Pagination cannot complete AJAX action, or when the setup is suboptimal. This is on only in development mode by default (see gem initializer). These warnings appear as alerts, and are displayed by the javascript code.
 * Initializer generator added, with configuration for an alternative loading image, and warnings setting.
-* renamed data-reload to data-pagination. The new attribute name is already used, but in different circumstances. Note this attribute is only set internally, so usage has not changed. This change should minimise AJAX Pagination''s footprint
+* renamed data-reload to data-pagination. The new attribute name is already used, but in different circumstances. Note this attribute is only set internally, so usage has not changed. This change should minimise the footprint of AJAX Pagination.
 * Note readme needs to be updated with new API still, use rdoc to get latest api until this version is released.
 
 ## v0.1.0
