@@ -105,11 +105,11 @@ module AjaxPagination
     # is reloaded, it may take some time. In the meanwhile, AJAX Pagination will look in the partial amoung its
     # immediate child for this tag. If this tag exists, it will cover this tag with a semi-transparent
     # rectangle, and make the old partial unclickable (links and other elements are therefore disabled).
-    # A loading image is also displayed above the content.
+    # A loading image is also displayed above the content. Only one loading zone is allowed. The rest are ignored.
     #
     # Use this tag in your partial, wrapped around all the content you want to disable. For example, if you are
     # displaying pagination links which you do not want to disable, as well as content you wish to disable,
-    # you partial might contain:
+    # your partial might contain:
     #
     #   <%= will_paginate @objects, :params => { :pagination => nil } %>
     #   <%= ajax_pagination_loadzone do %>
