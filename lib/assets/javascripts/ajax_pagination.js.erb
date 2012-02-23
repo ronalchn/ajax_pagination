@@ -94,13 +94,13 @@ if (History && History.enabled) {
           var pagination_name = /^(.*)_paginated_section$/.exec($(this).attr("id"))[1];
           if (pagination_name == null) return; // pagination not set up properly
 
-          // if data-reload is not defined, the use default reload test
-          if ($(this).data('reload') === undefined) {
+          // if data-pagination is not defined, the use default reload test
+          if ($(this).data('pagination') === undefined) {
             // if ?pagination_name=ABC, where ABC is the same for both urls, then don't need to reload
             if ($.deparam.querystring(from)[pagination_name] === $.deparam.querystring(to)[pagination_name]) return;
           }
           else { // otherwise parse json and perform tests
-            var reload = $(this).data('reload');
+            var reload = $(this).data('pagination');
             if (!(reload instanceof Array)) reload = new Array(reload);
             var changed = false;
             for (i=0;i<reload.length;i++) {

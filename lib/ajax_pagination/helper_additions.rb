@@ -84,9 +84,9 @@ module AjaxPagination
       divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
       case reload.class.to_s
       when "String"
-        divoptions["data-reload"] = reload
+        divoptions["data-pagination"] = reload
       when "Hash", "Array"
-        divoptions["data-reload"] = reload.to_json
+        divoptions["data-pagination"] = reload.to_json
       end
       if options[:loadzone]
         divoptions[:class] = "paginated_section paginated_content"

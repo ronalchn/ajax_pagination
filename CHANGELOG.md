@@ -2,9 +2,11 @@
 * Fix jquery_rails dependency, requires jQuery 1.7+
 * rename :partial option to :render in controller_additions methods (all instance and class methods added to ActionController). This is because it now has behaviour like the ActionController render function rather than the ActionView render function
 * change AJAX requests from js to html format. The motivation is to lower barrier to entry, getting AJAX to work. Now, no actual ajax_pagination instance method need be called in the controllers. It is less efficient, and normally not recommended, but not calling it will result in the default template (full page including application layout) to be returned in the AJAX call. AJAX Pagination can then pick out the paginated section required (throwing away everything else).
+* removed all publicly accessible javascript function, there was 1 accessible function for the AJAX result, but it has been removed in favour of the jQuery callback
 * added class method to ActionController which can add AJAX Pagination behaviour to the default_render method. This can be called at the ApplicationController level or for a specific controller. However, this is probably most useful at the application level for AJAX menu navigation (so that ajax_pagination does not need to be called in each controller/action)
 * Warnings added when AJAX Pagination cannot complete AJAX action, or when the setup is suboptimal. This is on only in development mode by default (see gem initializer). These warnings appear as alerts, and are displayed by the javascript code.
 * Initializer generator added, with configuration for an alternative loading image, and warnings setting.
+* renamed data-reload to data-pagination. The new attribute name is already used, but in different circumstances. Note this attribute is only set internally, so usage has not changed. This change should minimise AJAX Pagination''s footprint
 * Note readme needs to be updated with new API still, use rdoc to get latest api until this version is released.
 
 ## v0.1.0
