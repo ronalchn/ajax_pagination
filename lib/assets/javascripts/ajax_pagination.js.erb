@@ -23,7 +23,7 @@ if (History && History.enabled) {
         var height = paginated_content.height();
         // setup loading look
         var img = document.createElement("IMG");
-        img.src = "<%= asset_path "ajax-loader.gif" %>";
+        img.src = "<%= asset_path AjaxPagination.loading_image %>";
         var margin = Math.round(height>400?100:(height/4));
         $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'}).addClass('ajaxloader');
         var div = document.createElement("DIV");
@@ -47,7 +47,12 @@ if (History && History.enabled) {
             var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
             // find matching element id in data, after removing script tags
             var content = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"")).find(id);
-            if (content.length>0) $(id).html(content.html());
+            if (content.length>0) {
+              $(id).html(content.html());
+              <% if AjaxPagination.warnings %>
+                alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
+              <% end %>
+            }
             else $(id).html(data); // otherwise use all the content
             delete pagination_loader_state[pagination_name]; // not waiting for page anymore
           },
@@ -59,9 +64,22 @@ if (History && History.enabled) {
       $('body').on("click", ".pagination a, .ajaxpagination a", function() {
         var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
         var pagination_name = pagination_container.data('pagination');
-        if (pagination_name === undefined) pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id"))[1]; // if data-pagination not present, search up the tree for a suitable section
-        if ($("#" + pagination_name + "_paginated_section").length != 1) return true; // something wrong, cannot find unique section to load page into
-        if (pagination_name == null) return true; // pagination not set up properly
+        if (pagination_name === undefined) {
+          pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id")); // if data-pagination not present, search up the tree for a suitable section
+          if (pagination_name == null) {
+            <% if AjaxPagination.warnings %>
+              alert("AJAX Pagination warning:\nNo pagination section name given for link, and none could be implicitly assigned, AJAX cancelled for this request");
+            <% end %>
+            return true; // pagination not set up properly
+          }
+          pagination_name = pagination_name[1];
+        }
+        if ($("#" + pagination_name + "_paginated_section").length != 1) { // something wrong, cannot find unique section to load page into
+          <% if AjaxPagination.warnings %>
+            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + $("#" + pagination_name + "_paginated_section").length);
+          <% end %>
+          return true; // follow link normally
+        }
         //var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
         swapPage(pagination_name,this.href);
         pagination_url = this.href;

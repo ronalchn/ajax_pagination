@@ -3,6 +3,8 @@
 * rename :partial option to :render in controller_additions methods (all instance and class methods added to ActionController). This is because it now has behaviour like the ActionController render function rather than the ActionView render function
 * change AJAX requests from js to html format. The motivation is to lower barrier to entry, getting AJAX to work. Now, no actual ajax_pagination instance method need be called in the controllers. It is less efficient, and normally not recommended, but not calling it will result in the default template (full page including application layout) to be returned in the AJAX call. AJAX Pagination can then pick out the paginated section required (throwing away everything else).
 * added class method to ActionController which can add AJAX Pagination behaviour to the default_render method. This can be called at the ApplicationController level or for a specific controller. However, this is probably most useful at the application level for AJAX menu navigation (so that ajax_pagination does not need to be called in each controller/action)
+* Warnings added when AJAX Pagination cannot complete AJAX action, or when the setup is suboptimal. This is on only in development mode by default (see gem initializer). These warnings appear as alerts, and are displayed by the javascript code.
+* Initializer generator added, with configuration for an alternative loading image, and warnings setting.
 * Note readme needs to be updated with new API still, use rdoc to get latest api until this version is released.
 
 ## v0.1.0

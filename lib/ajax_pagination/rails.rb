@@ -8,5 +8,11 @@ module AjaxPagination
         include AjaxPagination::HelperAdditions
       end
     end
+
+    initializer 'ajax_pagination.javascript_warnings' do
+      if AjaxPagination.warnings.nil? # if not defined
+        AjaxPagination.warnings = Rails.env == 'development' # default setting
+      end
+    end
   end
 end
