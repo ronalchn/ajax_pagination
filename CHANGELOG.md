@@ -1,5 +1,6 @@
-## v0.2.0.alpha
+## v0.2.0
 **Note: The API has changed slightly from previous versions. If you have used an advanced feature - the :partial option, please use :render now, and if used in a controller, a non-partial template will be used. To use a partial, specify :render => { :partial => "" }.**
+
 * Fix jquery_rails dependency, requires jQuery 1.7+
 * rename :partial option to :render in controller_additions methods (all instance and class methods added to ActionController). This is because it now has behaviour like the ActionController render function rather than the ActionView render function
 * change AJAX requests from js to html format. The motivation is to lower barrier to entry, getting AJAX to work. Now, no actual ajax_pagination instance method need be called in the controllers. It is less efficient, and normally not recommended, but not calling it will result in the default template (full page including application layout) to be returned in the AJAX call. AJAX Pagination can then pick out the paginated section required (throwing away everything else).
