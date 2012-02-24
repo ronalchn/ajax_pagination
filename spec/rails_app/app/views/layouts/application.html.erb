@@ -14,7 +14,7 @@
     <%= link_to "Sign in as admin", sessions_signin_url, :id => "signin" %>
   <% end %>
 </div>
-<h1>AJAX Pagination Example Application</h1>
+<h1><%= ajax_link_to "AJAX Pagination Example Application", "broken link", :pagination => "menu" %><!-- note the broken link is intentional, for testing purposes --></h1>
 <div class="ajaxpagination menu" data-pagination="menu">
   <ul>
     <li><%= link_to "Home", root_url %></li>
@@ -31,7 +31,7 @@
   <% if flash[:alert] %>
     <p id="alert"><%= flash[:alert] %></p>
   <% end %>
-  <%= yield %>
+  <%= render :template => "layouts/flash" %>
 <% end %>
 </body>
 </html>

@@ -8,6 +8,6 @@
 
 
 <% if session[:admin] %>
-  <%= link_to 'Edit', edit_post_path(@post) %> |
+  <%= ajax_link_to 'Edit', edit_post_path(@post) %> |
 <% end %>
-<%= link_to 'Back', posts_path %>
+<%= ajax_link_to 'Back', posts_path %>

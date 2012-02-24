@@ -1,3 +1,14 @@
+## v0.3.0 **TO BE RELEASED**
+* Class method ajax_pagination :reload option - a string in json form no longer accepted, pass it in as a hash or array of hashes instead
+* image option added to ajax_pagination view helper, to specify a loading image other than the default
+* For reloading of a page section on browser back/forward, urlregex urlparts option changed to parse the url in strict mode
+* Fixed bug: The loading never stopped if page was invalid, it will now display the error page properly
+* Fixed bug: back/forward not loading properly in certain cases
+* Added link helper ajax_link_to, which wraps link_to. This helper is useful for one-off links to perform an AJAX call
+* Added support for redirection - redirects are intercepted, and if they are AJAX calls with a pagination url parameter, will be modified into a Status 200 OK response with Location header. The AJAX call be manually follow the redirect, and update the url in the address bar. the pagination url parameter context can also be kept.
+
+* To add form helpers which trigger ajax pagination (to be done for release)
+
 ## v0.2.0
 **Note: The API has changed slightly from previous versions. If you have used an advanced feature - the :partial option, please use :render now, and if used in a controller, a non-partial template will be used. To use a partial, specify :render => { :partial => "" }.**
 

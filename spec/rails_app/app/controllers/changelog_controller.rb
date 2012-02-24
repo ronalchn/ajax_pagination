@@ -7,7 +7,6 @@ class ChangelogController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       ajax_pagination(format)
-      ajax_pagination format, :pagination => :menu
     end
   end
 end

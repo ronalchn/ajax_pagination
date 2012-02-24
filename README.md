@@ -8,6 +8,8 @@ This gem can ajaxify any pagination solution. Links wrapped in containers with s
 
 Please note, this is not a pagination solution by itself. You should use a pagination solution such as will_paginate and Kaminari, or a menu builder such as Simple-navigation or Semantic-menu, or you can roll your own. After that is implemented, you can use AJAX Pagination to ajaxify it, so that when users change pages, they do not have the reload the whole page.
 
+AJAX Pagination is a powerful AJAX solution which is designed to be easy to use. You can add AJAX requests to your application, without touching a single line of javascript, because AJAX Pagination does it all for you. This gem follows the convention over configuration mantra. Therefore, the most common use cases will be much easier to implement. Users can progressively change the configuration as their use case differs from the norm. It is recommended to follow the convention unless it is necessary to do otherwise.
+
 ## Background
 This gem depends on Rails 3.1+, jQuery and jquery-historyjs. The gem was extracted from http://github.com/xrymbos/nztrain-v2/, and further development will be tied to the needs of the application. Therefore, some dependencies are because the application uses a particular version of these other gems. If you need to use this in other versions/javascript frameworks, I would welcome any pull requests. They are not currently supported because I do not need to use this gem in those other frameworks.
 
@@ -196,7 +198,7 @@ AJAX Pagination can also add a loading image and partially blanking out of the p
 
 Links outside are still clickable (such as the will_paginate links).
 
-The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. You can specify a new default filename in your initializer.
+The loading image is currently an image asset at "ajax-loader.gif", so put your loading image there. You can specify a new default filename in your initializer. If you want a different loading image (other than configuring a site-wide default), you can pass an option :image => "newimageinassetpipeline.gif" to the ajax_pagination view helper method.
 
 If you want all the content in the partial (or otherwise wrapped by the ajax_pagination helper method) to be included as a loading zone (with the visual loading cues), you can instead, set the :loadzone option to true, eg:
 
@@ -232,12 +234,6 @@ For more flexibility, a number of conditions can be passed in an array. If any o
 
 ```erb
 <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
-```
-
-Instead of passing in the Array/Hash Ruby object, a string in json form is accepted:
-
-```erb
-<%= ajax_pagination :reload => '[{"urlregex":"page=([0-9]+)","regexindex":1},{"query":"page"}]' %>
 ```
 
 ### Initializer

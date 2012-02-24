@@ -8,8 +8,31 @@
  * Copyright (c) 2012 Ronald Ping Man Chan
  * Distributed under the LGPL license
  */
-if (History && History.enabled) {
-  jQuery(document).ready(function () {
+jQuery(document).ready(function () {
+  function minVersion(version) {
+    var $vrs = window.jQuery.fn.jquery.split('.'),
+        min  = version.split('.');
+    for (var i=0, len=min.length; i<len; i++) {
+      if ($vrs[i]) {
+        min[i] = parseInt(min[i],10);
+        $vrs[i] = parseInt($vrs[i],10);
+        if ($vrs[i] < min[i]) return false;
+        else if ($vrs[i] > min[i]) return true;
+      }
+      else return false;
+    }
+    return true;
+  }
+  <% minjQuery = '1.7' %>
+  <% if AjaxPagination.warnings %>
+    if (!(History && minVersion('<%= minjQuery %>'))) { // dependencies missing
+      var missing = "";
+      if (!History) missing += "\nHistory.js not installed";
+      if (!minVersion('<%= minjQuery %>')) missing += "\njQuery version <%= minjQuery %>+ not installed. Currently installed: jQuery " + window.jQuery.fn.jquery;
+      alert("AJAX Pagination warning:" + missing);
+    }
+  <% end %>
+  if (History && History.enabled && minVersion('<%= minjQuery %>')) {
     (function( $ ) {
       var pagination_loader_state = new Array(); // the page we are waiting for
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
@@ -23,7 +46,8 @@ if (History && History.enabled) {
         var height = paginated_content.height();
         // setup loading look
         var img = document.createElement("IMG");
-        img.src = "<%= asset_path AjaxPagination.loading_image %>";
+        if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
+        else img.src = "<%= asset_path AjaxPagination.loading_image %>";
         var margin = Math.round(height>400?100:(height/4));
         $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'}).addClass('ajaxloader');
         var div = document.createElement("DIV");
@@ -40,11 +64,18 @@ if (History && History.enabled) {
       function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl
         display_pagination_loader(pagination_name);
         pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
-        //$.ajax(requesturl,{dataType:'script',cache:true});
+        var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
         $.ajax({url: requesturl, data: {pagination:pagination_name},
           dataType: 'html',
-          success: function(data) {
-            var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+          success: function(data, textStatus, jqXHR) {
+            if (requesturl != pagination_url) return; // ignore stale content
+            if (jqXHR.status == 200 && jqXHR.getResponseHeader('Location') !== null) { // special AJAX redirect
+              var redirecturl = jqXHR.getResponseHeader('Location');
+              swapPage(pagination_name,redirecturl);
+              pagination_url = redirecturl;
+              History.replaceState(null,document.title,redirecturl);
+              return;
+            }
             // find matching element id in data, after removing script tags
             var content = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"")).find(id);
             if (content.length>0) {
@@ -57,11 +88,13 @@ if (History && History.enabled) {
             delete pagination_loader_state[pagination_name]; // not waiting for page anymore
           },
           error: function(jqXHR, textStatus, errorThrown) {
+            if (requesturl != pagination_url) return; // ignore stale content
             $(id).html(jqXHR.responseText);
           }
         });
       }
-      $('body').on("click", ".pagination a, .ajaxpagination a", function() {
+      $('body').on("click", ".pagination a, .ajaxpagination a, a.ajaxpagination", function() {
+        // TODO: exit if this is an external link, browser same origin policy forbids loading within page anyways
         var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
         var pagination_name = pagination_container.data('pagination');
         if (pagination_name === undefined) {
@@ -95,12 +128,12 @@ if (History && History.enabled) {
           if (pagination_name == null) return; // pagination not set up properly
 
           // if data-pagination is not defined, the use default reload test
-          if ($(this).data('pagination') === undefined) {
+          if ($(this).data('pagination') === undefined || $(this).data('pagination').reload === undefined) {
             // if ?pagination_name=ABC, where ABC is the same for both urls, then don't need to reload
             if ($.deparam.querystring(from)[pagination_name] === $.deparam.querystring(to)[pagination_name]) return;
           }
           else { // otherwise parse json and perform tests
-            var reload = $(this).data('pagination');
+            var reload = $(this).data('pagination').reload;
             if (!(reload instanceof Array)) reload = new Array(reload);
             var changed = false;
             for (i=0;i<reload.length;i++) {
@@ -110,8 +143,8 @@ if (History && History.enabled) {
               if (reload[i].urlregex !== undefined) {
                 var fstr = from, tstr = to;
                 if (reload[i].urlpart !== undefined) {
-                  fstr = $.url(from).attr(reload[i].urlpart);
-                  tstr = $.url(to).attr(reload[i].urlpart);
+                  fstr = $.url(from,true).attr(reload[i].urlpart);
+                  tstr = $.url(to,true).attr(reload[i].urlpart);
                   if (typeof(fstr)!="string" || typeof(tstr)!="string") continue; // skip
                 }
                 var index = 0;
@@ -126,8 +159,7 @@ if (History && History.enabled) {
             }
             if (!changed) return; // otherwise it has changed, and we must reload
           }
-          var requesturl = $.param.querystring(location.href,{pagination:pagination_name}); // by default, adds ?pagination=page
-          swapPage(pagination_name,requesturl);
+          swapPage(pagination_name,location.href);
         });
 
         pagination_url = location.href; // update url (new url recognised)
@@ -135,6 +167,6 @@ if (History && History.enabled) {
 
       History.Adapter.trigger(window,"popstate"); // update stuff on page load
     })( jQuery );
-  });
-}
+  }
+});
 

@@ -127,6 +127,24 @@ module AjaxPagination
     def ajax_pagination_displayed?(pagination = :page)
       (!request.format.html?) || (params[:pagination].nil?) || (params[:pagination] == pagination.to_s)
     end
+
+    # This after_filter method is automatically included by AJAX Paginate, and does not need to be included manually. However,
+    # it can be disabled in the initializer, and if desired, enabled in specific controllers by adding this method as an after_filter.
+    #
+    # This after_filter method will intercept any redirects for AJAX calls by
+    # AJAX Paginate, and turn it into a Status 200 OK response, with an extra Location: header.
+    #
+    # This is used because of the transparent redirection otherwise done by browsers on receiving a 30x status code. The AJAX
+    # code cannot then detect that the request was redirected, and is therefore unable to change the url in the History object.
+    # AJAX Pagination javascript code will detect any 200 OK responses with a Location header, and treat this as a redirection.
+    #
+    # This filter should not affect other uses, because only AJAX calls trigger this. In addition, a ?pagination= parameter is required.
+    # Therefore other AJAX libraries or usage otherwise should not be affected.
+    def ajax_pagination_redirect
+      if request.xhr? && request.GET[:pagination] && response.status==302 # alter redirect response so that it can be detected by the client javascript
+        response.status = 200 # change response to OK, location header is preserved, so AJAX can get the new page manually
+      end
+    end
   end
 end
 

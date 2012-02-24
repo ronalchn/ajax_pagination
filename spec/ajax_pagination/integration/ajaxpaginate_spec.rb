@@ -35,6 +35,10 @@ describe 'paginating with javascript on', :js => true do
     visit("http://localhost:#{SERVERPORT}/changelog")
     find('#page_paginated_section').find('.next_page').click
     page.should have_xpath("//img[@class='ajaxloader' and @src = '/assets/myajax-loader.gif']")
+    sleep(1)
+    visit("http://localhost:#{SERVERPORT}/posts")
+    find('#page_paginated_section').find('.next_page').click
+    page.should have_xpath("//img[@class='ajaxloader' and @src = '/assets/ajax-loader.gif']")
   end
   it 'works with browser back and forward buttons' do
     visit("http://localhost:#{SERVERPORT}/changelog")

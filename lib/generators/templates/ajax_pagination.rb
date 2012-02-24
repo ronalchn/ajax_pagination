@@ -9,4 +9,12 @@ AjaxPagination.config do |config|
   # config.warnings = true
   # or to turn off in all environments
   # config.warnings = false
+
+  # Intercepts 302 redirects, if the request is an AJAX call with a ?pagination= parameter in the GET url
+  # This is used because browsers transparently follow 302 redirects, without the AJAX javascript code being aware
+  # that a redirection has taken place. The response is changed into a Status 200 OK, with an extra Location: header
+  # The javascript code can then manually follow the redirect, and perform the necessary cleanup tasks (change the url
+  # in the address bar). The default is on (true), use the following line to disable it if desired. If disabled, it can
+  # be re-enabled in specific controllers by adding after_filter :ajax_pagination_redirect to the class.
+  # config.redirect_after_filter = true
 end

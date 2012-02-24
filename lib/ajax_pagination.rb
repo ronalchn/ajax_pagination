@@ -12,6 +12,11 @@ module AjaxPagination
   mattr_accessor :warnings
   @@warnings = nil # if nil, uses default, which is true only in development mode
 
+  # intercepts any AJAX Pagination 302 redirects, and turns them into Status 200 OK, with a Location: header. AJAX code can manually perform the redirection.
+  # can be disabled in the initializer
+  mattr_accessor :redirect_after_filter
+  @@redirect_after_filter = true
+
   # run rails generate ajax_pagination:install to create a default initializer with configuration values
   def self.config
     yield self

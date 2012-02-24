@@ -73,6 +73,10 @@ module AjaxPagination
     #   
     #   If nil, AJAX Pagination acts as if it was passed {:query => options [:pagination]}.
     #
+    # [:+image+]
+    #   Specify another image to be used as the loading image. The string passed is an image in the assets pipeline.
+    #   If not specified, the default loading image is used.
+    #
     # [:+loadzone+]
     #   Instead of using the ajax_pagination_loadzone tag, this option can be set to true. Everything inside this tag
     #   will then be regarded as a loading zone, and the visual loading cues will apply to all the content here.
@@ -80,14 +84,14 @@ module AjaxPagination
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
       partial = options[:render] || pagination # default partial rendered is the name of the pagination
-      reload = options[:reload]
       divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
-      case reload.class.to_s
-      when "String"
-        divoptions["data-pagination"] = reload
+      data = {};
+      case options[:reload].class.to_s
       when "Hash", "Array"
-        divoptions["data-pagination"] = reload.to_json
+        data[:reload] = options[:reload]
       end
+      data[:image] = asset_path options[:image] if options[:image].class.to_s == "String"
+      divoptions["data-pagination"] = data.to_json if !data.empty?
       if options[:loadzone]
         divoptions[:class] = "paginated_section paginated_content"
         divoptions[:style] = "position: relative;"
@@ -120,6 +124,35 @@ module AjaxPagination
     def ajax_pagination_loadzone()
       content_tag :div, :class => "paginated_content", :style => "position: relative;" do
         yield
+      end
+    end
+
+    # Wrapper for link_to, but makes the link trigger an AJAX call.
+    # The arguments passed are in the same order as link_to. The only difference is that an ajaxpagination class is
+    # automatically added to trigger an AJAX call, and can adds data to the link, specifying the page section to load
+    # new content in to, by adding a :pagination hash key to the html_options argument.
+    #
+    # If no page section is specified, the new content loads into the closest parent page section, if any.
+    #
+    # The example below creates a link "Name", which when clicked, will load posts_url into the section of the page named
+    # "page" using AJAX.
+    #
+    #   <%= ajax_link_to "Name", posts_url, :pagination => "page" %>
+    #
+    def ajax_link_to(*args, &block)
+      if block_given? # extract html_options argument
+        html_options = args[1] || {}
+      else
+        html_options = args[2] || {}
+      end
+      html_options[:class] = (html_options[:class] || html_options["class"]).to_a + ["ajaxpagination"] # add class to trigger AJAX
+      html_options["data-pagination".to_sym] = html_options.delete(:pagination) # renames the option pagination to data-pagination
+      if block_given? # inject new html_options argument and call link_to
+        args[1] = html_options
+        link_to(*args,&block)
+      else
+        args[2] = html_options
+        link_to(*args)
       end
     end
   end
