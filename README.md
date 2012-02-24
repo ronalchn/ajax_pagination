@@ -4,7 +4,7 @@
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
 ## Introduction
-This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page in javascript format. The result will replace the content in a container for the content. this gem is tested to work with will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
+This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page. The result will replace the content in a container for the content. this gem is tested to work with will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
 
 Please note, this is not a pagination solution by itself. You should use a pagination solution such as will_paginate and Kaminari, or a menu builder such as Simple-navigation or Semantic-menu, or you can roll your own. After that is implemented, you can use AJAX Pagination to ajaxify it, so that when users change pages, they do not have the reload the whole page.
 
