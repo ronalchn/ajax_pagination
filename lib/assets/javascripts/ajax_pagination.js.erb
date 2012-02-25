@@ -77,14 +77,23 @@ jQuery(document).ready(function () {
               return;
             }
             // find matching element id in data, after removing script tags
-            var content = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"")).find(id);
+            var page = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,""));
+            var content = page.find(id);
             if (content.length>0) {
               $(id).html(content.html());
               <% if AjaxPagination.warnings %>
                 alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
               <% end %>
             }
-            else $(id).html(data); // otherwise use all the content
+            else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
+              page = $("<div>").append(data);
+              content = page.find("body");
+              if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
+              else $(id).html(page.html()); // otherwise include the whole html snippet
+            }
+            // if page contains a title, use it
+            content = page.find("title");
+            if (content.length>0) History.replaceState(null,content.html(),location.href);
             delete pagination_loader_state[pagination_name]; // not waiting for page anymore
           },
           error: function(jqXHR, textStatus, errorThrown) {

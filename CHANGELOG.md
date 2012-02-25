@@ -6,6 +6,7 @@
 * Fixed bug: back/forward not loading properly in certain cases
 * Added link helper ajax_link_to, which wraps link_to. This helper is useful for one-off links to perform an AJAX call
 * Added support for redirection - redirects are intercepted, and if they are AJAX calls with a pagination url parameter, will be modified into a Status 200 OK response with Location header. The AJAX call be manually follow the redirect, and update the url in the address bar. the pagination url parameter context can also be kept.
+* Add support for changing page title in the returned AJAX partial which is better if using for site-wide navigation (before it simply preserved the previous title)
 
 * To add form helpers which trigger ajax pagination (to be done for release)
 
