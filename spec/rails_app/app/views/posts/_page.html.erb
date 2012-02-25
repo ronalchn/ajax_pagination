@@ -7,7 +7,7 @@
       <%= ajax_link_to 'Show', post, :pagination => "menu" %>
       <% if session[:admin] %>
         | <%= ajax_link_to 'Edit', edit_post_path(post), :pagination => "menu" %> |
-        <%= link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete %>
+        <%= ajax_link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete, :pagination => "menu" %>
       <% end %>
     </div>
   <% end %>

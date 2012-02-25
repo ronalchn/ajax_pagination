@@ -17,6 +17,11 @@ module AjaxPagination
   mattr_accessor :redirect_after_filter
   @@redirect_after_filter = true
 
+  # when changing pages, AJAX Pagination scrolls to ensure the page sees the top of the changing section, plus an additional margin in pixels
+  # to turn this feature off, set scroll_margin to '-Infinity'
+  mattr_accessor :scroll_margin
+  @@scroll_margin = 20
+
   # run rails generate ajax_pagination:install to create a default initializer with configuration values
   def self.config
     yield self

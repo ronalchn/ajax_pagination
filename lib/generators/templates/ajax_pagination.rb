@@ -17,4 +17,10 @@ AjaxPagination.config do |config|
   # in the address bar). The default is on (true), use the following line to disable it if desired. If disabled, it can
   # be re-enabled in specific controllers by adding after_filter :ajax_pagination_redirect to the class.
   # config.redirect_after_filter = true
+
+  # when changing pages, AJAX Pagination scrolls to ensure the page sees the top of the changing section, plus an additional margin in pixels
+  # The default margin is 20 pixels, as set by the line below
+  # config.scroll_margin = 20
+  # To disable auto-scrolling, uncomment the line below
+  # config.scroll_margin = '-Infinity'
 end

@@ -18,10 +18,11 @@ module AjaxPagination
         pagination = options[:pagination] || ""
         view = options[:render] || nil
         define_method(:default_render) do |*args|
-          if params[:pagination] && params[:pagination] == pagination && request.format == "html" # override if calling AJAX Pagination
+          paramspagination = request.GET[:pagination] || params[:pagination]
+          if paramspagination && paramspagination == pagination && request.format == "html" # override if calling AJAX Pagination
             unless view
-              if lookup_context.find_all("#{params[:controller]}/_#{params[:pagination]}").any?
-                view = { :partial => params[:pagination] } # render partial, layout is off
+              if lookup_context.find_all("#{params[:controller]}/_#{paramspagination}").any?
+                view = { :partial => paramspagination } # render partial, layout is off
               else
                 view = { :layout => false } # render default view, but turn off layout
               end
@@ -74,11 +75,12 @@ module AjaxPagination
     #     end
     #
     def ajax_pagination(format,options = {})
-      if params[:pagination] == (options[:pagination] || 'page').to_s
+      paramspagination = request.GET[:pagination] || params[:pagination]
+      if paramspagination == (options[:pagination] || 'page').to_s
         if options[:render]
           view = options[:render] # render non partial
-        elsif lookup_context.find_all(params[:controller] + "/_" + params[:pagination]).any?
-          view = {:partial => params[:pagination]} # render partial of the same name as pagination
+        elsif lookup_context.find_all(params[:controller] + "/_" + paramspagination).any?
+          view = {:partial => paramspagination} # render partial of the same name as pagination
         else # render usual view
           view = {}
         end
@@ -125,7 +127,8 @@ module AjaxPagination
     #
     # The heavy computation will only be performed on posts which will be displayed when AJAX Pagination only wants a partial.
     def ajax_pagination_displayed?(pagination = :page)
-      (!request.format.html?) || (params[:pagination].nil?) || (params[:pagination] == pagination.to_s)
+      paramspagination = request.GET[:pagination] || params[:pagination]
+      (!request.format.html?) || (paramspagination.nil?) || (paramspagination == pagination.to_s)
     end
 
     # This after_filter method is automatically included by AJAX Paginate, and does not need to be included manually. However,
@@ -141,7 +144,8 @@ module AjaxPagination
     # This filter should not affect other uses, because only AJAX calls trigger this. In addition, a ?pagination= parameter is required.
     # Therefore other AJAX libraries or usage otherwise should not be affected.
     def ajax_pagination_redirect
-      if request.xhr? && request.GET[:pagination] && response.status==302 # alter redirect response so that it can be detected by the client javascript
+      paramspagination = request.GET[:pagination] || params[:pagination]
+      if request.xhr? && paramspagination && response.status==302 # alter redirect response so that it can be detected by the client javascript
         response.status = 200 # change response to OK, location header is preserved, so AJAX can get the new page manually
       end
     end

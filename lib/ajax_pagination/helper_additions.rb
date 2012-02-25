@@ -127,12 +127,15 @@ module AjaxPagination
       end
     end
 
-    # Wrapper for link_to, but makes the link trigger an AJAX call.
-    # The arguments passed are in the same order as link_to. The only difference is that an ajaxpagination class is
-    # automatically added to trigger an AJAX call, and can adds data to the link, specifying the page section to load
-    # new content in to, by adding a :pagination hash key to the html_options argument.
+    # Wrapper for link_to, but makes the link trigger an AJAX call through AJAX Pagination.
+    # The arguments passed are in the same order as link_to. This method adds the appropriate parameters to make an AJAX call via
+    # AJAX Pagination, using jquery-ujs.
     #
-    # If no page section is specified, the new content loads into the closest parent page section, if any.
+    # More specifically, it ensures the following attributes are defined :remote => true, "data-type" => 'html', :pagination => ?.
+    # The pagination attribute must be defined, or else it defaults to the empty string "".
+    # This link always sets data-remote to true - setting to false is not allowed, since AJAX Pagination would not be triggered.
+    #
+    # The advantage of using this helper is that if the implementation is changed, links using this helper will still work.
     #
     # The example below creates a link "Name", which when clicked, will load posts_url into the section of the page named
     # "page" using AJAX.
@@ -145,8 +148,9 @@ module AjaxPagination
       else
         html_options = args[2] || {}
       end
-      html_options[:class] = (html_options[:class] || html_options["class"]).to_a + ["ajaxpagination"] # add class to trigger AJAX
-      html_options["data-pagination".to_sym] = html_options.delete(:pagination) # renames the option pagination to data-pagination
+      html_options["data-pagination".to_sym] = html_options.delete(:pagination) || "" # renames the option pagination to data-pagination
+      html_options[:remote] = true
+      html_options["data-type"] ||= 'html'
       if block_given? # inject new html_options argument and call link_to
         args[1] = html_options
         link_to(*args,&block)

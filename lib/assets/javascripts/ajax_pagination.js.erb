@@ -57,53 +57,76 @@ jQuery(document).ready(function () {
         paginated_content.append(div);
 
         // scroll to top of paginated_section if it is not visible
-        if ($('body').scrollTop() > paginated_section.offset().top) {
-          $('body').scrollTop(paginated_section.offset().top);
+        if ($(document).scrollTop() > paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>) {
+          $(document).scrollTop(paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>);
         }
       }
-      function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl
-        display_pagination_loader(pagination_name);
-        pagination_loader_state[pagination_name] = requesturl; // remember which page number we are waiting for
+      // when this function is used beforeSend of an AJAX request, will use the resulting content in a section of the page
+      // this event handler has the same arguments as for jquery and jquery-ujs, except it also takes the name of the section to put the content into as first argument
+      // adapter functions will be used to reconcile the differences in arguments, this is required because jquery and jquery-ujs has different ways to get the pagination_name argument
+      function beforeSendHandler(pagination_name,jqXHR,settings) {
         var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+        var requesturl = settings.url;
+        if ($(id).length != 1) { // something wrong, cannot find unique section to load page into
+          <% if AjaxPagination.warnings %>
+            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + $("#" + pagination_name + "_paginated_section").length);
+          <% end %>
+          return false; // continue AJAX normally
+        }
+        display_pagination_loader(pagination_name);
+        // register callbacks for other events
+        jqXHR.done(function(data, textStatus, jqXHR) {
+          if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
+          if (jqXHR.status == 200 && jqXHR.getResponseHeader('Location') !== null) { // special AJAX redirect
+            var redirecturl = jqXHR.getResponseHeader('Location');
+            swapPage(pagination_name,redirecturl);
+            pagination_url = redirecturl;
+            History.replaceState(null,document.title,redirecturl);
+            return;
+          }
+          // find matching element id in data, after removing script tags
+          var page = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,""));
+          var content = page.find(id);
+          if (content.length>0) {
+            $(id).html(content.html());
+            <% if AjaxPagination.warnings %>
+              alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
+            <% end %>
+          }
+          else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
+            page = $("<div>").append(data);
+            content = page.find("body");
+            if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
+            else $(id).html(page.html()); // otherwise include the whole html snippet
+          }
+          // if page contains a title, use it
+          content = page.find("title");
+          if (content.length>0) History.replaceState(null,content.html(),location.href);
+          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+        });
+        jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+          if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
+          $(id).html(jqXHR.responseText);
+          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+        });
+        return true;
+      }
+      function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl (used by History.popState, therefore no remote link has been clicked)
+        // send our own ajax request, and tie it into the beforeSendHandler used for jquery-ujs as well
         $.ajax({url: requesturl, data: {pagination:pagination_name},
           dataType: 'html',
-          success: function(data, textStatus, jqXHR) {
-            if (requesturl != pagination_url) return; // ignore stale content
-            if (jqXHR.status == 200 && jqXHR.getResponseHeader('Location') !== null) { // special AJAX redirect
-              var redirecturl = jqXHR.getResponseHeader('Location');
-              swapPage(pagination_name,redirecturl);
-              pagination_url = redirecturl;
-              History.replaceState(null,document.title,redirecturl);
-              return;
-            }
-            // find matching element id in data, after removing script tags
-            var page = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,""));
-            var content = page.find(id);
-            if (content.length>0) {
-              $(id).html(content.html());
-              <% if AjaxPagination.warnings %>
-                alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
-              <% end %>
-            }
-            else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
-              page = $("<div>").append(data);
-              content = page.find("body");
-              if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
-              else $(id).html(page.html()); // otherwise include the whole html snippet
-            }
-            // if page contains a title, use it
-            content = page.find("title");
-            if (content.length>0) History.replaceState(null,content.html(),location.href);
-            delete pagination_loader_state[pagination_name]; // not waiting for page anymore
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            if (requesturl != pagination_url) return; // ignore stale content
-            $(id).html(jqXHR.responseText);
+          beforeSend: function (jqXHR,settings) {
+            var result = beforeSendHandler(pagination_name,jqXHR,settings);
+            pagination_loader_state[pagination_name] = settings.url; // remember which page number we are waiting for
+            return result;
           }
         });
       }
-      $('body').on("click", ".pagination a, .ajaxpagination a, a.ajaxpagination", function() {
-        // TODO: exit if this is an external link, browser same origin policy forbids loading within page anyways
+      // these special containers are for convenience only, to apply the required data-remote, data-pagination attributes to all links inside
+      $(document).on("click", ".pagination a, .ajaxpagination a, a.ajaxpagination", function(e) {
+        // ignore if already selected by jquery-ujs
+        if ($(this).filter($.rails.linkClickSelector).length>0) return true; // continue with jquery-ujs - this behaviour is necessary because we do not know if the jquery-ujs handler executes before or after this handler
+        // find out what data-pagination should be set to
         var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
         var pagination_name = pagination_container.data('pagination');
         if (pagination_name === undefined) {
@@ -116,17 +139,37 @@ jQuery(document).ready(function () {
           }
           pagination_name = pagination_name[1];
         }
-        if ($("#" + pagination_name + "_paginated_section").length != 1) { // something wrong, cannot find unique section to load page into
-          <% if AjaxPagination.warnings %>
-            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + $("#" + pagination_name + "_paginated_section").length);
-          <% end %>
-          return true; // follow link normally
+        
+        // set data-remote, data-pagination
+        $(this).attr({'data-remote':'true'}); // needs to be set so that the jquery-ujs selectors work
+        $(this).data({'remote':'true','pagination':pagination_name}); // needs to be set because attributes only read into jquery's data memory once
+        if ($(this).data('type') === undefined) { // to be moved to ajax:before filter when https://github.com/rails/jquery-ujs/pull/241 is successful, and jquery-rails minimum version updated
+          $(this).data('type','html'); // AJAX Pagination requests return html be default
         }
-        //var requesturl = $.param.querystring(this.href,{pagination:pagination_name}); // by default, adds ?pagination=page
-        swapPage(pagination_name,this.href);
-        pagination_url = this.href;
-        History.pushState(null,document.title,this.href);
+        // stop this event from having further effect (because we do not know if jquery-ujs's event handler executed before or after us)
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        // click element again to dispatch the event all over again - thus ensuring it is handled by jquery-ujs
+        $(this).click();
         return false;
+      });
+      $(document).on("ajax:before","a, " + $.rails.inputChangeSelector, function() {
+        var pagination_name = $(this).data('pagination');
+        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
+        $(this).data('params',$.extend($(this).data('params'),{'pagination':pagination_name})); // add data-pagination to the params data
+        return true;
+      });
+      $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
+        var pagination_name = $(this).data('pagination');
+        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
+        if (beforeSendHandler(pagination_name,jqXHR,settings)) {
+          var data = $.deparam.querystring($.url(settings.url).attr('query'));
+          delete data['pagination'];
+          pagination_url = $.param.querystring(settings.url,data,2);
+          History.pushState(null,document.title,pagination_url);
+          pagination_loader_state[pagination_name] = settings.url;
+        }
+        return true;
       });
 
       History.Adapter.bind(window,'popstate',function(){ // popstate, but can work with hash changes as well

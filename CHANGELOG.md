@@ -4,9 +4,12 @@
 * For reloading of a page section on browser back/forward, urlregex urlparts option changed to parse the url in strict mode
 * Fixed bug: The loading never stopped if page was invalid, it will now display the error page properly
 * Fixed bug: back/forward not loading properly in certain cases
-* Added link helper ajax_link_to, which wraps link_to. This helper is useful for one-off links to perform an AJAX call
+* AJAX Pagination now uses jquery-ujs! The internals have changed, but the released public API has not otherwise changed. However, this important change allows AJAX Pagination to handle links and forms requesting via POST, PUT and DELETE methods.
+* Added link helper ajax_link_to, which wraps link_to. This helper is useful for one-off links to perform an AJAX call. In fact, the output link format that required to get AJAX Pagination to work.
+* The original way to specify that links use AJAX Pagination - wrapping links within a container of ajaxpagination class, with data-pagination attribute is a convenience feature provided, which actually uses javascript to set the same link attributes as the link helper.
 * Added support for redirection - redirects are intercepted, and if they are AJAX calls with a pagination url parameter, will be modified into a Status 200 OK response with Location header. The AJAX call be manually follow the redirect, and update the url in the address bar. the pagination url parameter context can also be kept.
 * Add support for changing page title in the returned AJAX partial which is better if using for site-wide navigation (before it simply preserved the previous title)
+* Scrolling feature fixed, and a new configuration - scroll_margin provided
 
 * To add form helpers which trigger ajax pagination (to be done for release)
 

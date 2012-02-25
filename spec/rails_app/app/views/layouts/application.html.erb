@@ -25,12 +25,6 @@
   </ul>
 </div>
 <%= ajax_pagination :pagination => "menu", :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
-  <% if flash[:notice] %>
-    <p id="notice"><%= flash[:notice] %></p>
-  <% end %>
-  <% if flash[:alert] %>
-    <p id="alert"><%= flash[:alert] %></p>
-  <% end %>
   <%= render :template => "layouts/flash" %>
 <% end %>
 </body>

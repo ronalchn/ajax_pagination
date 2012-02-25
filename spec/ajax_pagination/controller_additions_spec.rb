@@ -5,7 +5,7 @@ describe AjaxPagination::ControllerAdditions do
     @controller.stub!(:params).and_return({:pagination => name, :controller => "dummycontroller"})
   end
   def stub_request_format_html(bool)
-    @controller.stub!(:request).and_return(stub(:format => stub(:html? => bool)))
+    @controller.stub!(:request).and_return(stub({:format => stub(:html? => bool), :GET => {} }))
   end
   def stub_lookup_context(result)
     @controller.stub!(:lookup_context).and_return(stub(:find_all => result))

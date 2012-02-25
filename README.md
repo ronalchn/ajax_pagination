@@ -3,7 +3,7 @@
 
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
-**Notice:** The current roadmap for the next version is tighter integration with jquery_ujs. Instead of creating ajax events directly through jquery, it is planned to get jquery to handle it as a remote request, and modify its behaviour through the jquery_ujs callbacks. This should not alter the usage of this gem (except for unreleased features).
+**Notice:** The current roadmap for the next version is tighter integration with jquery_ujs. Instead of creating ajax events directly through jquery, it is planned to get jquery_ujs to handle it as a remote request, and modify its behaviour through the jquery_ujs callbacks. This should not alter the usage of this gem (except for unreleased features).
 
 ## Introduction
 This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page. The result will replace the content in a container for the content. this gem is tested to work with will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
