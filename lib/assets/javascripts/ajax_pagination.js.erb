@@ -159,6 +159,10 @@ jQuery(document).ready(function () {
         $(this).data('params',$.extend($(this).data('params'),{'pagination':pagination_name})); // add data-pagination to the params data
         return true;
       });
+      $(document).on("ajax:before","form", function() {
+        // alter action to include pagination parameter in the GET part of the action url
+        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:$(this).data('pagination')}));
+      });
       $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
         var pagination_name = $(this).data('pagination');
         if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request

@@ -10,8 +10,10 @@
 * Added support for redirection - redirects are intercepted, and if they are AJAX calls with a pagination url parameter, will be modified into a Status 200 OK response with Location header. The AJAX call be manually follow the redirect, and update the url in the address bar. the pagination url parameter context can also be kept.
 * Add support for changing page title in the returned AJAX partial which is better if using for site-wide navigation (before it simply preserved the previous title)
 * Scrolling feature fixed, and a new configuration - scroll_margin provided
+* Added form helpers which trigger ajax pagination
+* Added ajax_options method, which can be used especially with form helpers from gems such as Formtastic or Simple Form.
 
-* To add form helpers which trigger ajax pagination (to be done for release)
+* TODO: add specs for new features
 
 ## v0.2.0
 **Note: The API has changed slightly from previous versions. If you have used an advanced feature - the :partial option, please use :render now, and if used in a controller, a non-partial template will be used. To use a partial, specify :render => { :partial => "" }.**

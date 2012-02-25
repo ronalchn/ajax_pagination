@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   before_filter :slowajaxload
-  ajax_pagination :pagination => 'menu', :render => { :layout => "ajax" }
+  ajax_pagination :pagination => "", :render => { :layout => "ajax" }
   def slowajaxload
     if params[:pagination] && Rails.env == "test"
       sleep(1)

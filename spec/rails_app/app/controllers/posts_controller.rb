@@ -9,7 +9,7 @@ class PostsController < ApplicationController
       format.html # index.html.erb
       format.json { render :json => @posts }
       ajax_pagination format, :pagination => :upcomingpage
-      ajax_pagination format, :pagination => :menu, :render => { :layout => "ajax" }
+      ajax_pagination format, :pagination => "", :render => { :layout => "ajax" }
     end
   end
 

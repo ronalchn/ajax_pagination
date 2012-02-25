@@ -127,15 +127,27 @@ module AjaxPagination
       end
     end
 
-    # Wrapper for link_to, but makes the link trigger an AJAX call through AJAX Pagination.
-    # The arguments passed are in the same order as link_to. This method adds the appropriate parameters to make an AJAX call via
+    # modifies the html options, so that it calls AJAX Pagination. This method adds the appropriate parameters to make an AJAX call via
     # AJAX Pagination, using jquery-ujs.
     #
     # More specifically, it ensures the following attributes are defined :remote => true, "data-type" => 'html', :pagination => ?.
     # The pagination attribute must be defined, or else it defaults to the empty string "".
     # This link always sets data-remote to true - setting to false is not allowed, since AJAX Pagination would not be triggered.
     #
-    # The advantage of using this helper is that if the implementation is changed, links using this helper will still work.
+    # Below is an alternative way to create an ajax link instead of ajax_link_to
+    #
+    #   <%= link_to "Name", posts_url, ajax_options :pagination => "page" %>
+    #
+    def ajax_options(html_options = {})
+      html_options["data-pagination".to_sym] = html_options.delete(:pagination) || html_options.delete("data-pagination") || "" # renames the option pagination to data-pagination
+      html_options[:remote] = true
+      html_options["data-type".to_sym] ||= html_options.delete("data-type") || 'html'
+      html_options
+    end
+
+    # Wrapper for link_to, but makes the link trigger an AJAX call through AJAX Pagination.
+    # The arguments passed are in the same order as link_to the advantage of using this helper
+    # is that if the implementation is changed, links using this helper will still work. Internally uses ajax_options
     #
     # The example below creates a link "Name", which when clicked, will load posts_url into the section of the page named
     # "page" using AJAX.
@@ -143,22 +155,63 @@ module AjaxPagination
     #   <%= ajax_link_to "Name", posts_url, :pagination => "page" %>
     #
     def ajax_link_to(*args, &block)
-      if block_given? # extract html_options argument
-        html_options = args[1] || {}
-      else
-        html_options = args[2] || {}
-      end
-      html_options["data-pagination".to_sym] = html_options.delete(:pagination) || "" # renames the option pagination to data-pagination
-      html_options[:remote] = true
-      html_options["data-type"] ||= 'html'
       if block_given? # inject new html_options argument and call link_to
-        args[1] = html_options
+        html_options = args[1] || {}
+        args[1] = ajax_options html_options
         link_to(*args,&block)
       else
-        args[2] = html_options
+        html_options = args[2] || {}
+        args[2] = ajax_options html_options
         link_to(*args)
       end
     end
+
+    # Wrapper for form_tag, following are equivalent:
+    #
+    #   <%= ajax_form_tag posts_url, :method => "post", :class => "myclass", :pagination => "page" do %>
+    #     ...
+    #   <% end %>
+    #
+    #   <%= form_tag posts_url, ajax_options :method => "post", :class => "myclass", :pagination => "page" do %>
+    #     ...
+    #   <% end %>
+    #
+    def ajax_form_tag(url_for_options = {}, options = {}, &block)
+      options = ajax_options(options)
+      if block_given?
+        form_tag(url_for_options,options, &block)
+      else
+        form_tag(url_for_options,options)
+      end
+    end
+
+    # Wrapper for form_for. The following are equivalent
+    #
+    #   <%= ajax_form_for @post, :method => "post", :html => {:class => "myclass", :pagination => "menu"} do %>
+    #     ...
+    #   <% end %>
+    #
+    #   <%= form_tag @post, :method => "post", :html => ajax_options({:class => "myclass", :pagination => "menu"}) do %>
+    #     ...
+    #   <% end %>
+    #
+    # Please be aware that in the second alternative, you should never set :remote => false manually, eg:
+    #
+    #   <%= form_tag @post, :remote => false, :html => ajax_options(:pagination => "menu") do %><!-- Never Do This!!! -->
+    #
+    # This will prevent AJAX Pagination from being called.
+    #
+    # If you are using Formtastic or Simple Form gems, you can use the second method to add AJAX Pagination functionality
+    # at the same time. This form_for helper is only a convenience method (shorthand)
+    #
+    def ajax_form_for(record, options = {}, &block)
+      raise ArgumentError, "Missing block" unless block_given?
+      options[:html] ||= {}
+      options[:html] = ajax_options options[:html]
+      options.delete(:remote) # html sub-hash already has remote set true
+      form_for(record,options,&block)
+    end
+
   end
 end
 

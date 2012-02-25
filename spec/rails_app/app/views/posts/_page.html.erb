@@ -4,10 +4,10 @@
     <div style="border-bottom: 1px solid black; padding-bottom: 10px;">
       <p><h3><%= post.title %></h3><i>Published on <%= post.published_at.strftime('%d %B %Y') if post.published_at? %></i></p>
       <%= simple_format(post.content) %>
-      <%= ajax_link_to 'Show', post, :pagination => "menu" %>
+      <%= ajax_link_to 'Show', post, :pagination => "" %>
       <% if session[:admin] %>
-        | <%= ajax_link_to 'Edit', edit_post_path(post), :pagination => "menu" %> |
-        <%= ajax_link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete, :pagination => "menu" %>
+        | <%= ajax_link_to 'Edit', edit_post_path(post), :pagination => "" %> |
+        <%= ajax_link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete, :pagination => "" %>
       <% end %>
     </div>
   <% end %>
