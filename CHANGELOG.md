@@ -1,4 +1,4 @@
-## v0.3.0 **TO BE RELEASED**
+## v0.3.0
 * Class method ajax_pagination :reload option - a string in json form no longer accepted, pass it in as a hash or array of hashes instead
 * image option added to ajax_pagination view helper, to specify a loading image other than the default
 * For reloading of a page section on browser back/forward, urlregex urlparts option changed to parse the url in strict mode
