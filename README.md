@@ -293,12 +293,11 @@ bundle exec rails server
 Then point your browser to http://localhost:3000/
 
 ## AJAX Call
-The AJAX Call is triggered by a link wrapped in any container with a certain class. The AJAX Call is to the same address, but with the ?pagination=NAME parameter added. The format requested is javascript. If the controller also returns javascript for other uses, AJAX Pagination does not necessarily prevent such uses. The ajax_pagination(format, :pagination => "page") function in the controller handles the AJAX Call when the format is javascript, and the ?pagination parameter is set to the correct string. It also returns true if the pagination parameter matches. Therefore, you can use use the javascript format when it does not match, as shown below:
+The AJAX Call is triggered by a link wrapped in any container with a certain class. The AJAX Call is to the same address, but with the ?pagination=NAME parameter added. The format requested is html. If the controller also returns html for other uses (with its own render block), AJAX Pagination does not necessarily prevent such uses. The ajax_pagination(format, :pagination => "page") function in the controller handles the AJAX Call when the format is html, and the ?pagination parameter is set to the correct string. It also returns true if the pagination parameter matches. Therefore, you can use use the javascript format when it does not match, as shown below:
 
 ```ruby
 respond_to do |format|
-  format.html # index.html.erb
-  format.js unless ajax_pagination(format)
+  format.html { render 'superawesomerender' } unless ajax_pagination(format)
 end
 ```
 
@@ -306,9 +305,8 @@ Note that **unless** does not need to be used, since respond_to is actually sens
 
 ```ruby
 respond_to do |format|
-  format.html # index.html.erb
   ajax_pagination(format)
-  format.js # index.js.erb
+  format.html { render 'superawesomerender' } # index.html.erb
 end
 ```
 
