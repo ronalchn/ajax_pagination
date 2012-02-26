@@ -81,11 +81,23 @@ module AjaxPagination
     #   Instead of using the ajax_pagination_loadzone tag, this option can be set to true. Everything inside this tag
     #   will then be regarded as a loading zone, and the visual loading cues will apply to all the content here.
     #
+    # [:+history+]
+    #   Whether the url changes, as if an new page was accessed, including adding page to the history. This defaults to
+    #   true. Therefore, (sub)pages accessed through AJAX Pagination act as if a whole new page was accessed.
+    #
+    #   If false then it is as if no new page is accessed, and the history is not changed. It therefore appears as if following
+    #   the link simply creates a cool AJAX effect on the current page. If false, then :reload defaults to {:urlregex => ""},
+    #   meaning that it will never reload when browser back/forward buttons are used, whether the url changes or not.
+    #
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
       partial = options[:render] || pagination # default partial rendered is the name of the pagination
       divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
       data = {};
+      if options.has_key? :history
+        data[:history] = (options[:history] != false)
+        data[:reload] = {:urlregex => ""} unless data[:history] # by default never reloads a history-less section
+      end
       case options[:reload].class.to_s
       when "Hash", "Array"
         data[:reload] = options[:reload]

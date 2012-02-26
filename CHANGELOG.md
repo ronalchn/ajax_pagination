@@ -12,8 +12,7 @@
 * Scrolling feature fixed, and a new configuration - scroll_margin provided
 * Added form helpers which trigger ajax pagination
 * Added ajax_options method, which can be used especially with form helpers from gems such as Formtastic or Simple Form.
-
-* TODO: add specs for new features
+* Added specs for new features (including displaying error pages, redirecting within div, submitting forms with PUT POST DELETE, testing ajax_link_to, ajax_form_tag, ajax_form_for (and with all these, indirectly testing ajax_options), title changes)
 
 ## v0.2.0
 **Note: The API has changed slightly from previous versions. If you have used an advanced feature - the :partial option, please use :render now, and if used in a controller, a non-partial template will be used. To use a partial, specify :render => { :partial => "" }.**

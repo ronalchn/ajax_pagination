@@ -1,0 +1,7 @@
+<span id="submits"><%= session[:count].to_i %></span> 
+submit<%= 's' unless session[:count]==1 %> so far.
+<%= ajax_form_tag sessions_count_url, :method => "post", :pagination => "count" do %>
+  <span class="actions">
+    <%= submit_tag "Submit" %>
+  </span>
+<% end %>

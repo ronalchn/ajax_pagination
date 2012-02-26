@@ -167,10 +167,13 @@ jQuery(document).ready(function () {
         var pagination_name = $(this).data('pagination');
         if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
         if (beforeSendHandler(pagination_name,jqXHR,settings)) {
-          var data = $.deparam.querystring($.url(settings.url).attr('query'));
-          delete data['pagination'];
-          pagination_url = $.param.querystring(settings.url,data,2);
-          History.pushState(null,document.title,pagination_url);
+          var data = $("#" + pagination_name + "_paginated_section").data("pagination");
+          if (data === undefined || data.history === undefined || data.history) {
+            var data = $.deparam.querystring($.url(settings.url).attr('query'));
+            delete data['pagination'];
+            pagination_url = $.param.querystring(settings.url,data,2);
+            History.pushState(null,document.title,pagination_url);
+          }
           pagination_loader_state[pagination_name] = settings.url;
         }
         return true;
