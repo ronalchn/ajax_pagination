@@ -5,23 +5,7 @@
 
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
-**Notice:** The current roadmap for the next version is tighter integration with jquery_ujs. Instead of creating ajax events directly through jquery, it is planned to get jquery_ujs to handle it as a remote request, and modify its behaviour through the jquery_ujs callbacks. This should not alter the usage of this gem (except for unreleased features).
-
-## Introduction
-This gem can ajaxify any pagination solution. Links wrapped in containers with specific classes will be ajaxified. This means that clicking it will instead send an AJAX request for the page. The result will replace the content in a container for the content. this gem is tested to work with will_paginate, but should work for other pagination solutions, as well as navigation level links or tabbed interfaces. The ajax call will load new content into the designated content container.
-
-Please note, this is not a pagination solution by itself. You should use a pagination solution such as will_paginate and Kaminari, or a menu builder such as Simple-navigation or Semantic-menu, or you can roll your own. After that is implemented, you can use AJAX Pagination to ajaxify it, so that when users change pages, they do not have the reload the whole page.
-
-AJAX Pagination is a powerful AJAX solution which is designed to be easy to use. You can add AJAX requests to your application, without touching a single line of javascript, because AJAX Pagination does it all for you. This gem follows the convention over configuration mantra. Therefore, the most common use cases will be much easier to implement. Users can progressively change the configuration as their use case differs from the norm. It is recommended to follow the convention unless it is necessary to do otherwise.
-
-## Background
-This gem depends on Rails 3.1+, jQuery and jquery-historyjs. The gem was extracted from http://github.com/xrymbos/nztrain-v2/, and further development will be tied to the needs of the application. Therefore, some dependencies are because the application uses a particular version of these other gems. If you need to use this in other versions/javascript frameworks, I would welcome any pull requests. They are not currently supported because I do not need to use this gem in those other frameworks.
-
-The original AJAX pagination functionality was inspired by the RailsCasts on pagination with AJAX. However, other functionality was added to the pagination, and more modular code was desired, especially when many different controllers need pagination. Added functionality includes loading cues and support of multiple pagination areas on the same webpage.
-
-Because the code became more modular, it also made it suitable to turn into a Ruby Gem, so that others can create AJAX pagination without fiddling with the details.
-
-Rails 3.1+ is required only because the javascript is placed into the assets pipeline.
+For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
 
 ## Installation
 Add to your Gemfile:
