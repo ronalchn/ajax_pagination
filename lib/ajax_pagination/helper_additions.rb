@@ -203,7 +203,7 @@ module AjaxPagination
     #     ...
     #   <% end %>
     #
-    #   <%= form_tag @post, :method => "post", :html => ajax_options({:class => "myclass", :pagination => "menu"}) do %>
+    #   <%= form_for @post, :method => "post", :html => ajax_options({:class => "myclass", :pagination => "menu"}) do %>
     #     ...
     #   <% end %>
     #

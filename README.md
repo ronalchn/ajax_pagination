@@ -1,6 +1,8 @@
 # AJAX Pagination
 [![Build Status](https://secure.travis-ci.org/ronalchn/ajax_pagination.png?branch=master)](http://travis-ci.org/ronalchn/ajax_pagination)
 
+[Wiki](https://github.com/ronalchn/ajax_pagination/wiki) | [RDoc](http://rdoc.info/gems/ajax_pagination/frames) | [Changelog](https://github.com/ronalchn/ajax_pagination/blob/master/CHANGELOG.md)
+
 Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
 
 **Notice:** The current roadmap for the next version is tighter integration with jquery_ujs. Instead of creating ajax events directly through jquery, it is planned to get jquery_ujs to handle it as a remote request, and modify its behaviour through the jquery_ujs callbacks. This should not alter the usage of this gem (except for unreleased features).
@@ -81,11 +83,13 @@ This will cause it to display content in the _mypartial.* view.
 
 If you are using will_paginate, and the links are wrapped in a div with class="pagination", the links will be ajaxified automatically.
 
-Otherwise, you should wrap the links with a container. We recommend that the class given is "ajaxpagination". You can put the links inside the partial, for example:
+Otherwise, you can wrap a set of links with a container. We recommend that the class given is "ajaxpagination". You can put the links inside the partial, for example:
 
 ```html
 <div class="ajaxpagination"><a href="#">My ajaxified link</a></div>
 ```
+
+If you want to ajaxify individual links, check out the ajax_link_to helper (shown later), which is more flexible (can handle non-GET requests). Wrapping links in a container is actually just a convenience feature, which internally does the same things ajax_link_to does.
 
 If you are using will_paginate, you can simply put the links inside the partial (so that the new links get reloaded when the page changes):
 
@@ -212,7 +216,7 @@ If you want all the content in the partial (or otherwise wrapped by the ajax_pag
 
 In this case, whatever is inside the yield will not need to call ajax_pagination_loadzone.
 
-### Content reloading
+### Browser History
 
 The back and forward buttons on your browser may not work properly yet. It will work as long as the link includes distinct query parameter with the same name as the pagination name for the set. For example, if the name of the pagination set is "page" (the default), when the browser url changes, AJAX Pagination looks for a change in the links query parameter with the same name, such as if the url changes from /path/to/controller?page=4 to /path/to/controller?page=9, then AJAX Pagination knows that the content corresponding to the pagination set needs reloading. The absence of the parameter is a distinct state, so changes such as /path/to/controller to /path/to/controller?page=0 are detected.
 
@@ -237,6 +241,51 @@ For more flexibility, a number of conditions can be passed in an array. If any o
 ```erb
 <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
 ```
+
+Sometimes, you may have a small section of the page which is paginated, but for which you do not want to change the url. In effect, the page you are on should remain the same, simply with a cool effect, which changes the content displayed. This would mean that the new content loaded does not add to browser history.
+
+By default, the url does get changed, and browser history is added to. To turn this off, you can set :history => false, eg:
+
+```erb
+<%= ajax_pagination :history => false %>
+```
+
+When history is turned off, by default, reload is also set to never reload the content.
+
+### Link and Form helpers
+For individual links, you can ajaxify them using ajax_link_to with the same format as the link_to helper, but making sure to pass a pagination option:
+
+```erb
+<%= ajax_link_to "Name", posts_url, :pagination => "page" %>
+```
+
+Similarly, there exist AJAX form helpers, again with the same format as the original form helpers:
+
+```erb
+<%= ajax_form_tag posts_url, :method => "post", :class => "myclass", :pagination => "page" do %>
+ ...
+<% end %>
+
+<%= ajax_form_for @post, :method => "post", :html => {:class => "myclass", :pagination => "menu"} do %>
+ ...
+<% end %>
+```
+
+Note that these form helpers actually use another helper method ajax_options, with the original non-ajax helpers. This means that you can also use:
+
+```erb
+<%= link_to "Name", posts_url, ajax_options :pagination => "page" %>
+
+<%= form_tag posts_url, ajax_options :method => "post", :class => "myclass", :pagination => "page" do %>
+ ...
+<% end %>
+
+<%= form_for @post, :method => "post", :html => ajax_options({:class => "myclass", :pagination => "menu"}) do %>
+ ...
+<% end %>
+```
+
+This is actually a powerful feature, because though you would simply use the ajax_link_to, ajax_form_tag, ajax_form_for tags as shorthand, if you are using another helper method (eg. one from Formtastic or Simple Form gems), you can use ajax_options with that helper method.
 
 ### Initializer
 You can configure AJAX Pagination in the initializer. Run ```
