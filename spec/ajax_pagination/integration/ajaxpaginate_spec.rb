@@ -4,8 +4,8 @@ describe 'paginating with javascript on', :js => true do
   it 'displays a loading image' do
     # following 3 lines to warm up loading image
     visit("http://localhost:#{SERVERPORT}") # goes to welcome page
-    click_link 'About'
-    sleep(2)
+    click_link 'Changelog'
+    sleep(3)
 
     visit("http://localhost:#{SERVERPORT}") # goes to welcome page
     page.should have_no_selector('.ajaxloader')
