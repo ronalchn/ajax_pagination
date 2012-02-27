@@ -7,6 +7,12 @@
  * 
  * Copyright (c) 2012 Ronald Ping Man Chan
  * Distributed under the LGPL license
+ *
+ * Although the ajax_pagination gem as a whole is distributed under LGPL, I am expressly permitting users to minify and concatenate this javascript file
+ * with other javascript files, as long as it is through an automatic asset management process (eg. Sprockets), and the automatic asset
+ * management process obtains this javascript file as a separate file via dynamically linked means (ie. with this file left in the separately
+ * installed ajax_pagination gem).
+ *    ~ Ronald Chan
  */
 jQuery(document).ready(function () {
   function minVersion(version) {
@@ -34,6 +40,27 @@ jQuery(document).ready(function () {
   <% end %>
   if (History && History.enabled && minVersion('<%= minjQuery %>')) {
     (function( $ ) {
+      ///////////////////////////////////
+      ////// $.ajax_pagination API //////
+      ///////////////////////////////////
+      // selector function for pagination object
+      $.ajax_pagination = function (pagination_name) {
+        return new pagination_object(pagination_name);
+      };
+      $.ajax_pagination.version = '<%= AjaxPagination::VERSION %>';
+      function pagination_object(pagination_name) {
+        this.get = function(url,options) {
+          if (options === undefined) options = {};
+          if (options.history === undefined) options.history = true;
+          swapPage(pagination_name,url,options.history);
+        }
+        this.exists = function() {
+          return $('#' + pagination_name + '_paginated_section').length == 1;
+        }
+      }
+      /////////////////////////////
+      ////// Basic Internals //////
+      /////////////////////////////
       var pagination_loader_state = new Array(); // the page we are waiting for
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
 
@@ -111,16 +138,29 @@ jQuery(document).ready(function () {
         });
         return true;
       }
-      function swapPage(pagination_name,requesturl) { // swaps the page at pagination_name to that from requesturl (used by History.popState, therefore no remote link has been clicked)
+      function swapPage(pagination_name, requesturl, history) { // swaps the page at pagination_name to that from requesturl (used by History.popState, therefore no remote link has been clicked)
+        if (history === undefined) history = false;
         // send our own ajax request, and tie it into the beforeSendHandler used for jquery-ujs as well
         $.ajax({url: requesturl, data: {pagination:pagination_name},
           dataType: 'html',
           beforeSend: function (jqXHR,settings) {
             var result = beforeSendHandler(pagination_name,jqXHR,settings);
-            pagination_loader_state[pagination_name] = settings.url; // remember which page number we are waiting for
+            if (result) {
+              if (history) pushHistory(pagination_name,settings.url);
+              pagination_loader_state[pagination_name] = settings.url; // remember which page number we are waiting for
+            }
             return result;
           }
         });
+      }
+      function pushHistory(pagination_name,url) {
+        var data = $("#" + pagination_name + "_paginated_section").data("pagination");
+        if (data === undefined || data.history === undefined || data.history) {
+          var data = $.deparam.querystring($.url(url).attr('query'));
+          delete data['pagination'];
+          pagination_url = $.param.querystring(url,data,2);
+          History.pushState(null,document.title,pagination_url);
+        }
       }
       // these special containers are for convenience only, to apply the required data-remote, data-pagination attributes to all links inside
       $(document).on("click", ".pagination a, .ajaxpagination a, a.ajaxpagination", function(e) {
@@ -167,13 +207,7 @@ jQuery(document).ready(function () {
         var pagination_name = $(this).data('pagination');
         if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
         if (beforeSendHandler(pagination_name,jqXHR,settings)) {
-          var data = $("#" + pagination_name + "_paginated_section").data("pagination");
-          if (data === undefined || data.history === undefined || data.history) {
-            var data = $.deparam.querystring($.url(settings.url).attr('query'));
-            delete data['pagination'];
-            pagination_url = $.param.querystring(settings.url,data,2);
-            History.pushState(null,document.title,pagination_url);
-          }
+          pushHistory(pagination_name,settings.url);
           pagination_loader_state[pagination_name] = settings.url;
         }
         return true;

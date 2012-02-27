@@ -7,6 +7,12 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+<script>
+/*jQuery(document).ready(function () {
+  alert($.ajax_pagination.version);
+  $.ajax_pagination("").get("http://localhost:3000/pages/about");
+});*/
+</script>
 <div style="float: right;">
   <% if session[:admin] %>
     <%= link_to "Sign out", sessions_signout_url, :id => "signout" %>

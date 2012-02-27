@@ -1,5 +1,6 @@
 ## v0.3.1.alpha
 * Moving css from javascript to stylesheet - this should make it easier to customize aspects of it
+* Expose a $.ajax_pagination API with a well-defined, and useful interface
 
 ## v0.3.0
 * Class method ajax_pagination :reload option - a string in json form no longer accepted, pass it in as a hash or array of hashes instead
