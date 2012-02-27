@@ -48,12 +48,12 @@ jQuery(document).ready(function () {
         var img = document.createElement("IMG");
         if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
         else img.src = "<%= asset_path AjaxPagination.loading_image %>";
-        var margin = Math.round(height>400?100:(height/4));
-        $(img).css({'margin': margin + 'px', 'max-height': (3*height/4) + 'px'}).addClass('ajaxloader');
+        var margin = Math.round(height>400?50:(height/8));
+        $(img).css({'margin': margin + 'px', 'max-height': (7*height/8) + 'px'}).addClass('ajaxpagination-loader');
         var div = document.createElement("DIV");
         $(div).append(img);
-        $(div).css({'position': 'absolute', 'left': 0, 'top': 0, 'width': '100%', 'height': '100%', 'text-align': 'center', 'opacity': 0.9});
-        paginated_content.children().css({'opacity': 0.4});
+        $(div).addClass('ajaxpagination-loadzone');
+        paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\">");
         paginated_content.append(div);
 
         // scroll to top of paginated_section if it is not visible
