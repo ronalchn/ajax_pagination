@@ -97,9 +97,10 @@ jQuery(document).ready(function () {
       function beforeSendHandler(pagination_name,jqXHR,settings) {
         var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
         var requesturl = settings.url;
-        if ($(id).length != 1) { // something wrong, cannot find unique section to load page into
+        var countid = $('[id="' + pagination_name + '_paginated_section"]').length;
+        if (countid != 1) { // something wrong, cannot find unique section to load page into
           <% if AjaxPagination.warnings %>
-            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + $("#" + pagination_name + "_paginated_section").length);
+            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + countid);
           <% end %>
           return false; // continue AJAX normally
         }
@@ -221,8 +222,10 @@ jQuery(document).ready(function () {
         var from = pagination_url, to = location.href; // from what state to what other state
 
         $(".paginated_section").each(function(){
-          var pagination_name = /^(.*)_paginated_section$/.exec($(this).attr("id"))[1];
-          if (pagination_name == null) return; // pagination not set up properly
+          var id = $(this).attr("id");
+          if (id === undefined) return; // pagination not set up properly
+          var pagination_name = /^(.*)_paginated_section$/.exec(id)[1];
+          if (pagination_name == null || pagination_name === undefined) return; // pagination not set up properly
 
           // if data-pagination is not defined, the use default reload test
           if ($(this).data('pagination') === undefined || $(this).data('pagination').reload === undefined) {
