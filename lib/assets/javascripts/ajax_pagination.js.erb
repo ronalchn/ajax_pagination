@@ -76,11 +76,11 @@ jQuery(document).ready(function () {
         if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
         else img.src = "<%= asset_path AjaxPagination.loading_image %>";
         var margin = Math.round(height>400?50:(height/8));
-        $(img).css({'margin': margin + 'px', 'max-height': (7*height/8) + 'px'}).addClass('ajaxpagination-loader');
+        $(img).addClass('ajaxpagination-loader');
         var div = document.createElement("DIV");
-        $(div).append(img);
         $(div).addClass('ajaxpagination-loadzone');
-        paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\">");
+        $(div).append("<div class=\"margin-top\" />").append(img);
+        paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\" />");
         paginated_content.append(div);
 
         // scroll to top of paginated_section if it is not visible
@@ -112,7 +112,7 @@ jQuery(document).ready(function () {
             return;
           }
           // find matching element id in data, after removing script tags
-          var page = $("<div>").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,""));
+          var page = $("<div />").append(data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,""));
           var content = page.find(id);
           if (content.length>0) {
             $(id).html(content.html());
@@ -121,7 +121,7 @@ jQuery(document).ready(function () {
             <% end %>
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
-            page = $("<div>").append(data);
+            page = $("<div />").append(data);
             content = page.find("body");
             if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
             else $(id).html(page.html()); // otherwise include the whole html snippet

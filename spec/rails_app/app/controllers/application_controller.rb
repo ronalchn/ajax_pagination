@@ -4,7 +4,9 @@ class ApplicationController < ActionController::Base
   ajax_pagination :pagination => "", :render => { :layout => "ajax" }
   def slowajaxload
     if params[:pagination] && Rails.env == "test"
-      sleep(1)
+      delay = 0
+      delay = ENV['AJAX_DELAY'] if ENV['AJAX_DELAY']
+      sleep(delay.to_f)
     end
   end
 

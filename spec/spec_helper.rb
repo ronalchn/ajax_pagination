@@ -27,4 +27,5 @@ end
 include Capybara::DSL
 
 SERVERPORT = IO.read(File.expand_path("../PORT",__FILE__)).strip # port number that we are using
+SERVERSLOWPORT = IO.read(File.expand_path("../SLOWPORT",__FILE__)).strip # a port with artificially slowed down loading
 
