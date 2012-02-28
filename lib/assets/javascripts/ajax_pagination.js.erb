@@ -38,8 +38,10 @@ jQuery(document).ready(function () {
       alert("AJAX Pagination warning:" + missing);
     }
   <% end %>
-  if (History && History.enabled && minVersion('<%= minjQuery %>')) {
-    (function( $ ) {
+  (function( $ ) {
+  })( jQuery );
+  (function( $ ) {
+    if (History && History.enabled && minVersion('<%= minjQuery %>')) {
       ///////////////////////////////////
       ////// $.ajax_pagination API //////
       ///////////////////////////////////
@@ -48,6 +50,7 @@ jQuery(document).ready(function () {
         return new pagination_object(pagination_name);
       };
       $.ajax_pagination.version = '<%= AjaxPagination::VERSION %>';
+      $.ajax_pagination.enabled = true;
       function pagination_object(pagination_name) {
         this.get = function(url,options) {
           if (options === undefined) options = {};
@@ -190,8 +193,8 @@ jQuery(document).ready(function () {
         // stop this event from having further effect (because we do not know if jquery-ujs's event handler executed before or after us)
         e.preventDefault();
         e.stopImmediatePropagation();
-        // click element again to dispatch the event all over again - thus ensuring it is handled by jquery-ujs
-        $(this).click();
+        // pass it on the jquery-ujs
+        $.rails.handleRemote($(this));
         return false;
       });
       $(document).on("ajax:before","a, " + $.rails.inputChangeSelector, function() {
@@ -260,7 +263,36 @@ jQuery(document).ready(function () {
       });
 
       History.Adapter.trigger(window,"popstate"); // update stuff on page load
-    })( jQuery );
-  }
+    }
+    else {
+      // AJAX Pagination is disabled, we need to tidy up a few things to keep things working
+
+      // remove remote attribute globally
+      $("a[data-pagination]").removeData('remote');
+      $("a[data-pagination]").removeAttr('data-remote');
+      $("form[data-pagination]").removeData('remote');
+      $("form[data-pagination]").removeAttr('data-remote');
+
+      // set an event handler to remove the remote attribute if new content is loaded with AJAX Pagination
+      $(".paginated_section").on("click", function(event) {
+        var element = $(event.target);
+        if (element.data('pagination') === undefined) return true;
+        else {
+          element.removeData('remote');
+          element.removeAttr('data-remote');
+        }
+      });
+
+      // set another event handler on the body tag (although malformed pages may not have a body tag)
+      $("body").on("click.rails change.rails submit.rails", function(event) {
+        var element = $(event.target);
+        if (element.data('pagination') === undefined) return true;
+        else {
+          element.removeData('remote');
+          element.removeAttr('data-remote');
+        }
+      });
+    }
+  })( jQuery );
 });
 
