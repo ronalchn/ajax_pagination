@@ -18,4 +18,11 @@ class PagesController < ApplicationController
       ajax_pagination format, :pagination => "", :render => { :layout => "ajax" }
     end
   end
+
+  def warnings
+    respond_to do |format|
+      format.html
+      ajax_pagination format, :pagination => "disable", :render => { :layout => "ajax" }
+    end
+  end
 end

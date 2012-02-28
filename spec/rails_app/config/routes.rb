@@ -5,6 +5,7 @@ RailsApp::Application.routes.draw do
     get '' => 'pages#welcome'
     get 'about'
     get 'readme'
+    get 'warnings'
   end
 
   get 'changelog' => 'changelog#index'
