@@ -21,11 +21,6 @@ Then add to your asset manifests,
 //= require ajax_pagination
 ```
 
-```css
-/* app/assets/stylesheets/application.css
- *= require ajax_pagination
-```
-
 AJAX Pagination depends on jquery-rails and jquery-historyjs, so if their javascript files are not already included, also include to following in your assets/javascripts/application.js file:
 
 ```javascript
