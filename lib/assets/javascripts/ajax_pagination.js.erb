@@ -276,24 +276,15 @@ jQuery(document).ready(function () {
       $("form[data-pagination]").removeAttr('data-remote');
 
       // set an event handler to remove the remote attribute if new content is loaded with AJAX Pagination
-      $(".paginated_section").on("click", function(event) {
+      $(document).children().add(".paginated_section").delegate("click.rails change.rails submit.rails", function(event) {
         var element = $(event.target);
         if (element.data('pagination') === undefined) return true;
         else {
           element.removeData('remote');
           element.removeAttr('data-remote');
         }
-      });
+      }); // note using delegate for this instance for backwards compatibility, since might be disabled due to old jQuery version
 
-      // set another event handler on the body tag (although malformed pages may not have a body tag)
-      $("body").on("click.rails change.rails submit.rails", function(event) {
-        var element = $(event.target);
-        if (element.data('pagination') === undefined) return true;
-        else {
-          element.removeData('remote');
-          element.removeAttr('data-remote');
-        }
-      });
     }
   })( jQuery );
 });
