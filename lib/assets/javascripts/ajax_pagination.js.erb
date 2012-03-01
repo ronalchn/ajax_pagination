@@ -116,8 +116,8 @@ jQuery(document).ready(function () {
             return;
           }
           // find matching element id in data, after removing script tags
-          data = data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
-          var page = $("<div />").append(data);
+          var page = $("<div />");
+          page[0].innerHTML = data; // put in DOM without executing scripts
           var content = page.find(id);
           if (content.length>0) {
             $(id).html(content.html());
@@ -126,7 +126,6 @@ jQuery(document).ready(function () {
             <% end %>
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
-            page = $("<div />").append(data);
             content = page.find("body"); // does not tend to work since browsers strip out the html, head, body tags
             if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
             else $(id).html(page.html()); // otherwise include the whole html snippet

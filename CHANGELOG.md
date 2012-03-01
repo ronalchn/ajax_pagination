@@ -1,7 +1,7 @@
 ## v0.3.1.alpha
 * Moving css from javascript to stylesheet - this should make it easier to customize aspects of it.
 * Expose a $.ajax_pagination API with a well-defined, and useful interface.
-* Removed javascript <script> tag functionality inside any AJAX content loaded. These can sometimes cause problems. Inline javascript from event handlers is still available. If any further javascript needs to be run, it is recommended that it is registered on initial page load - through event handlers.
+* Javascript enabled when AJAX loads full page. Only scripts inside of <div> section inserted will be executed.
 * Fix bug: When javascript active but AJAX Pagination disabled, ajax_link_to, ajax_form_tag, ajax_form_for tags stop working because of data-remote. Now data-remote is tidied up so that jquery-ujs not activated (which is the cause of the bug).
 * Make javascript more robust - rare bugs which occur for webpages with poor structuring of divs with class paginated_section.
 * Added warnings page to example application to demonstrate possible warnings.
