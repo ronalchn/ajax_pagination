@@ -1,10 +1,13 @@
-## v0.3.1.alpha
+## v0.4.0.alpha
 * Moving css from javascript to stylesheet - this should make it easier to customize aspects of it.
 * Expose a $.ajax_pagination API with a well-defined, and useful interface.
-* Javascript enabled when AJAX loads full page. Only scripts inside of <div> section inserted will be executed.
+* Javascript enabled when AJAX loads full page. Only scripts inside of &lt;div&gt; section inserted will be executed.
 * Fix bug: When javascript active but AJAX Pagination disabled, ajax_link_to, ajax_form_tag, ajax_form_for tags stop working because of data-remote. Now data-remote is tidied up so that jquery-ujs not activated (which is the cause of the bug).
 * Make javascript more robust - rare bugs which occur for webpages with poor structuring of divs with class paginated_section.
 * Added warnings page to example application to demonstrate possible warnings.
+* Added events ajaxp:before, ajaxp:beforeSend, ajaxp:done, ajaxp:fail, ajaxp:loading, ajaxp:focus - these emit from section where page is loading (wheres ajax:? events emit from link clicked). New events also fire due to browser back/forward (while ajax:? only do not fire on browser back - these come from jquery-ujs)
+* Visual cues overridable (by returning false from events).
+* When jumping history, section no longer gets reloaded if parent already being reloaded.
 
 ## v0.3.0
 * Class method ajax_pagination :reload option - a string in json form no longer accepted, pass it in as a hash or array of hashes instead

@@ -68,28 +68,43 @@ jQuery(document).ready(function () {
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
 
       function display_pagination_loader(pagination_name) {
-        if (pagination_loader_state[pagination_name] != undefined) return; // if already loading, don't reshow loader
-        var paginated_section = $('#' + pagination_name + '_paginated_section');
-        var paginated_content;
-        if (paginated_section.hasClass("paginated_content")) paginated_content = paginated_section; // if the whole section is a loading zone
-        else paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
-        var height = paginated_content.height();
-        // setup loading look
-        var img = document.createElement("IMG");
-        if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
-        else img.src = "<%= asset_path AjaxPagination.loading_image %>";
-        var margin = Math.round(height>400?50:(height/8));
-        $(img).addClass('ajaxpagination-loader');
-        var div = document.createElement("DIV");
-        $(div).addClass('ajaxpagination-loadzone');
-        $(div).append("<div class=\"margin-top\" />").append(img);
-        paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\" />");
-        paginated_content.append(div);
-
-        // scroll to top of paginated_section if it is not visible
-        if ($(document).scrollTop() > paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>) {
-          $(document).scrollTop(paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>);
+        var paginated_section = getSection(pagination_name);
+        if (pagination_loader_state[pagination_name] === undefined) { // show loader if not already shown
+          if ($.rails.fire(getSection(pagination_name),"ajaxp:loading")) {
+            var paginated_content;
+            if (paginated_section.hasClass("paginated_content")) paginated_content = paginated_section; // if the whole section is a loading zone
+            else paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
+            var height = paginated_content.height();
+            // setup loading look
+            var img = document.createElement("IMG");
+            if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
+            else img.src = "<%= asset_path AjaxPagination.loading_image %>";
+            var margin = Math.round(height>400?50:(height/8));
+            $(img).addClass('ajaxpagination-loader');
+            var div = document.createElement("DIV");
+            $(div).addClass('ajaxpagination-loadzone');
+            $(div).append("<div class=\"margin-top\" />").append(img);
+            paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\" />");
+            paginated_content.append(div);
+          }
         }
+        if ($.rails.fire(getSection(pagination_name),"ajaxp:focus")) {
+          // scroll to top of paginated_section if it is not visible
+          if ($(document).scrollTop() > paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>) {
+            $(document).scrollTop(paginated_section.offset().top - <%= AjaxPagination.scroll_margin %>);
+          }
+        }
+      }
+      function getSection(pagination_name) {
+        var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+        return $(id);
+      }
+      function getSectionName(section) {
+          var id = section.attr("id");
+          if (id === undefined) return undefined; // no name
+          var pagination_name = /^(.*)_paginated_section$/.exec(id)[1];
+          if (pagination_name == null || pagination_name === undefined) return undefined; // pagination not set up properly
+          return pagination_name;
       }
       // when this function is used beforeSend of an AJAX request, will use the resulting content in a section of the page
       // this event handler has the same arguments as for jquery and jquery-ujs, except it also takes the name of the section to put the content into as first argument
@@ -104,6 +119,7 @@ jQuery(document).ready(function () {
           <% end %>
           return false; // continue AJAX normally
         }
+        if (!$.rails.fire(getSection(pagination_name),"ajaxp:beforeSend",[jqXHR,settings])) return false;
         display_pagination_loader(pagination_name);
         // register callbacks for other events
         jqXHR.done(function(data, textStatus, jqXHR) {
@@ -117,27 +133,34 @@ jQuery(document).ready(function () {
           }
           // find matching element id in data, after removing script tags
           var page = $("<div />");
-          page[0].innerHTML = data; // put in DOM without executing scripts
+          page[0].innerHTML = data; // put response in DOM without executing scripts
+
+          // if page contains a title, use it
+          var title = page.find("title");
+          if (title.length>0) History.replaceState(null,title.html(),location.href);
+
+          // get page contents
           var content = page.find(id);
           if (content.length>0) {
-            $(id).html(content.html());
+            content = content.html();
             <% if AjaxPagination.warnings %>
               alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
             <% end %>
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
             content = page.find("body"); // does not tend to work since browsers strip out the html, head, body tags
-            if (content.length>0) $(id).html(content.html()); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
-            else $(id).html(page.html()); // otherwise include the whole html snippet
+            if (content.length>0) content = content.html(); // if it has a body tag, only include its contents (for full html structure), leaving out <head> etc sections.
+            else content = page.html(); // otherwise include the whole html snippet
           }
-          // if page contains a title, use it
-          content = page.find("title");
-          if (content.length>0) History.replaceState(null,content.html(),location.href);
+
+          if ($.rails.fire(getSection(pagination_name),"ajaxp:done",[content])) $(id).html(content);
+
           delete pagination_loader_state[pagination_name]; // not waiting for page anymore
         });
         jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
           if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
-          $(id).html(jqXHR.responseText);
+          if ($.rails.fire(getSection(pagination_name),"ajaxp:fail",[jqXHR.responseText])) $(id).html(jqXHR.responseText);
+
           delete pagination_loader_state[pagination_name]; // not waiting for page anymore
         });
         return true;
@@ -145,6 +168,7 @@ jQuery(document).ready(function () {
       function swapPage(pagination_name, requesturl, history) { // swaps the page at pagination_name to that from requesturl (used by History.popState, therefore no remote link has been clicked)
         if (history === undefined) history = false;
         // send our own ajax request, and tie it into the beforeSendHandler used for jquery-ujs as well
+        if (!$.rails.fire(getSection(pagination_name),"ajaxp:before",[requesturl,undefined])) return false;
         $.ajax({url: requesturl, data: {pagination:pagination_name},
           dataType: 'html',
           beforeSend: function (jqXHR,settings) {
@@ -201,11 +225,14 @@ jQuery(document).ready(function () {
         var pagination_name = $(this).data('pagination');
         if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
         $(this).data('params',$.extend($(this).data('params'),{'pagination':pagination_name})); // add data-pagination to the params data
-        return true;
+        return $.rails.fire(getSection(pagination_name),"ajaxp:before",[this.href,$(this).data('method')]);
       });
       $(document).on("ajax:before","form", function() {
+        var pagination_name = $(this).data('pagination');
+        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
         // alter action to include pagination parameter in the GET part of the action url
-        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:$(this).data('pagination')}));
+        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:pagination_name}));
+        return $.rails.fire(getSection(pagination_name),"ajaxp:before",[$(this).attr('action'),$(this).data('method')]);
       });
       $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
         var pagination_name = $(this).data('pagination');
@@ -221,10 +248,18 @@ jQuery(document).ready(function () {
         var from = pagination_url, to = location.href; // from what state to what other state
 
         $(".paginated_section").each(function(){
-          var id = $(this).attr("id");
-          if (id === undefined) return; // pagination not set up properly
-          var pagination_name = /^(.*)_paginated_section$/.exec(id)[1];
-          if (pagination_name == null || pagination_name === undefined) return; // pagination not set up properly
+          // if parent already being reloaded, then this section should not be reloaded
+          var anyparentsloading = false;
+          $(this).parents(".paginated_section").each(function() {
+            var pagination_name = getSectionName($(this));
+            if (pagination_name === undefined) return; // pagination not set up properly
+            if (pagination_loader_state[pagination_name] !== undefined) anyparentsloading = true;
+          });
+          if (anyparentsloading) return;
+
+
+          var pagination_name = getSectionName($(this));
+          if (pagination_name === undefined) return; // pagination not set up properly
 
           // if data-pagination is not defined, the use default reload test
           if ($(this).data('pagination') === undefined || $(this).data('pagination').reload === undefined) {
