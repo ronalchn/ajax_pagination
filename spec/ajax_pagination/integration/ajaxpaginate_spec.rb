@@ -147,6 +147,7 @@ describe 'paginating with javascript on', :js => true do
       fill_in 'Content', :with => 'my supercontent again'
     end
     click_button("Update Post");
+    sleep(0.3) # added because travis could not find loader once (in rbx)
     page.should have_selector('.ajaxpagination-loader')
     sleep(2)
     page.should have_content("my supercontent again")
