@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   before_filter :slowajaxload
   ajax_pagination :pagination => "", :render => { :layout => "ajax" }
   def slowajaxload
-    if params[:pagination] && Rails.env == "test"
+    if (request.GET[:pagination] || params[:pagination]) && Rails.env == "test"
       delay = 0
       delay = ENV['AJAX_DELAY'] if ENV['AJAX_DELAY']
       sleep(delay.to_f)
