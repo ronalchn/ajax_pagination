@@ -365,7 +365,7 @@ jQuery(document).ready(function () {
       $("form[data-pagination]").removeAttr('data-remote');
 
       // set an event handler to remove the remote attribute if new content is loaded with AJAX Pagination
-      $(document).children().add(".paginated_section").delegate("click.rails change.rails submit.rails", function(event) {
+      $(document).children().add(".paginated_section").delegate("a, input, form","click.rails change.rails submit.rails", function(event) {
         var element = $(event.target);
         if (element.data('pagination') === undefined) return true;
         else {
