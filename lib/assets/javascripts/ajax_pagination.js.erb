@@ -38,9 +38,7 @@ jQuery(document).ready(function () {
       alert("AJAX Pagination warning:" + missing);
     }
   <% end %>
-  (function( $ ) {
-  })( jQuery );
-  (function( $ ) {
+  (function( $ ) { // on document ready
     if (History && History.enabled && minVersion('<%= minjQuery %>')) {
       ///////////////////////////////////
       ////// $.ajax_pagination API //////
@@ -66,6 +64,7 @@ jQuery(document).ready(function () {
       /////////////////////////////
       var pagination_loader_state = new Array(); // the page we are waiting for
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
+      var history_state = {ajax_pagination_set:true}; // current history state
 
       function display_pagination_loader(pagination_name) {
         var paginated_section = getSection(pagination_name);
@@ -106,6 +105,55 @@ jQuery(document).ready(function () {
           if (pagination_name == null || pagination_name === undefined) return undefined; // pagination not set up properly
           return pagination_name;
       }
+      function getSectionNames(sections) {
+        var names = new Array();
+        sections.each(function () {
+          names.push(getSectionName($(this)));
+        });
+        return names;
+      }
+      function intersects(a,b) { // do the arrays a and b intersect?
+        var i=0, j=0;
+        while (i < a.length && j < b.length) {
+          if (a[i]<b[j]) i++;
+          else if (a[i]>b[j]) j++;
+          else return true; // intersects
+        }
+        return false; // doesn't intersect
+      }
+      // whether change of state is a reload
+      function isReload(pagination_name,from,to) {
+        if (from == to) return true; // same url - always a reload
+        var section = getSection(pagination_name);
+        if (section.length == 0) return false;
+
+        // if data-pagination is not defined, then no reload can be detected
+        if (section.data('pagination') === undefined || section.data('pagination').reload === undefined) return false;
+
+        var reload = section.data('pagination').reload;
+        if (!(reload instanceof Array)) reload = new Array(reload);
+        for (i=0;i<reload.length;i++) {
+          if (reload[i].query !== undefined) {
+            if ($.deparam.querystring(from)[reload[i].query] !== $.deparam.querystring(to)[reload[i].query]) return false;
+          }
+          if (reload[i].urlregex !== undefined) {
+            var fstr = from, tstr = to;
+            if (reload[i].urlpart !== undefined) {
+              fstr = $.url(from,true).attr(reload[i].urlpart);
+              tstr = $.url(to,true).attr(reload[i].urlpart);
+              if (typeof(fstr)!="string" || typeof(tstr)!="string") continue; // skip
+            }
+            var index = 0;
+            if (reload[i].regexindex !== undefined) index = reload[i].regexindex;
+            var regex = new RegExp(reload[i].urlregex);
+            var frommatch = regex.exec(fstr), tomatch = regex.exec(tstr);
+            if (frommatch != null && frommatch.length>=index) frommatch = frommatch[index];
+            if (tomatch != null && tomatch.length>=index) tomatch = tomatch[index];
+            if (frommatch !== tomatch) return false;
+          }
+        }
+        return true;
+      }
       // when this function is used beforeSend of an AJAX request, will use the resulting content in a section of the page
       // this event handler has the same arguments as for jquery and jquery-ujs, except it also takes the name of the section to put the content into as first argument
       // adapter functions will be used to reconcile the differences in arguments, this is required because jquery and jquery-ujs has different ways to get the pagination_name argument
@@ -128,7 +176,7 @@ jQuery(document).ready(function () {
             var redirecturl = jqXHR.getResponseHeader('Location');
             swapPage(pagination_name,redirecturl);
             pagination_url = redirecturl;
-            History.replaceState(null,document.title,redirecturl);
+            History.replaceState(history_state,document.title,redirecturl); // state not changed
             return;
           }
           // find matching element id in data, after removing script tags
@@ -137,7 +185,7 @@ jQuery(document).ready(function () {
 
           // if page contains a title, use it
           var title = page.find("title");
-          if (title.length>0) History.replaceState(null,title.html(),location.href);
+          if (title.length>0) History.replaceState(history_state,title.html(),location.href);
 
           // get page contents
           var content = page.find(id);
@@ -183,11 +231,20 @@ jQuery(document).ready(function () {
       }
       function pushHistory(pagination_name,url) {
         var data = $("#" + pagination_name + "_paginated_section").data("pagination");
-        if (data === undefined || data.history === undefined || data.history) {
+        if (data === undefined || data.history === undefined || data.history) { // check that history is not disabled
+          // construct visible url
           var data = $.deparam.querystring($.url(url).attr('query'));
           delete data['pagination'];
           pagination_url = $.param.querystring(url,data,2);
-          History.pushState(null,document.title,pagination_url);
+          if (isReload(pagination_name,url,location.href)) History.replaceState(history_state,document.title,pagination_url);
+          else { // not just a reload of current page, so do actual pushState
+            // change current history state, and push it on
+            if (history_state.ajax_pagination === undefined) history_state.ajax_pagination = new Array();
+            var fieldname = "_" + pagination_name;
+            if (history_state.ajax_pagination[fieldname] === undefined) history_state.ajax_pagination[fieldname]=1;
+            else history_state.ajax_pagination[fieldname]++;
+            History.pushState(history_state,document.title,pagination_url); // push state
+          }
         }
       }
       // these special containers are for convenience only, to apply the required data-remote, data-pagination attributes to all links inside
@@ -243,58 +300,48 @@ jQuery(document).ready(function () {
         }
         return true;
       });
+      History.Adapter.bind(window,'popstate',function(e){ // popstate, but can work with hash changes as well
+        //var from = pagination_url, to = location.href; // from what state to what other state
+        var state = History.getState().data || {};
+        state.ajax_pagination = state.ajax_pagination || {};
+        history_state.ajax_pagination = history_state.ajax_pagination || {};
+        if (!state.ajax_pagination_set) { // page first visited (if refresh, state remains)
+          state.ajax_pagination = history_state.ajax_pagination; // put current known state in
+          state.ajax_pagination_set = true; // special flag so that we know its touched
+          History.replaceState(state,document.title,location.href);
+          return;
+        }
+        var allsections = {};
+        for (var field in state.ajax_pagination) {
+          //if (getSection(field.substr(1)).length == 0) delete state.ajax_pagination[field]; // section no longer exists in current page, so can be deleted
+          // edit it cannot be deleted anymore, because if history changes, section tree node not necessarily reloaded
+          allsections[field] = true;
+        }
+        for (var field in history_state.ajax_pagination) allsections[field] = true;
 
-      History.Adapter.bind(window,'popstate',function(){ // popstate, but can work with hash changes as well
-        var from = pagination_url, to = location.href; // from what state to what other state
-
-        $(".paginated_section").each(function(){
-          // if parent already being reloaded, then this section should not be reloaded
-          var anyparentsloading = false;
-          $(this).parents(".paginated_section").each(function() {
-            var pagination_name = getSectionName($(this));
-            if (pagination_name === undefined) return; // pagination not set up properly
-            if (pagination_loader_state[pagination_name] !== undefined) anyparentsloading = true;
-          });
-          if (anyparentsloading) return;
-
-
-          var pagination_name = getSectionName($(this));
-          if (pagination_name === undefined) return; // pagination not set up properly
-
-          // if data-pagination is not defined, the use default reload test
-          if ($(this).data('pagination') === undefined || $(this).data('pagination').reload === undefined) {
-            // if ?pagination_name=ABC, where ABC is the same for both urls, then don't need to reload
-            if ($.deparam.querystring(from)[pagination_name] === $.deparam.querystring(to)[pagination_name]) return;
+        var changedsections = new Array();
+        for (var section in allsections) {
+          var from = history_state.ajax_pagination[section] || 0;
+          var to = state.ajax_pagination[section] || 0;
+          if (from != to) {
+            // schedule for loading only if not a refresh (changing browser history does not cause a refresh unless it is explicitly requested)
+//alert('testing ' + section);
+            if (!isReload(section.substr(1),location.href,pagination_url)) changedsections.push(section.substr(1)); // this section changed
           }
-          else { // otherwise parse json and perform tests
-            var reload = $(this).data('pagination').reload;
-            if (!(reload instanceof Array)) reload = new Array(reload);
-            var changed = false;
-            for (i=0;i<reload.length;i++) {
-              if (reload[i].query !== undefined) {
-                if ($.deparam.querystring(from)[reload[i].query] !== $.deparam.querystring(to)[reload[i].query]) changed = true;
-              }
-              if (reload[i].urlregex !== undefined) {
-                var fstr = from, tstr = to;
-                if (reload[i].urlpart !== undefined) {
-                  fstr = $.url(from,true).attr(reload[i].urlpart);
-                  tstr = $.url(to,true).attr(reload[i].urlpart);
-                  if (typeof(fstr)!="string" || typeof(tstr)!="string") continue; // skip
-                }
-                var index = 0;
-                if (reload[i].regexindex !== undefined) index = reload[i].regexindex;
-                var regex = new RegExp(reload[i].urlregex);
-                var frommatch = regex.exec(fstr), tomatch = regex.exec(tstr);
-                if (frommatch != null && frommatch.length>=index) frommatch = frommatch[index];
-                if (tomatch != null && tomatch.length>=index) tomatch = tomatch[index];
-                if (frommatch !== tomatch) changed = true;
-              }
-              if (changed) break;
-            }
-            if (!changed) return; // otherwise it has changed, and we must reload
+        }
+        history_state = state; // we can update our view of the state now
+
+        changedsections.sort(); // sort the pagination_names stored in array
+        for (var i = 0; i < changedsections.length; i++) {
+          var section = getSection(changedsections[i]);
+          if (section.length == 0) continue; // no longer exists on page (meaning it does not need reloading)
+          var parentsections = getSectionNames(section.parents(".paginated_section"));
+          parentsections.sort();
+          // check for intersection
+          if (!intersects(changedsections,parentsections)) { // no intersection, load new content in this section
+            swapPage(changedsections[i],location.href);
           }
-          swapPage(pagination_name,location.href);
-        });
+        }
 
         pagination_url = location.href; // update url (new url recognised)
       });
