@@ -31,7 +31,7 @@ module AjaxPagination
     #       <li><%= link_to "About", pages_about_url %></li>
     #     </ul>
     #   </div>
-    #   <%= ajax_pagination :pagination => "menu", :reload => {:urlpart => "path", :urlregex => "^.*$"} do %>
+    #   <%= ajax_pagination :pagination => "" do %>
     #     <%= yield %>
     #   <% end %>
     #
@@ -48,31 +48,30 @@ module AjaxPagination
     #   files, in which case, the behaviour is the same as the render method in views.
     #
     # [:+reload+]
-    #   Used to detect whether the partial needs reloading, based on how the url changes. When pagination links are
-    #   clicked, they are easily detected, and will load the new content automatically. When the browser
-    #   back/forwards buttons are used, AJAX Pagination needs to know whether the content inside this pagination
-    #   partial needs reloading. This is not certain, because the webpage may contain multiple pagination partials,
-    #   and moreover, the page may have other functionality using the History.pushState feature. Defaults to nil.
-    #   
+    #   Can be used to tweak the logic detecting that a page section is trying to reload the same page content. If there
+    #   are multiple urls that loads the same page content into a section, AJAX Pagination will not normally detect that.
+    #   Since the urls are different, it is assumed they have different content, therefore, a new history item will
+    #   normally be added for it, and when jumping between two history items with the same content in this section,
+    #   but different urls, the content will still be reloaded.
+    #
+    #   If this option is used, it identifies certain areas of the url which must differ if the page content will be different.
+    #   If all areas specified is the same, two urls will be assumed to reference the same content for this section.
+    #
     #   If passed a hash of the form :+query+ => "parametername", AJAX Pagination will parse the url, to find
-    #   the parameter +parametername+ inside the query string (ie. /path/?parametername=value). When it changes,
-    #   the partial is reloaded.
+    #   the parameter +parametername+ inside the query string (ie. /path/?parametername=value).
     #   
     #   If passed a hash of the form :+urlregex+ => "regularexpression", AJAX Pagination will apply the regular
-    #   expression to the url. If a particular subexpression of the match changes, the partial is reloaded. The
+    #   expression to the url. If a particular subexpression of the match changes, the urls are regarded as different. The
     #   subexpression used defaults to the whole match. If the hash includes :+regexindex+ => N, the Nth subexpression
     #   is used. If the hash also includes :+urlpart+, then the regular expression will only be applied to part of the
     #   url. The part it is applied to depends on the string passed. Allowed strings are any attributes as given at
     #   https://github.com/allmarkedup/jQuery-URL-Parser. Possible attributes include: "source", "protocol", "host",
-    #   "port", "relative", "path", "directory", "file", "query". Notice in the above example for the application
-    #   layout, how :urlpart => "path" is passed as a reload condition.
+    #   "port", "relative", "path", "directory", "file", "query".
     #   
     #   Different parts of the url can be watched for any changes, by passing an array of hashes. For example:
     #   
     #     <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
     #   
-    #   If nil, AJAX Pagination acts as if it was passed {:query => options [:pagination]}.
-    #
     # [:+image+]
     #   Specify another image to be used as the loading image. The string passed is an image in the assets pipeline.
     #   If not specified, the default loading image is used.
@@ -86,8 +85,7 @@ module AjaxPagination
     #   true. Therefore, (sub)pages accessed through AJAX Pagination act as if a whole new page was accessed.
     #
     #   If false then it is as if no new page is accessed, and the history is not changed. It therefore appears as if following
-    #   the link simply creates a cool AJAX effect on the current page. If false, then :reload defaults to {:urlregex => ""},
-    #   meaning that it will never reload when browser back/forward buttons are used, whether the url changes or not.
+    #   the link simply creates a cool AJAX effect on the current page.
     #
     def ajax_pagination(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
@@ -96,7 +94,6 @@ module AjaxPagination
       data = {};
       if options.has_key? :history
         data[:history] = (options[:history] != false)
-        data[:reload] = {:urlregex => ""} unless data[:history] # by default never reloads a history-less section
       end
       case options[:reload].class.to_s
       when "Hash", "Array"

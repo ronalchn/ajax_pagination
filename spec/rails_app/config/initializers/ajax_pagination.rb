@@ -6,7 +6,7 @@ AjaxPagination.config do |config|
   # by default, warnings are active only if the environment is development
   # to configure by environment otherwise, this configuration needs to be added to the environment specific files
   # uncomment to turn warnings on in all environments
-  # config.warnings = true
+  config.warnings = true
   # or to turn off in all environments
   # config.warnings = false
 end

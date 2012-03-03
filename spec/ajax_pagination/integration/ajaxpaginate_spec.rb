@@ -71,6 +71,30 @@ describe 'paginating with javascript on', :js => true do
     sleep(1)
     page.should have_selector('#aboutpagetitle')
   end
+  it 'has correct reload behaviour on history' do
+    visit("http://localhost:#{SERVERPORT}/pages/about")
+    click_link 'Readme' # History will have [about,readme]
+    page.should have_selector('#readmepagetitle')
+    click_link 'Readme' # should not add readme to history again - behaviour should be like a page refresh
+    sleep(1)
+    page.should have_no_selector('.ajaxpagination-loader')
+    page.evaluate_script('window.history.back();') # back to About (if readme not added to history twice)
+    page.should have_selector('#aboutpagetitle')
+  end
+  it 'has correct reload behaviour when jumping between history with the same url' do
+    visit("http://localhost:#{SERVERPORT}/pages/about")
+    click_link 'Readme' # History will have [about,readme]
+    page.should have_selector('#readmepagetitle')
+    click_link 'About' # History will have [about,readme]
+    page.should have_selector('#aboutpagetitle')
+    find("#aboutpagetitle").text.should_not == "ReloadReferenceToken"
+    page.evaluate_script('document.getElementById("aboutpagetitle").innerHTML = "ReloadReferenceToken";') # allows us to tell if it got reloaded
+    find("#aboutpagetitle").text.should == "ReloadReferenceToken"
+    page.evaluate_script('window.history.go(-2);') # back from about page to about page again
+
+    sleep(1)
+    find("#aboutpagetitle").text.should == "ReloadReferenceToken" # hasn't reloaded if token is still there
+  end
   it 'displays error pages within div' do
     visit("http://localhost:#{SERVERPORT}") # goes to welcome page
     click_link("AJAX Pagination Example Application")

@@ -35,7 +35,7 @@ jQuery(document).ready(function () {
       var missing = "";
       if (!History) missing += "\nHistory.js not installed";
       if (!minVersion('<%= minjQuery %>')) missing += "\njQuery version <%= minjQuery %>+ not installed. Currently installed: jQuery " + window.jQuery.fn.jquery;
-      alert("AJAX Pagination warning:" + missing);
+      alert("AJAX Pagination MISSING_DEPENDENCIES:" + missing);
     }
   <% end %>
   (function( $ ) { // on document ready
@@ -163,7 +163,7 @@ jQuery(document).ready(function () {
         var countid = $('[id="' + pagination_name + '_paginated_section"]').length;
         if (countid != 1) { // something wrong, cannot find unique section to load page into
           <% if AjaxPagination.warnings %>
-            alert("AJAX Pagination warning:\nExpected one pagination section called " + pagination_name + ", found " + countid);
+            alert("AJAX Pagination UNIQUE_SECTION_NOT_FOUND:\nExpected one pagination section called " + pagination_name + ", found " + countid);
           <% end %>
           return false; // continue AJAX normally
         }
@@ -192,7 +192,7 @@ jQuery(document).ready(function () {
           if (content.length>0) {
             content = content.html();
             <% if AjaxPagination.warnings %>
-              alert("AJAX Pagination warning:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
+              alert("AJAX Pagination EXTRA_CONTENT_DISCARDED:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
             <% end %>
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
@@ -262,7 +262,7 @@ jQuery(document).ready(function () {
           pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id")); // if data-pagination not present, search up the tree for a suitable section
           if (pagination_name == null) {
             <% if AjaxPagination.warnings %>
-              alert("AJAX Pagination warning:\nNo pagination section name given for link, and none could be implicitly assigned, AJAX cancelled for this request");
+              alert("AJAX Pagination MISSING_REFERENCE:\nNo pagination section name given for link, and none could be implicitly assigned, AJAX cancelled for this request");
             <% end %>
             return true; // pagination not set up properly
           }
