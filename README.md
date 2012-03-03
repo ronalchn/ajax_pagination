@@ -21,11 +21,6 @@ Then add to your asset manifests,
 //= require ajax_pagination
 ```
 
-```css
-/* app/assets/stylesheets/application.css
- *= require ajax_pagination
-```
-
 AJAX Pagination depends on jquery-rails and jquery-historyjs, so if their javascript files are not already included, also include to following in your assets/javascripts/application.js file:
 
 ```javascript
@@ -44,7 +39,7 @@ and much [more](https://github.com/ronalchn/ajax_pagination/wiki/Home).
 
 ## Usage
 
-The pagination needs a name (in case you have multiple sets of AJAX pagination on the same webpage). By default, the name is "page". If you only intend to use a single set of pagination links, then leave it as "page". The name is used to distinguish different sets of pagination links, and is also used as a default for other functionaility.
+Each section of the page which may change is named. By default, the name is "page". This is ideal if a single controller/action handles a number of pages. Sometimes different sections of the page may have new content loaded into them. The name is used to distinguish between the different sections. Links refer to a certain section to identify where new content shhould be loaded into.
 
 ### Ajaxifying the content
 
