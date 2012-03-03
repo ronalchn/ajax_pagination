@@ -7,7 +7,13 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<script>
+<div id="countajaxloading" style="display: none;">0</div>
+<script type="text/javascript">
+$(document).ready(function () {
+  $(document).on("ajaxp:loading", function() { // increment hidden div every time something loads
+    $("#countajaxloading").text((parseInt($("#countajaxloading").text(),10) + 1).toString());
+  });
+});
 /*jQuery(document).ready(function () {
   alert($.ajax_pagination.version);
   $.ajax_pagination("").get("http://localhost:3000/pages/about");

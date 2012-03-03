@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'paginating with javascript on', :js => true do
+  def ajaxCount
+    page.evaluate_script("document.getElementById('countajaxloading').innerHTML").to_i # using javascript to get content because selenium cannot get content of non-visible elements
+  end
+
   it 'displays a loading image' do
     # following 3 lines to warm up loading image
     visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
@@ -47,20 +51,19 @@ describe 'paginating with javascript on', :js => true do
     page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
   end
   it 'works with browser back and forward buttons' do
-    visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+    visit("http://localhost:#{SERVERPORT}/changelog")
     find('#_paginated_section').find('.next_page').click
     sleep(1)
     click_link 'About'
     sleep(1)
     click_link 'Readme'
     sleep(2)
-    page.should have_no_selector('.ajaxpagination-loader')
     page.should have_selector('#readmepagetitle')
+    count = ajaxCount
     page.evaluate_script('window.history.back();') # back to About
-    page.should have_selector('.ajaxpagination-loader')
     sleep(1)
-    page.should have_no_selector('.ajaxpagination-loader')
     page.should have_selector('#aboutpagetitle')
+    ajaxCount.should == count + 1
     page.evaluate_script('window.history.forward();') # forward to readme
     sleep(1)
     page.should have_selector('#readmepagetitle')
@@ -132,29 +135,32 @@ describe 'paginating with javascript on', :js => true do
     click_link("Posts")
     page.should have_content("New Post")
     myurl = page.current_url # to get the canonical url
-    visit("http://localhost:#{SERVERSLOWPORT}/posts/new")
+    visit("http://localhost:#{SERVERPORT}/posts/new")
     within("#new_post") do
       fill_in 'Title', :with => 'very unique title for test'
       fill_in 'Content', :with => 'my supercontent'
     end
+    count = ajaxCount
     click_button("Create Post");
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(2)
     page.should have_content("Post was successfully created.")
+    ajaxCount.should == count + 1
     page.current_url.should_not == myurl # means we have gotten redirected
     click_link("Edit");
     within(".edit_post") do
       fill_in 'Content', :with => 'my supercontent again'
     end
+    count = ajaxCount
     click_button("Update Post");
-    page.should have_selector('.ajaxpagination-loader')
     sleep(2)
+    page.should have_content("Post was successfully updated.")
     page.should have_content("my supercontent again")
+    ajaxCount.should == count + 1
+    count = ajaxCount
     click_link("Destroy");
     page.driver.browser.switch_to.alert.accept
-    page.should have_selector('.ajaxpagination-loader')
     sleep(2)
     page.should have_content("Post destroyed.")
+    ajaxCount.should == count + 1
   end
   it 'changes title' do
     visit("http://localhost:#{SERVERPORT}")
