@@ -204,12 +204,16 @@ jQuery(document).ready(function () {
           if ($.rails.fire(getSection(pagination_name),"ajaxp:done",[content])) $(id).html(content);
 
           delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+
+          $.rails.fire(getSection(pagination_name),"ajaxp:loaded");
         });
         jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
           if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
           if ($.rails.fire(getSection(pagination_name),"ajaxp:fail",[jqXHR.responseText])) $(id).html(jqXHR.responseText);
 
           delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+
+          $.rails.fire(getSection(pagination_name),"ajaxp:loaded");
         });
         return true;
       }
@@ -347,6 +351,9 @@ jQuery(document).ready(function () {
       });
 
       History.Adapter.trigger(window,"popstate"); // update stuff on page load
+
+      // trigger a loaded event on each section on initial page load
+      $.rails.fire($(".paginated_section"),"ajaxp:loaded");
     }
     else {
       // AJAX Pagination is disabled, we need to tidy up a few things to keep things working
