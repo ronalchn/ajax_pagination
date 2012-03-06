@@ -175,7 +175,7 @@ describe 'paginating with javascript on', :js => true do
     #page.should have_content("Post was successfully updated.")
     #page.should have_content("my supercontent again")
     #ajaxCount.should == count + 1
-    #count = ajaxCount
+    count = ajaxCount
     click_link("Destroy");
     page.driver.browser.switch_to.alert.accept
     sleep(2)
