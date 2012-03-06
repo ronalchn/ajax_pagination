@@ -14,7 +14,7 @@ For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pag
 * So easy to use, you don&#39;t need to touch a single line of javascript
 * Supports multiple and nested sections
 * Supports browser history, for more see [Robust Support for Browser History in AJAX Pagination](https://github.com/ronalchn/ajax_pagination/wiki/Robust-Support-for-Browser-History-in-AJAX-Pagination)
-* Supports links, but also POST, DELETE, PUT links and forms. Then all can be used to change the content in a section
+* Supports links, but also POST, DELETE, PUT links and forms, which can all be used to change the content in a section
 * Supports redirects - a necessary feature when used with forms
 * Custom javascript events
 * Built in visual cues when loading new content - can be altered with css.
