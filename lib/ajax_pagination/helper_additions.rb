@@ -1,8 +1,3 @@
-begin
-  require 'will_paginate' if Gem::Specification.find_by_name('will_paginate') # needed for testing dummy application
-rescue Gem::LoadError # in case using version without fix for this
-end
-
 module AjaxPagination
   # This module is automatically added to all views, providing helper methods.
   module HelperAdditions

@@ -39,4 +39,4 @@ gem 'ajax_pagination', :path => "../.."
 # gem 'capistrano'
 
 # To use debugger
-gem 'ruby-debug'
+# gem 'ruby-debug' # requires MRI Ruby

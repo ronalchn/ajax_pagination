@@ -20,10 +20,11 @@ describe 'paginating with javascript on', :type => :request, :driver => :seleniu
     visit("http://localhost:#{SERVERPORT}/posts")
     page.should have_selector('#page_paginated_section .previous_page.disabled')
     find('#page_paginated_section').find('.next_page').click
+    sleep(1)
     page.should have_no_selector('#page_paginated_section .previous_page.disabled')
     page.should have_selector('#upcomingpage_paginated_section .previous_page.disabled')
     find('#upcomingpage_paginated_section').find('.next_page').click
-    sleep(0.5)
+    sleep(1)
     page.should have_no_selector('#upcomingpage_paginated_section .previous_page.disabled')
     page.should have_no_selector('#page_paginated_section .previous_page.disabled')
   end

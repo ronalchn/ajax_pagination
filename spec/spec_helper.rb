@@ -7,8 +7,6 @@ require 'capybara/rspec'
 require 'capybara'
 require 'rake' 
 
-require 'ajax_pagination'
-
 Rails.backtrace_cleaner.remove_silencers!
 
 Capybara.app = RailsApp::Application

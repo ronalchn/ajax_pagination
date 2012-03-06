@@ -13,82 +13,95 @@ describe 'paginating with javascript on', :js => true do
 
     visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
     page.should have_no_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     click_link 'About'
     page.should have_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
     click_link 'Readme'
     page.should have_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
   end
   it 'displays a loading image with nested and multiple paginated sections' do
     visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+    sleep(2)
+    page.should have_selector('#changelogpagetitle')
     find('#_paginated_section').find('.next_page').click
     page.should have_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
     find('#signin').click
+    sleep(2)
     visit("http://localhost:#{SERVERSLOWPORT}/posts")
     sleep(2)
+    page.should have_selector('#postspagetitle')
     find('#page_paginated_section').find('.next_page').click
     page.should have_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
     find('#upcomingpage_paginated_section').find('.next_page').click
     page.should have_selector('.ajaxpagination-loader')
-    sleep(1)
+    sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
   end
   it 'shows the configured loading image' do
     visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-    find('#_paginated_section').find('.next_page').click
+    find('#page_paginated_section').find('.next_page').click
     page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
-    sleep(1)
+    sleep(1.5)
     visit("http://localhost:#{SERVERSLOWPORT}/posts")
-    find('#_paginated_section').find('.next_page').click
+    find('#page_paginated_section').find('.next_page').click
     page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
   end
   it 'works with browser back and forward buttons' do
+    visit("http://localhost:#{SERVERPORT}/pages/about") # warmup serverport
+    sleep(3)
+    page.should have_selector('#aboutpagetitle')
+
+    # actual test
     visit("http://localhost:#{SERVERPORT}/changelog")
-    find('#_paginated_section').find('.next_page').click
     sleep(1)
+    page.should have_selector('#changelogpagetitle')
     click_link 'About'
     sleep(1)
+    page.should have_selector('#aboutpagetitle')
     click_link 'Readme'
-    sleep(2)
+    sleep(1)
     page.should have_selector('#readmepagetitle')
     count = ajaxCount
     page.evaluate_script('window.history.back();') # back to About
-    sleep(1)
     page.should have_selector('#aboutpagetitle')
     ajaxCount.should == count + 1
     page.evaluate_script('window.history.forward();') # forward to readme
-    sleep(1)
     page.should have_selector('#readmepagetitle')
-    page.evaluate_script('window.history.go(-2);') # back to changelog page 2
-    sleep(1)
+    page.evaluate_script('window.history.go(-2);') # back to changelog
     page.should have_no_selector('#aboutpagetitle')
     page.evaluate_script('window.history.forward();') # forward to about
-    sleep(1)
     page.should have_selector('#aboutpagetitle')
   end
   it 'has correct reload behaviour on history' do
     visit("http://localhost:#{SERVERPORT}/pages/about")
+    sleep(3) # rbx has long warmup time
+    page.should have_selector('#aboutpagetitle')
     click_link 'Readme' # History will have [about,readme]
+    sleep(1)
     page.should have_selector('#readmepagetitle')
     click_link 'Readme' # should not add readme to history again - behaviour should be like a page refresh
-    sleep(1)
+    sleep(0.5)
     page.should have_no_selector('.ajaxpagination-loader')
     page.evaluate_script('window.history.back();') # back to About (if readme not added to history twice)
     page.should have_selector('#aboutpagetitle')
   end
   it 'has correct reload behaviour when jumping between history with the same url' do
     visit("http://localhost:#{SERVERPORT}/pages/about")
+    sleep(3) # allow warmup time (zzz... rbx)
+    page.should have_selector('#aboutpagetitle')
     click_link 'Readme' # History will have [about,readme]
+    sleep(1)
     page.should have_selector('#readmepagetitle')
-    click_link 'About' # History will have [about,readme]
+    click_link 'About' # History will have [about,readme,about]
+    sleep(1)
     page.should have_selector('#aboutpagetitle')
     find("#aboutpagetitle").text.should_not == "ReloadReferenceToken"
     page.evaluate_script('document.getElementById("aboutpagetitle").innerHTML = "ReloadReferenceToken";') # allows us to tell if it got reloaded
@@ -100,6 +113,7 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'displays error pages within div' do
     visit("http://localhost:#{SERVERPORT}") # goes to welcome page
+    sleep(1)
     click_link("AJAX Pagination Example Application")
     page.current_url.should == "http://localhost:#{SERVERPORT}/broken%20link"
     page.should have_content("AJAX Pagination Example Application")
@@ -107,7 +121,9 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'changes url to match redirection' do
     visit("http://localhost:#{SERVERPORT}")
+    sleep(1)
     click_link("Posts")
+    sleep(1)
     page.should have_content("New Post")
     myurl = page.current_url # to get the canonical url
     click_link("New Post")

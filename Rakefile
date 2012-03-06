@@ -16,7 +16,7 @@ task :travis do
 
   # startup test servers
   system("(cd spec/rails_app/ && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
-  system("(cd spec/rails_app/ && RAILS_ENV=test AJAX_DELAY=1 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
+  system("(cd spec/rails_app/ && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
   system("bundle exec rake spec")
   unless $?.exitstatus == 0
     system("kill -9 `lsof -i :#{serverport} -t`") # kills rails server
