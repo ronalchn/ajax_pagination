@@ -8,6 +8,7 @@ describe 'paginating with javascript on', :js => true do
   it 'displays a loading image' do
     # following 3 lines to warm up loading image
     visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+    sleep(3)
     click_link 'Changelog'
     sleep(3)
 
@@ -46,6 +47,15 @@ describe 'paginating with javascript on', :js => true do
     page.should have_no_selector('.ajaxpagination-loader')
   end
   it 'shows the configured loading image' do
+    # warmup images
+    visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+    find('#page_paginated_section').find('.next_page').click
+    sleep(3)
+    visit("http://localhost:#{SERVERSLOWPORT}/posts")
+    find('#page_paginated_section').find('.next_page').click
+    sleep(3)
+
+
     visit("http://localhost:#{SERVERSLOWPORT}/changelog")
     find('#page_paginated_section').find('.next_page').click
     page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
