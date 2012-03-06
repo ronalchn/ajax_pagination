@@ -186,7 +186,7 @@ describe 'paginating with javascript on', :js => true do
     click_button("Update Post");
     sleep(3)
     page.should have_content("Post was successfully updated.")
-    page.should have_content("my supercontent again")
+    page.should have_content("some supercontent")
     ajaxCount.should == count + 1
   end
   it 'changes title' do
