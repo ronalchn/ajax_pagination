@@ -173,6 +173,9 @@ describe 'paginating with javascript on', :js => true do
     ajaxCount.should == count + 1
   end
   it 'submits ajax_form_for form via PUT link' do
+    visit("http://localhost:#{SERVERPORT}")
+    find('#signin').click
+    sleep(2)
     visit("http://localhost:#{SERVERPORT}/posts/2")
     click_link("Edit");
     sleep(2)
