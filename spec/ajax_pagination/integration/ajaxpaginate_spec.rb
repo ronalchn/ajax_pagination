@@ -149,25 +149,29 @@ describe 'paginating with javascript on', :js => true do
     visit("http://localhost:#{SERVERPORT}")
     find('#signin').click
     click_link("Posts")
+    sleep(1)
     page.should have_content("New Post")
     myurl = page.current_url # to get the canonical url
     visit("http://localhost:#{SERVERPORT}/posts/new")
+    sleep(1)
     within("#new_post") do
       fill_in 'Title', :with => 'very unique title for test'
       fill_in 'Content', :with => 'my supercontent'
     end
     count = ajaxCount
     click_button("Create Post");
+    sleep(2)
     page.should have_content("Post was successfully created.")
     ajaxCount.should == count + 1
     page.current_url.should_not == myurl # means we have gotten redirected
     click_link("Edit");
+    sleep(2)
     within(".edit_post") do
       fill_in 'Content', :with => 'my supercontent again'
     end
     count = ajaxCount
     click_button("Update Post");
-    sleep(2)
+    sleep(3)
     page.should have_content("Post was successfully updated.")
     page.should have_content("my supercontent again")
     ajaxCount.should == count + 1
