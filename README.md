@@ -38,7 +38,7 @@ Then add to your asset manifests,
 
 ```css
 /* app/assets/stylesheets/application.css
- * require ajax_pagination
+ *= require ajax_pagination
  */
 ```
 
