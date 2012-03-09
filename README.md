@@ -9,19 +9,9 @@ Basically, there is a helper function to use to create a section in your webpage
 
 For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
 
-This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files (see the Installation section).
+This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files (see the Installation section). For Rails 3.0, see information below - adding support in progress.
 
-## Rails 3.0, or without assets pipeline
-
-To use this on Rails 3.0, or without using the assets pipeline, here is the [Installation Guide](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-Pipeline), and you must use the github version (in your Gemfile):
-
-```rb
-gem 'ajax_pagination', :git => "git://github.com/ronalchn/ajax_pagination.git"
-```
-
-The generator for this has not yet been released to rubygems. Please notify me if it works in a Rails 3.0 application, before I release this to rubygems.
-
-## Installation
+## Installation with Asset Pipeline
 Add to your Gemfile:
 
     gem 'ajax_pagination'
@@ -43,6 +33,16 @@ Then add to your asset manifests,
  *= require ajax_pagination
  */
 ```
+
+## Installation on Rails 3.0, or without asset pipeline
+
+To use this on Rails 3.0, or without using the assets pipeline, here is the [Installation without Assets Pipeline](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-Pipeline) guide, and you must use the github version (in your Gemfile):
+
+```rb
+gem 'ajax_pagination', :git => "git://github.com/ronalchn/ajax_pagination.git"
+```
+
+The generator for this has not yet been released to rubygems. Please notify me if it works in a Rails 3.0 application, before I release this to rubygems.
 
 ## Getting Started
 To learn how to use this gem, read one of the usage guides below (found in the wiki):
