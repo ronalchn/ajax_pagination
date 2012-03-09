@@ -27,3 +27,16 @@ include Capybara::DSL
 SERVERPORT = IO.read(File.expand_path("../PORT",__FILE__)).strip # port number that we are using
 SERVERSLOWPORT = IO.read(File.expand_path("../SLOWPORT",__FILE__)).strip # a port with artificially slowed down loading
 
+module Retryable
+  # retry code n times
+  def retry_exceptions(n = 3)
+    i=0
+    begin
+      yield
+    rescue
+      retry if (i += 1) < n
+      raise # if not retrying then raise
+    end
+  end
+end
+

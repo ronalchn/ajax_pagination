@@ -1,69 +1,76 @@
 require 'spec_helper'
 
 describe 'paginating with javascript on', :js => true do
+  include Retryable
+
   def ajaxCount
     page.evaluate_script("document.getElementById('countajaxloading').innerHTML").to_i # using javascript to get content because selenium cannot get content of non-visible elements
   end
 
   it 'displays a loading image' do
-    # following 3 lines to warm up loading image
-    visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
-    sleep(3)
-    click_link 'Changelog'
-    sleep(3)
+    retry_exceptions do
+      # following 3 lines to warm up loading image
+      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      sleep(3)
+      click_link 'Changelog'
+      sleep(3)
 
-    visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
-    page.should have_no_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    click_link 'About'
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    page.should have_no_selector('.ajaxpagination-loader')
-    click_link 'Readme'
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    page.should have_no_selector('.ajaxpagination-loader')
+      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      page.should have_no_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      click_link 'About'
+      page.should have_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      page.should have_no_selector('.ajaxpagination-loader')
+      click_link 'Readme'
+      page.should have_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      page.should have_no_selector('.ajaxpagination-loader')
+    end
   end
   it 'displays a loading image with nested and multiple paginated sections' do
-    visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-    sleep(2)
-    page.should have_selector('#changelogpagetitle')
-    find('#_paginated_section').find('.next_page').click
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    page.should have_no_selector('.ajaxpagination-loader')
-    find('#signin').click
-    sleep(2)
-    visit("http://localhost:#{SERVERSLOWPORT}/posts")
-    sleep(2)
-    page.should have_selector('#postspagetitle')
-    find('#page_paginated_section').find('.next_page').click
-    sleep(0.5) # failed once on travis rbx without sleep
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    page.should have_no_selector('.ajaxpagination-loader')
-    find('#upcomingpage_paginated_section').find('.next_page').click
-    page.should have_selector('.ajaxpagination-loader')
-    sleep(1.5)
-    page.should have_no_selector('.ajaxpagination-loader')
+    retry_exceptions do
+      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      sleep(2)
+      page.should have_selector('#changelogpagetitle')
+      find('#_paginated_section').find('.next_page').click
+      page.should have_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      page.should have_no_selector('.ajaxpagination-loader')
+      find('#signin').click
+      sleep(2)
+      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      sleep(2)
+      page.should have_selector('#postspagetitle')
+      find('#page_paginated_section').find('.next_page').click
+      sleep(0.5) # failed once on travis rbx without sleep
+      page.should have_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      page.should have_no_selector('.ajaxpagination-loader')
+      find('#upcomingpage_paginated_section').find('.next_page').click
+      page.should have_selector('.ajaxpagination-loader')
+      sleep(1.5)
+      page.should have_no_selector('.ajaxpagination-loader')
+    end
   end
   it 'shows the configured loading image' do
-    # warmup images
-    visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-    find('#page_paginated_section').find('.next_page').click
-    sleep(3)
-    visit("http://localhost:#{SERVERSLOWPORT}/posts")
-    find('#page_paginated_section').find('.next_page').click
-    sleep(3)
+    retry_exceptions do
+      # warmup images
+      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      find('#page_paginated_section').find('.next_page').click
+      sleep(3)
+      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      find('#page_paginated_section').find('.next_page').click
+      sleep(3)
 
-
-    visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-    find('#page_paginated_section').find('.next_page').click
-    page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
-    sleep(1.5)
-    visit("http://localhost:#{SERVERSLOWPORT}/posts")
-    find('#page_paginated_section').find('.next_page').click
-    page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
+      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      find('#page_paginated_section').find('.next_page').click
+      page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
+      sleep(1.5)
+      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      find('#page_paginated_section').find('.next_page').click
+      page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
+    end
   end
   it 'works with browser back and forward buttons' do
     visit("http://localhost:#{SERVERPORT}/pages/about") # warmup serverport
@@ -157,31 +164,33 @@ describe 'paginating with javascript on', :js => true do
     page.current_url.should == myurl # url remains the same (so history has not changed)
   end
   it 'submits ajax_form_for form via POST and DELETE link' do
-    visit("http://localhost:#{SERVERPORT}")
-    find('#signin').click
-    click_link("Posts")
-    sleep(1)
-    page.should have_content("New Post")
-    myurl = page.current_url # to get the canonical url
-    visit("http://localhost:#{SERVERPORT}/posts/new")
-    sleep(1)
-    within("#new_post") do
-      fill_in 'Title', :with => 'very unique title for test'
-      fill_in 'Content', :with => 'my supercontent'
-    end
-    count = ajaxCount
-    click_button("Create Post");
-    sleep(2)
-    page.should have_content("Post was successfully created.")
-    ajaxCount.should == count + 1
-    page.current_url.should_not == myurl # means we have gotten redirected
+    retry_exceptions do
+      visit("http://localhost:#{SERVERPORT}")
+      find('#signin').click
+      click_link("Posts")
+      sleep(1)
+      page.should have_content("New Post")
+      myurl = page.current_url # to get the canonical url
+      visit("http://localhost:#{SERVERPORT}/posts/new")
+      sleep(1)
+      within("#new_post") do
+        fill_in 'Title', :with => 'very unique title for test'
+        fill_in 'Content', :with => 'my supercontent'
+      end
+      count = ajaxCount
+      click_button("Create Post");
+      sleep(2)
+      page.should have_content("Post was successfully created.")
+      ajaxCount.should == count + 1
+      page.current_url.should_not == myurl # means we have gotten redirected
 
-    count = ajaxCount
-    click_link("Destroy");
-    page.driver.browser.switch_to.alert.accept
-    sleep(2)
-    page.should have_content("Post destroyed.")
-    ajaxCount.should == count + 1
+      count = ajaxCount
+      click_link("Destroy");
+      page.driver.browser.switch_to.alert.accept
+      sleep(2)
+      page.should have_content("Post destroyed.")
+      ajaxCount.should == count + 1
+    end
   end
   ## This spec does not work in rbx on travis.
   ## Tested to work in rbx-1.2.4 on local machine. Also works using MRI ruby on travis.
