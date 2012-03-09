@@ -42,7 +42,7 @@ To use this on Rails 3.0, or without using the assets pipeline, here is the [Ins
 gem 'ajax_pagination', :git => "git://github.com/ronalchn/ajax_pagination.git"
 ```
 
-The generator for this has not yet been released to rubygems. Please notify me if it works in a Rails 3.0 application, before I release this to rubygems.
+The generator for this has not yet been released to rubygems. This has been tested to work in Rails 3.0. The release of the next official release of version v0.5.1 including this generator is planned within a few days.
 
 ## Getting Started
 To learn how to use this gem, read one of the usage guides below (found in the wiki):
