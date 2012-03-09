@@ -16,13 +16,10 @@ task :travis do
   system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails_app/vendor/assets/javascripts/")
 
   # recreate assets for rails 3.0 app - delete them first
-  system("rm spec/rails30_app/public/javascripts/*")
-  system("rm spec/rails30_app/public/stylesheets/ajax_pagination.css")
-  system("rm spec/rails30_app/public/images/ajax-loader.gif")
   system("mkdir -p spec/rails30_app/public/javascripts")
   system("cp `bundle show jquery-rails`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
   system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
-  system("(cd spec/rails30_app/ && bundle exec rails generate ajax_pagination:assets)")
+  system("(cd spec/rails30_app/ && bundle exec rails generate ajax_pagination:assets --force)")
 
   # startup test servers
   system("(cd spec/rails_app/ && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
