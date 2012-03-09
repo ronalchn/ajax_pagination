@@ -1,0 +1,24 @@
+.ajaxpagination-loadzone > .margin-top {
+  height: 50px;
+  max-height: 12.5%;
+  width: 100%;
+}
+
+.ajaxpagination-loader {
+  max-height: 87.5%;
+}
+
+.ajaxpagination-oldcontent {
+  opacity: 0.4;
+}
+
+.ajaxpagination-loadzone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  opacity: 0.9;
+}
+

@@ -1,7 +1,7 @@
 ENV["RAILS_ENV"] = "test"
 
 require File.expand_path("../rails_app/config/environment.rb", __FILE__)
-#require "rails_app/config/environment"
+
 require 'rspec/rails'
 require 'capybara/rspec'
 require 'capybara'
@@ -26,6 +26,8 @@ include Capybara::DSL
 
 SERVERPORT = IO.read(File.expand_path("../PORT",__FILE__)).strip # port number that we are using
 SERVERSLOWPORT = IO.read(File.expand_path("../SLOWPORT",__FILE__)).strip # a port with artificially slowed down loading
+
+R30SERVERPORT = IO.read(File.expand_path("../R30PORT",__FILE__)).strip # port number for rails 3.0 app
 
 module Retryable
   # retry code n times

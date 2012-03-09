@@ -1,0 +1,10 @@
+<%= will_paginate @changelogs, :params => { :pagination => nil } %>
+<%= ajax_loadzone do %>
+  <% @changelogs.each do |changelog| %>
+    <%= content_tag :div, :style => "border-bottom: 1px solid black;" do %>
+      <h3><%= simple_format(changelog.title) %></h3>
+      <%= simple_format(changelog.content) %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= will_paginate @changelogs, :params => { :pagination => nil } %>
