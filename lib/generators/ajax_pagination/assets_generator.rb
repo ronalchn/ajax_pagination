@@ -22,7 +22,9 @@ if true #::Rails.version < "3.1" || !::Rails.application.config.assets.enabled
         def css
           copy_file "lib/assets/stylesheets/ajax_pagination.css", "public/stylesheets/ajax_pagination.css"
         end
-
+        def img
+          copy_file "lib/assets/images/ajax-loader.gif", "public/images/ajax-loader.gif"
+        end
         private
 
         def asset_path(filename)
