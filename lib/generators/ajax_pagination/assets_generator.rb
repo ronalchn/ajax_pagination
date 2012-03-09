@@ -1,12 +1,5 @@
 require 'rails'
 require 'erb'
-if (RUBY_VERSION.split('.').collect(&:to_i) <=> [1,9]) == -1
-  require 'ftools'
-  MKDIRSNAME = 'ftools'
-else
-  require 'fileutils'
-  MKDIRSNAME = 'fileutils'
-end
 
 # Supply generator for Rails 3.0.x or if asset pipeline is not enabled
 if true #::Rails.version < "3.1" || !::Rails.application.config.assets.enabled
@@ -20,8 +13,8 @@ if true #::Rails.version < "3.1" || !::Rails.application.config.assets.enabled
         def js
           jstemplate = ERB.new IO.read(File.expand_path("../../../assets/javascripts/ajax_pagination.js.erb",__FILE__))
           
-          File.makedirs("public/javascripts/") if MKDIRSNAME == 'ftools'
-          FileUtils.makedirs("public/javascripts/") if MKDIRSNAME == 'fileutils'
+          Dir.mkdir("public/javascripts") unless File.exists?("public/javascripts")
+
           create_file "public/javascripts/ajax_pagination.js", jstemplate.result(binding)
           copy_file "vendor/assets/javascripts/jquery.ba-bbq.js", "public/javascripts/jquery.ba-bbq.js"
           copy_file "vendor/assets/javascripts/jquery.url.js", "public/javascripts/jquery.url.js"
