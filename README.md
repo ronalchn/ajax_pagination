@@ -9,10 +9,10 @@ Basically, there is a helper function to use to create a section in your webpage
 
 For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
 
-This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files (see the Installation section). For Rails 3.0, see information below - adding support in progress.
+This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follow the general installation instructions. Otherwise, use the ajax_pagination:assets generator, which puts the assets into the public/ directory.
 
-## Installation with Asset Pipeline
-Add to your Gemfile:
+## Installation
+Assuming, you are using the asset pipeline, add to your Gemfile:
 
     gem 'ajax_pagination'
 
@@ -34,15 +34,32 @@ Then add to your asset manifests,
  */
 ```
 
-## Installation on Rails 3.0, or without asset pipeline
+To use this on Rails 3.0, or without using the asset pipeline, read [Installation without the Asset Pipeline](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-the-Asset-Pipeline) guide.
 
-To use this on Rails 3.0, or without using the assets pipeline, here is the [Installation without Assets Pipeline](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-Pipeline) guide, and you must use the github version (in your Gemfile):
+## Basic Usage
+In the ActionView, use ajax_section to declare a section, and ajax_link_to to create a link loading content into the section:
 
-```rb
-gem 'ajax_pagination', :git => "git://github.com/ronalchn/ajax_pagination.git"
+```erb
+<%= ajax_link_to "Link", link_url, :pagination => "section_name" %>
+<%= ajax_section :pagination => "section_name", :render => "mypartial" %>
 ```
 
-The generator for this has not yet been released to rubygems. This has been tested to work in Rails 3.0. The release of the next official release of version v0.5.1 including this generator is planned within a few days.
+Then, in the ActionController, use ajax_respond to render only the partial when an AJAX request is made:
+
+```ruby
+Class ObjectsController < ApplicationController
+  def index
+    ...
+    respond_to do |format|
+      format.html # index.html.erb
+      ajax_respond format, :pagination => "section_name", :render => "_mypartial"
+    end
+  end
+  ...
+end
+```
+
+Much more information can be found in the wiki.
 
 ## Getting Started
 To learn how to use this gem, read one of the usage guides below (found in the wiki):

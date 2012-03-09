@@ -1,5 +1,6 @@
-## v0.5.1.alpha
+## v0.5.1
 * Added generator for assets (so asset pipeline is no longer required).
+* Added tests for a Rails 3.0.x application.
 
 ## v0.5.0
 This release has no new features, however, it is backwards incompatible because several methods have been renamed for clarity.
