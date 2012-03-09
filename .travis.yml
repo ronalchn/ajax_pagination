@@ -13,4 +13,4 @@ rvm:
 before_script: # for Selenium RSpec tests
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-script: rake travis
+script: bundle exec rake travis

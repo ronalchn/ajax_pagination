@@ -1,6 +1,10 @@
 require 'rails'
 require 'erb'
-require 'ftools'
+if (RUBY_VERSION.split('.').collect(&:to_i) <=> [1,9]) == -1
+  require 'ftools'
+else
+  require 'fileutils'
+end
 
 # Supply generator for Rails 3.0.x or if asset pipeline is not enabled
 if true #::Rails.version < "3.1" || !::Rails.application.config.assets.enabled
