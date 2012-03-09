@@ -38,6 +38,7 @@ describe 'paginating with javascript on', :js => true do
     sleep(2)
     page.should have_selector('#postspagetitle')
     find('#page_paginated_section').find('.next_page').click
+    sleep(0.5) # failed once on travis rbx without sleep
     page.should have_selector('.ajaxpagination-loader')
     sleep(1.5)
     page.should have_no_selector('.ajaxpagination-loader')
