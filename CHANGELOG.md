@@ -1,3 +1,6 @@
+## v0.5.1.alpha
+* Added generator for assets (so asset pipeline is no longer required).
+
 ## v0.5.0
 This release has no new features, however, it is backwards incompatible because several methods have been renamed for clarity.
 

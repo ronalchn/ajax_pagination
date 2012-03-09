@@ -7,9 +7,19 @@ Handles AJAX pagination for you, by hooking up the links you want to load conten
 
 Basically, there is a helper function to use to create a section in your webpage, where content can be changed. Links can reference the section, and thus load new content into it.
 
-This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files.
-
 For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
+
+This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files (see the Installation section).
+
+## Rails 3.0, or without assets pipeline
+
+To use this on Rails 3.0, or without using the assets pipeline, here is the [Installation Guide](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-Pipeline), and you must use the github version (in your Gemfile):
+
+```rb
+gem 'ajax_pagination', :git => "git://github.com/ronalchn/ajax_pagination.git"
+```
+
+The generator for this has not yet been released to rubygems. Please notify me if it works in a Rails 3.0 application, before I release this to rubygems.
 
 ## Installation
 Add to your Gemfile:
