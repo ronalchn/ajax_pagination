@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  ajax_pagination :pagination => 'page'
+  ajax_respond :pagination => 'page'
   # GET /posts
   # GET /posts.json
   def index
@@ -8,8 +8,8 @@ class PostsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @posts }
-      ajax_pagination format, :pagination => :upcomingpage
-      ajax_pagination format, :pagination => "", :render => { :layout => "ajax" }
+      ajax_respond format, :pagination => :upcomingpage
+      ajax_respond format, :pagination => "", :render => { :layout => "ajax" }
     end
   end
 

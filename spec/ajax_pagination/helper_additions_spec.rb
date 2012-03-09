@@ -13,27 +13,27 @@ describe AjaxPagination::HelperAdditions do
     @view_class.send(:include, AjaxPagination::HelperAdditions)
     @view_class.send(:include, BlockPassThrough) # passes through block return value directly
   end
-  describe 'ajax_pagination' do
+  describe 'ajax_section' do
     it 'should render partial requested, default of page with no arguments' do
       @view.should_receive(:render).with('page')
-      @view.ajax_pagination
+      @view.ajax_section
       @view.should_receive(:render).with('page2')
-      @view.ajax_pagination :pagination => 'page2' # renders the partial named :pagination if :partial not defined
+      @view.ajax_section :pagination => 'page2' # renders the partial named :pagination if :partial not defined
       @view.should_receive(:render).with('page3')
-      @view.ajax_pagination :render => 'page3' # if partial defined, renders partial
+      @view.ajax_section :render => 'page3' # if partial defined, renders partial
       @view.should_receive(:render).with('pageX')
-      @view.ajax_pagination :pagination => 'page10', :render => 'pageX' # even if pagination also defined as different value
+      @view.ajax_section :pagination => 'page10', :render => 'pageX' # even if pagination also defined as different value
     end
   end
-  describe 'ajax_pagination_loadzone' do
+  describe 'ajax_loadzone' do
     it 'should yield once to block' do
-      html = @view.ajax_pagination_loadzone do
+      html = @view.ajax_loadzone do
         @view.count
         true
       end
       html.should be_true
       @view.count.should == 1
-      html = @view.ajax_pagination_loadzone do
+      html = @view.ajax_loadzone do
         @view.count
         false
       end

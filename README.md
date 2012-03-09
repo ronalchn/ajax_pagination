@@ -7,17 +7,9 @@ Handles AJAX pagination for you, by hooking up the links you want to load conten
 
 Basically, there is a helper function to use to create a section in your webpage, where content can be changed. Links can reference the section, and thus load new content into it.
 
+This gem currently assumes you are using Rails 3.1+, and the assets pipeline for the javascript and css files.
+
 For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
-
-## Features
-
-* So easy to use, you don&#39;t need to touch a single line of javascript
-* Supports multiple and nested sections
-* Supports browser history, for more see [Robust Support for Browser History in AJAX Pagination](https://github.com/ronalchn/ajax_pagination/wiki/Robust-Support-for-Browser-History-in-AJAX-Pagination)
-* Supports links, but also POST, DELETE, PUT links and forms, which can all be used to change the content in a section
-* Supports redirects - a necessary feature when used with forms
-* Custom javascript events
-* Built in visual cues when loading new content - can be altered with css.
 
 ## Installation
 Add to your Gemfile:
@@ -51,6 +43,16 @@ To learn how to use this gem, read one of the usage guides below (found in the w
 For more, including how specific features work, look in the [wiki](https://github.com/ronalchn/ajax_pagination/wiki/Home).
 
 Alternatively, to see the API, see [RDoc](http://rdoc.info/gems/ajax_pagination/frames).
+
+## Features
+
+* So easy to use, you don&#39;t need to touch a single line of javascript
+* Supports multiple and nested sections
+* Supports browser history, for more see [Robust Support for Browser History in AJAX Pagination](https://github.com/ronalchn/ajax_pagination/wiki/Robust-Support-for-Browser-History-in-AJAX-Pagination)
+* Supports links, but also POST, DELETE, PUT links and forms, which can all be used to change the content in a section
+* Supports redirects - a necessary feature when used with forms
+* Custom javascript events
+* Built in visual cues when loading new content - can be altered with css.
 
 ## Example Application
 This gem contains an example application (actually, it is there also for testing purposes), however it is nevertheless a good example.

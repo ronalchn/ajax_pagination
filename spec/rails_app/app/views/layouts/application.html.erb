@@ -27,7 +27,7 @@ $(document).ready(function () {
   <% end %>
 </div>
 <div style="float: right; min-width: 150px;">
-<%= ajax_pagination :pagination => "count", :history => false do %>
+<%= ajax_section :pagination => "count", :history => false do %>
   <%= render :template => "sessions/count" %>
 <% end %>
 </div>
@@ -42,7 +42,7 @@ $(document).ready(function () {
     <li><%= link_to "About", pages_about_url %></li>
   </ul>
 </div>
-<%= ajax_pagination :pagination => "", :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
+<%= ajax_section :pagination => "", :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
   <%= render :template => "layouts/flash" %>
 <% end %>
 </body>

@@ -3,13 +3,13 @@ module AjaxPagination
   module HelperAdditions
     # Renders a partial wrapped in a div tag. When the page content displayed in the partial needs changing
     # AJAX Pagination will replace content inside this div tag, with the new content returned by the controller
-    # (To manage that, see +ajax_pagination+ in ControllerAdditions).
+    # (To manage that, see +ajax_respond+ in ControllerAdditions).
     # 
     # Call this method instead of +render+ to display the partial representing the page content:
     #
     #   Listing Comments:
     #   
-    #   <%= ajax_pagination %>
+    #   <%= ajax_section %>
     #   
     #   <%= link_to 'New Comment', new_comment_path %>
     #
@@ -26,7 +26,7 @@ module AjaxPagination
     #       <li><%= link_to "About", pages_about_url %></li>
     #     </ul>
     #   </div>
-    #   <%= ajax_pagination :pagination => "" do %>
+    #   <%= ajax_section :pagination => "" do %>
     #     <%= yield %>
     #   <% end %>
     #
@@ -65,14 +65,14 @@ module AjaxPagination
     #   
     #   Different parts of the url can be watched for any changes, by passing an array of hashes. For example:
     #   
-    #     <%= ajax_pagination :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
+    #     <%= ajax_section :reload => [{:urlregex => "page=([0-9]+)", :regexindex => 1},{:query => "watching"}] %>
     #   
     # [:+image+]
     #   Specify another image to be used as the loading image. The string passed is an image in the assets pipeline.
     #   If not specified, the default loading image is used.
     #
     # [:+loadzone+]
-    #   Instead of using the ajax_pagination_loadzone tag, this option can be set to true. Everything inside this tag
+    #   Instead of using the ajax_loadzone tag, this option can be set to true. Everything inside this tag
     #   will then be regarded as a loading zone, and the visual loading cues will apply to all the content here.
     #
     # [:+history+]
@@ -82,7 +82,7 @@ module AjaxPagination
     #   If false then it is as if no new page is accessed, and the history is not changed. It therefore appears as if following
     #   the link simply creates a cool AJAX effect on the current page.
     #
-    def ajax_pagination(options = {})
+    def ajax_section(options = {})
       pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
       partial = options[:render] || pagination # default partial rendered is the name of the pagination
       divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
@@ -120,12 +120,12 @@ module AjaxPagination
     # your partial might contain:
     #
     #   <%= will_paginate @objects, :params => { :pagination => nil } %>
-    #   <%= ajax_pagination_loadzone do %>
+    #   <%= ajax_loadzone do %>
     #     All content here is covered by a semi-transparent rectangle.
     #     A loading image is displayed on top, and any links here are unclickable
     #   <% end %>
     #
-    def ajax_pagination_loadzone()
+    def ajax_loadzone()
       content_tag :div, :class => "paginated_content", :style => "position: relative;" do
         yield
       end

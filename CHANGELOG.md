@@ -1,3 +1,12 @@
+## v0.5.0.alpha
+This release has no new features, however, it is backwards incompatible because several methods have been renamed for clarity.
+
+The new method names are ajax_respond in the controller instead of ajax_pagination, ajax_section in the view instead of ajax_pagination, ajax_loadzone instead of ajax_pagination_loadzone, and ajax_section_displayed? instead of ajax_pagination_displayed?.
+
+Hopefully, the new names will make it easier to learn to use this gem, and is happening along with some slight changes in how various parts of the AJAX process is named.
+
+I have for a while thought that the overloading of the same name ajax_pagination, with the name giving little clue as to its use, was confusing. However, it has taken a while to come up with a suitable replacement. Other name changes are simply to maintain the same naming format.
+
 ## v0.4.0
 * Reload logic rewritten, we now have world-class support for browser history. This is the biggest change. It is almost unnecessary to use the :reload option now, because the history support engine is much more intelligent. The original reason for the :reload option is to expose good history behaviour. This is now unnecessary, because the glitches which would otherwise occur are now solved in a better way. There is one remaining use for it. When browsers visit the same url, they do not add a new history item (therefore it is the same as clicking refresh). And when jumping to another history item with the same url, Firefox does not reload the page (although Chrome does). AJAX Pagination behaves like Firefox. However, sometimes different urls refer to the same content, when considering just a single section of the page. The :reload option is now used for this purpose. If present, it should specify all the important parts of the url which should be the same, for two different urls to be considered to same for the page section. The syntax for this reload specification is identical to before. Only the use of it has changed. Although this does change behaviour quite a bit, existing code should still work fine. This was changed because this behaviour more successfully mimics browser behaviour automatically - so less configuration.
 * Moving css from javascript to stylesheet - this should make it easier to customize aspects of it.

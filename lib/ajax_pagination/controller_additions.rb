@@ -12,7 +12,7 @@ module AjaxPagination
       #   Overrides default render behaviour for AJAX Pagination, which is to render the partial with name matching the pagination option,
       #   or if it does not exist, renders the default template
       #
-      def ajax_pagination(options = {});
+      def ajax_respond(options = {});
         # instead of defining default render normally, we save an unbound reference to original function in case it was already defined, since we want to retain the original behaviour, and add to it (if the method is redefined after, this new behaviour is lost, but at least we don't remove others' behaviour - note that this also allows multiple invocations of this with different parameters)
         default_render = self.instance_method(:default_render) # get a reference to original method
         pagination = options[:pagination] || ""
@@ -28,7 +28,7 @@ module AjaxPagination
               end
             end
             respond_to do |format|
-              ajax_pagination format, :pagination => pagination, :render => view
+              ajax_respond format, :pagination => pagination, :render => view
             end
           else # otherwise do what would have been done
             default_render.bind(self).call(*args) # call original method of the same name
@@ -50,7 +50,7 @@ module AjaxPagination
     #       @comments = Comment.all
     #       respond_to do |format|
     #         format.html # index.html.erb
-    #         ajax_pagination(format)
+    #         ajax_respond(format)
     #       end
     #     end
     #   end
@@ -70,11 +70,11 @@ module AjaxPagination
     #     def welcome
     #       respond_to do |format|
     #         format.html
-    #         ajax_pagination format, :pagination => :menu, :render => {:file => "pages/welcome"}
+    #         ajax_respond format, :pagination => :menu, :render => {:file => "pages/welcome"}
     #       end
     #     end
     #
-    def ajax_pagination(format,options = {})
+    def ajax_respond(format,options = {})
       paramspagination = request.GET[:pagination] || params[:pagination]
       if paramspagination == (options[:pagination] || 'page').to_s
         if options[:render]
@@ -105,13 +105,13 @@ module AjaxPagination
     # 
     #   class PostsController < ApplicationController
     #     def index
-    #       if ajax_pagination_displayed? do
+    #       if ajax_section_displayed? do
     #         @posts = Post.published
     #         @posts.each do |post|
     #           post.heavycomputation
     #         end
     #       end
-    #       if current_user.is_admin && ajax_pagination_displayed? :upcomingpage do
+    #       if current_user.is_admin && ajax_section_displayed? :upcomingpage do
     #         @upcomingposts = Post.upcoming
     #         @upcomingposts.each do |post|
     #           post.heavycomputation
@@ -119,14 +119,14 @@ module AjaxPagination
     #       end
     #       respond_to do |format|
     #         format.html # index.html.erb
-    #         ajax_pagination format
-    #         ajax_pagination format, :pagination => 'upcomingpage'
+    #         ajax_respond format
+    #         ajax_respond format, :pagination => 'upcomingpage'
     #       end
     #     end
     #   end
     #
     # The heavy computation will only be performed on posts which will be displayed when AJAX Pagination only wants a partial.
-    def ajax_pagination_displayed?(pagination = :page)
+    def ajax_section_displayed?(pagination = :page)
       paramspagination = request.GET[:pagination] || params[:pagination]
       (!request.format.html?) || (paramspagination.nil?) || (paramspagination == pagination.to_s)
     end

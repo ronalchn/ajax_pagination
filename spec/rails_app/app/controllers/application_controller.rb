@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   before_filter :slowajaxload
-  ajax_pagination :pagination => "", :render => { :layout => "ajax" }
+  ajax_respond :pagination => "", :render => { :layout => "ajax" }
   def slowajaxload
     if (request.GET[:pagination] || params[:pagination]) && Rails.env == "test"
       delay = 0

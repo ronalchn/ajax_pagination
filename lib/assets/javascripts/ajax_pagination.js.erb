@@ -192,7 +192,7 @@ jQuery(document).ready(function () {
           if (content.length>0) {
             content = content.html();
             <% if AjaxPagination.warnings %>
-              alert("AJAX Pagination EXTRA_CONTENT_DISCARDED:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_pagination for :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
+              alert("AJAX Pagination EXTRA_CONTENT_DISCARDED:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_respond :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
             <% end %>
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
