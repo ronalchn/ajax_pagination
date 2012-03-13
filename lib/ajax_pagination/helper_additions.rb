@@ -150,7 +150,7 @@ module AjaxPagination
     #
     def ajax_links(options = {})
       section_id = options[:section_id] || 'global'
-      content_tag :div, "data-pagination" => section_id, :class => ((options[:class].to_a || []) + ["ajaxpagination"]).join(" ") do
+      content_tag :div, "data-pagination" => section_id, :class => ((Array(options[:class]) || []) + ["ajaxpagination"]).join(" ") do
         yield
       end
     end
