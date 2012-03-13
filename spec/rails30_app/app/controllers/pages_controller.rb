@@ -5,7 +5,7 @@ class PagesController < ApplicationController
     @readme = IO.read(File.expand_path("../../../../../README.md",__FILE__))
     respond_to do |format|
       format.html
-      ajax_respond format, :pagination => "", :render => {:file => "pages/readme", :layout => "ajax"}
+      ajax_respond format, :section_id => "global", :render => {:file => "pages/readme", :layout => "ajax"}
     end
   end
 
@@ -15,14 +15,7 @@ class PagesController < ApplicationController
   def welcome
     respond_to do |format|
       format.html
-      ajax_respond format, :pagination => "", :render => { :layout => "ajax" }
-    end
-  end
-
-  def warnings
-    respond_to do |format|
-      format.html
-      ajax_respond format, :pagination => "disable", :render => { :layout => "ajax" }
+      ajax_respond format, :section_id => "global", :render => { :layout => "ajax" }
     end
   end
 end

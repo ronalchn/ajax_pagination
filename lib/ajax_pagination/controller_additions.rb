@@ -56,7 +56,7 @@ module AjaxPagination
       @_ajax_section
     end
 
-    # Registers an ajax response in html format when params [:pagination] matches options [:pagination] ( = "page" by default).
+    # Registers an ajax response in html format when a request is made by AJAX Pagination (in which case ajax_section.nil? is false).
     # AJAX Pagination uses this response to render only the content which has changed. When this format is triggered,
     # a partial is passed back, and sent to AJAX Pagination as a function argument in javascript.
     #
@@ -83,14 +83,14 @@ module AjaxPagination
     # [:+render+]
     #   Changes the default template/partial that is rendered by this response. The value can be any object,
     #   and is rendered directly. The render behaviour is the same as the render method in controllers. If this option is not used,
-    #   then the default is a partial of the same name as :pagination, if it exists, otherwise, if it does not,
+    #   then the default is a partial of the same name as :section_id, if it exists, otherwise, if it does not,
     #   the default template is rendered (ie. the :controller/:action.:format view file). By default, no layout is used
     #   to render the template/partial. It can be set by passing in a layout key.
     #
     #     def welcome
     #       respond_to do |format|
     #         format.html
-    #         ajax_respond format, :pagination => :menu, :render => {:file => "pages/welcome"}
+    #         ajax_respond format, :section_id => :menu, :render => {:file => "pages/welcome"}
     #       end
     #     end
     #
@@ -117,14 +117,14 @@ module AjaxPagination
     # ajax_section == section_id (the name of the section, which defaults to page).
     #
     # This method is a convenience function so that the controller does not need to perform heavy computation which might only
-    # be required if a certain pagination partial is displayed.
+    # be required if only a certain section is displayed (for an AJAX request).
     #
-    # For example, suppose an index page contains two sets of pagination partials, one for upcoming posts, and one for published
+    # For example, suppose an index page contains two ajax_section containers, one for upcoming posts, and one for published
     # posts, then you might use:
     # 
     #   class PostsController < ApplicationController
     #     def index
-    #       if ajax_section_displayed? do
+    #       if ajax_section_displayed? :page do
     #         @posts = Post.published
     #         @posts.each do |post|
     #           post.heavycomputation
@@ -138,8 +138,8 @@ module AjaxPagination
     #       end
     #       respond_to do |format|
     #         format.html # index.html.erb
-    #         ajax_respond format
-    #         ajax_respond format, :pagination => 'upcomingpage'
+    #         ajax_respond format, :section_id => 'page'
+    #         ajax_respond format, :section_id => 'upcomingpage'
     #       end
     #     end
     #   end

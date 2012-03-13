@@ -1,4 +1,6 @@
-<%= will_paginate @posts %>
+<%= ajax_links :section_id => "page" do %>
+  <%= will_paginate @posts %>
+<% end %>
 <%= ajax_loadzone do %>
   <% @posts.each do |post| %>
     <div style="border-bottom: 1px solid black; padding-bottom: 10px;">
@@ -6,10 +8,12 @@
       <%= simple_format(post.content) %>
       <%= ajax_link_to 'Show', post %>
       <% if session[:admin] %>
-        | <%= ajax_link_to 'Edit', edit_post_path(post), :pagination => "" %> |
+        | <%= ajax_link_to 'Edit', edit_post_path(post), :section_id => "" %> |
         <%= ajax_link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete %>
       <% end %>
     </div>
   <% end %>
 <% end %>
-<%= will_paginate @posts %>
+<%= ajax_links :section_id => "page" do %>
+  <%= will_paginate @posts %>
+<% end %>

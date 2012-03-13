@@ -7,6 +7,7 @@ The :pagination option no longer makes as much sense, now that the sections are 
 * Added ajax_links helper method, to replace the magic container (a div container with class of ajaxpagination).
 * div containers of class pagination are no longer magic containers
 * Added ajax_section method in ActionController - which is set to the only section that should be displayed in an AJAX request. It is nil for normal requests.
+**Avoid using data-pagination, or inspecting params[:pagination] directly. These will be changed in the next version. Instead, use the helper methods provided.**
 
 ## v0.5.1
 * Added generator for assets (so asset pipeline is no longer required).

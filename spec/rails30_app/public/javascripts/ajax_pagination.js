@@ -2,7 +2,7 @@
 //= require jquery.url
 
 /* 
- * AJAX Pagination: Ajaxifying your pagination links
+ * AJAX Pagination: Ajaxifying your navigation
  * https://github.com/ronalchn/ajax_pagination
  * 
  * Copyright (c) 2012 Ronald Ping Man Chan
@@ -47,7 +47,7 @@ jQuery(document).ready(function () {
       $.ajax_pagination = function (pagination_name) {
         return new pagination_object(pagination_name);
       };
-      $.ajax_pagination.version = '0.5.1';
+      $.ajax_pagination.version = '0.6.0.alpha';
       $.ajax_pagination.enabled = true;
       function pagination_object(pagination_name) {
         this.get = function(url,options) {
@@ -250,11 +250,11 @@ jQuery(document).ready(function () {
         }
       }
       // these special containers are for convenience only, to apply the required data-remote, data-pagination attributes to all links inside
-      $(document).on("click", ".pagination a, .ajaxpagination a, a.ajaxpagination", function(e) {
+      $(document).on("click", ".ajaxpagination a", function(e) {
         // ignore if already selected by jquery-ujs
         if ($(this).filter($.rails.linkClickSelector).length>0) return true; // continue with jquery-ujs - this behaviour is necessary because we do not know if the jquery-ujs handler executes before or after this handler
         // find out what data-pagination should be set to
-        var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
+        var pagination_container = $(this).closest(".ajaxpagination"); // container of links (use to check for data-pagination first)
         var pagination_name = pagination_container.data('pagination');
         if (pagination_name === undefined) {
           pagination_name = $(this).closest(".paginated_section").attr("id"); // if data-pagination not present, search up the tree for a suitable section

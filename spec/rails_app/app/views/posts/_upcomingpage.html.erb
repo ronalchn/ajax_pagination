@@ -1,4 +1,6 @@
-<%= will_paginate @upcomingposts, :param_name => :upcomingpage %>
+<%= ajax_links :section_id => "upcomingpage" do %>
+  <%= will_paginate @upcomingposts, :param_name => :upcomingpage %>
+<% end %>
 <%= ajax_loadzone do %>
   <% @upcomingposts.each do |post| %>
     <div style="border-bottom: 1px solid black; padding-bottom: 10px;">
@@ -12,4 +14,6 @@
     </div>
   <% end %>
 <% end %>
-<%= will_paginate @upcomingposts, :param_name => :upcomingpage %>
+<%= ajax_links :section_id => "upcomingpage" do %>
+  <%= will_paginate @upcomingposts, :param_name => :upcomingpage %>
+<% end %>

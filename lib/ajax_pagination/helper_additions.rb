@@ -17,7 +17,7 @@ module AjaxPagination
     # application layout), you can pass in a block. Any content wrapped by this section will be changed
     # when paginating. A possible way to use this function by passing a block in an application layout is shown:
     # 
-    #   <div class="ajaxpagination menu" data-pagination="global">
+    #   <%= ajax_links :section_id => "global", :class => "menu" do %>
     #     <ul>
     #       <li><%= link_to "Home", root_url %></li>
     #       <li><%= link_to "Posts", posts_url %></li>
@@ -25,7 +25,7 @@ module AjaxPagination
     #       <li><%= link_to "Readme", pages_readme_url %></li>
     #       <li><%= link_to "About", pages_about_url %></li>
     #     </ul>
-    #   </div>
+    #   <% end %>
     #   <%= ajax_section :id => "global" do %>
     #     <%= yield %>
     #   <% end %>
@@ -121,8 +121,9 @@ module AjaxPagination
     # Use this tag in your partial, wrapped around all the content you want to disable. For example, if you are
     # displaying AJAX links which you do not want to disable, as well as content you wish to disable,
     # your partial might contain:
-    #
-    #   <%= will_paginate @objects, :params => { :pagination => nil } %>
+    #   <% ajax_links :section_id => "page" do %>
+    #     <%= will_paginate @objects %>
+    #   <% end %>
     #   <%= ajax_loadzone do %>
     #     All content here is covered by a semi-transparent rectangle.
     #     A loading image is displayed on top, and any links here are unclickable
@@ -148,8 +149,8 @@ module AjaxPagination
     # on each link. The default :section_id is "global" if not otherwise specified.
     #
     def ajax_links(options = {})
-      section_id = options['section_id'] || 'global'
-      content_tag :div, "data-pagination" => section_id, :class => "ajaxpagination" do
+      section_id = options[:section_id] || 'global'
+      content_tag :div, "data-pagination" => section_id, :class => ((options[:class].to_a || []) + ["ajaxpagination"]).join(" ") do
         yield
       end
     end
