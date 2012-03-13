@@ -12,6 +12,4 @@ rvm:
 before_script: # for Selenium RSpec tests
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - 'gem install rails -v `grep -e "^\ *rails\ *([0-9.]\+)\ *$" spec/rails_app/Gemfile.lock | grep -e "[0-9.]\+" -o`'
-  - 'gem install rails -v `grep -e "^\ *rails\ *([0-9.]\+)\ *$" spec/rails30_app/Gemfile.lock | grep -e "[0-9.]\+" -o`'
 script: rake travis

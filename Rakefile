@@ -20,11 +20,12 @@ task :travis do
   system("cp `bundle show jquery-rails`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
   system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
   system("(cd spec/rails30_app/ && bundle exec rails generate ajax_pagination:assets --force)")
-
-  # startup test servers
-  system("(cd spec/rails_app/ && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
-  system("(cd spec/rails_app/ && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
-  system("(cd spec/rails30_app/ && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{r30serverport})") # daemonized rails server
+  Bundler.with_clean_env do
+    # startup test servers
+    system("(cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
+    system("(cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
+    system("(cd spec/rails30_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{r30serverport})") # daemonized rails server
+  end
   system("bundle exec rake spec")
   unless $?.exitstatus == 0
     system("kill -9 `lsof -i :#{serverport} -t`") # kills rails server

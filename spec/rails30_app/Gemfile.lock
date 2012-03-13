@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    ajax_pagination (0.6.0)
+    ajax_pagination (0.6.1.alpha)
       jquery-historyjs
       jquery-rails (>= 1.0.17)
       rails (>= 3.0)
