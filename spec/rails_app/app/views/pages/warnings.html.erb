@@ -2,10 +2,10 @@
 This page gives examples of the warnings that may be given, from AJAX Pagination, when some configuration or otherwise is suboptimal, or prevents proper functioning of the gem.
 
 <%= content_tag :div, :style => "display: inline-block; width: 300px; height: 100px; border: 1px solid black; margin: 10px; padding: 10px; vertical-align: middle;" do %>
-  <%= ajax_section do %>
+  <%= ajax_section :id => "page" do %>
     <p>You are on page <%= params[:page] ||= 1 %>.</p>
 
-    <p><%= ajax_link_to "Reload whole page just to refresh this content", pages_warnings_path(:page => (params[:page].to_i+1)), :pagination => "page", :id => "fullpagelink" %></p>
+    <p><%= ajax_link_to "Reload whole page just to refresh this content", pages_warnings_path(:page => (params[:page].to_i+1)), :section_id => "page", :id => "fullpagelink" %></p>
   <% end %>
 <% end %>
 
@@ -22,17 +22,17 @@ This page gives examples of the warnings that may be given, from AJAX Pagination
 
 <%= content_tag :div, :style => "display: inline-block; width: 300px; height: 100px; border: 1px solid black; margin: 10px; padding: 10px; vertical-align: middle;" do %>
   <p>AJAX Links need to reference a valid pagination section, otherwise AJAX Pagination doesn't know where the new content should go.</p>
-  <p><%= ajax_link_to "Link without valid AJAX Pagination section", pages_warnings_path, :pagination => "RANDOM", :id => "nosectionlink" %></p>
+  <p><%= ajax_link_to "Link without valid AJAX Pagination section", pages_warnings_path, :section_id => "RANDOM", :id => "nosectionlink" %></p>
 <% end %>
 
 <%= content_tag :div, :style => "display: inline-block; width: 300px; height: 100px; border: 1px solid black; margin: 10px; padding: 10px; vertical-align: middle;" do %>
   <%= content_tag :div, :style => "border: 1px solid black; margin: 10px;" do %>
-    <%= ajax_section :pagination => "double" do %>My section name is "double".<% end %>
+    <%= ajax_section :id => "double" do %>My section name is "double".<% end %>
   <% end %>
   <%= content_tag :div, :style => "border: 1px solid black; margin: 10px;" do %>
-    <%= ajax_section :pagination => "double" do %>My section name is "double".<% end %>
+    <%= ajax_section :id => "double" do %>My section name is "double".<% end %>
   <% end %>
-  <p><%= ajax_link_to "Load stuff in section named \"double\"", pages_warnings_path, :pagination => "double", :id => "doublesectionlink" %></p>
+  <p><%= ajax_link_to "Load stuff in section named \"double\"", pages_warnings_path, :section_id => "double", :id => "doublesectionlink" %></p>
 <% end %>
 
 <%= content_tag :div, :class => "paginated_section", :style => "display: inline-block; width: 300px; height: 100px; border: 1px solid black; margin: 10px; padding: 10px; vertical-align: middle;" do %>

@@ -56,7 +56,7 @@ jQuery(document).ready(function () {
           swapPage(pagination_name,url,options.history);
         }
         this.exists = function() {
-          return $('#' + pagination_name + '_paginated_section').length == 1;
+          return $('#' + pagination_name).length == 1;
         }
       }
       /////////////////////////////
@@ -95,15 +95,13 @@ jQuery(document).ready(function () {
         }
       }
       function getSection(pagination_name) {
-        var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+        var id = "#" + pagination_name; // element id we are looking for
         return $(id);
       }
       function getSectionName(section) {
           var id = section.attr("id");
           if (id === undefined) return undefined; // no name
-          var pagination_name = /^(.*)_paginated_section$/.exec(id)[1];
-          if (pagination_name == null || pagination_name === undefined) return undefined; // pagination not set up properly
-          return pagination_name;
+          return id; // id = pagination_name
       }
       function getSectionNames(sections) {
         var names = new Array();
@@ -158,9 +156,9 @@ jQuery(document).ready(function () {
       // this event handler has the same arguments as for jquery and jquery-ujs, except it also takes the name of the section to put the content into as first argument
       // adapter functions will be used to reconcile the differences in arguments, this is required because jquery and jquery-ujs has different ways to get the pagination_name argument
       function beforeSendHandler(pagination_name,jqXHR,settings) {
-        var id = "#" + pagination_name + "_paginated_section"; // element id we are looking for
+        var id = "#" + pagination_name; // element id we are looking for
         var requesturl = settings.url;
-        var countid = $('[id="' + pagination_name + '_paginated_section"]').length;
+        var countid = $('[id="' + pagination_name + '"]').length;
         if (countid != 1) { // something wrong, cannot find unique section to load page into
           
             alert("AJAX Pagination UNIQUE_SECTION_NOT_FOUND:\nExpected one pagination section called " + pagination_name + ", found " + countid);
@@ -234,7 +232,7 @@ jQuery(document).ready(function () {
         });
       }
       function pushHistory(pagination_name,url) {
-        var data = $("#" + pagination_name + "_paginated_section").data("pagination");
+        var data = $("#" + pagination_name).data("pagination");
         if (data === undefined || data.history === undefined || data.history) { // check that history is not disabled
           // construct visible url
           var data = $.deparam.querystring($.url(url).attr('query'));
@@ -259,14 +257,13 @@ jQuery(document).ready(function () {
         var pagination_container = $(this).closest(".pagination, .ajaxpagination"); // container of links (use to check for data-pagination first)
         var pagination_name = pagination_container.data('pagination');
         if (pagination_name === undefined) {
-          pagination_name = /^(.*)_paginated_section$/.exec($(this).closest(".paginated_section").attr("id")); // if data-pagination not present, search up the tree for a suitable section
+          pagination_name = $(this).closest(".paginated_section").attr("id"); // if data-pagination not present, search up the tree for a suitable section
           if (pagination_name == null) {
             
-              alert("AJAX Pagination MISSING_REFERENCE:\nNo pagination section name given for link, and none could be implicitly assigned, AJAX cancelled for this request");
+              alert("AJAX Pagination MISSING_REFERENCE:\nNo pagination section id given for link, and none could be implicitly assigned, AJAX cancelled for this request");
             
             return true; // pagination not set up properly
           }
-          pagination_name = pagination_name[1];
         }
         
         // set data-remote, data-pagination

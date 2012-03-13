@@ -1,8 +1,15 @@
 require "spec_helper"
 
+module SetAjaxSection
+  def ajax_section= (name)
+    @_ajax_section = name
+  end
+end
+
 describe AjaxPagination::ControllerAdditions do
   def stub_pagination(name)
     @controller.stub!(:params).and_return({:pagination => name, :controller => "dummycontroller"})
+    @controller.ajax_section = name
   end
   def stub_request_format_html(bool)
     @controller.stub!(:request).and_return(stub({:format => stub(:html? => bool), :GET => {} }))
@@ -12,10 +19,14 @@ describe AjaxPagination::ControllerAdditions do
   end
   before :each do
     @controller_class = Class.new
+    @controller_class.stub!(:around_filter)
+    @controller_class.stub!(:before_filter)
+    @controller_class.stub!(:after_filter)
     @controller = @controller_class.new
     @controller.stub!(:params).and_return({})
     stub_request_format_html(false)
     @controller_class.send(:include, AjaxPagination::ControllerAdditions)
+    @controller_class.send(:include, SetAjaxSection)
     @formatter = Class.new
     @formatter.stub!(:html).and_return(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15) # to detect how many times the function was called
     stub_lookup_context([]) # no partial matching
@@ -30,9 +41,10 @@ describe AjaxPagination::ControllerAdditions do
       @formatter.html.should == 0
     end
     it 'should render when pagination parameter matches' do
-      stub_pagination('page')
+      stub_pagination('global')
       @controller.ajax_respond(@formatter).should be_true
       @formatter.html.should == 1 # detects html function was called once (but checking also calls the function) ...
+      stub_pagination('page')
       @controller.ajax_respond(@formatter, :pagination => :page).should be_true
       @formatter.html.should == 3 # ... which is why the next check should be 2 more html function calls
       @controller.ajax_respond(@formatter, :pagination => 'page').should be_true
@@ -43,7 +55,7 @@ describe AjaxPagination::ControllerAdditions do
       stub_lookup_context(['matching_partial_found'])
       @controller.ajax_respond(@formatter, :pagination => 'pageX').should be_true
       @formatter.html.should == 9
-      stub_pagination('page')
+      stub_pagination('global')
       @controller.ajax_respond(@formatter).should be_true
       @formatter.html.should == 11
 
@@ -69,7 +81,7 @@ describe AjaxPagination::ControllerAdditions do
     end
     it 'should display partial when .html?pagination=pagename' do
       stub_request_format_html(true)
-      stub_pagination('page')
+      stub_pagination('global')
       @controller.ajax_section_displayed?.should be_true
       stub_pagination('page2')
       @controller.ajax_section_displayed?('page2').should be_true

@@ -14,10 +14,10 @@ module AjaxPagination
     #   <%= link_to 'New Comment', new_comment_path %>
     #
     # If you prefer to can render yourself, or call another function instead (useful for using this in the
-    # application layout), you can pass in a block. Any content wrapped by the pagination tag will be changed
+    # application layout), you can pass in a block. Any content wrapped by this section will be changed
     # when paginating. A possible way to use this function by passing a block in an application layout is shown:
     # 
-    #   <div class="ajaxpagination menu" data-pagination="menu">
+    #   <div class="ajaxpagination menu" data-pagination="global">
     #     <ul>
     #       <li><%= link_to "Home", root_url %></li>
     #       <li><%= link_to "Posts", posts_url %></li>
@@ -26,18 +26,21 @@ module AjaxPagination
     #       <li><%= link_to "About", pages_about_url %></li>
     #     </ul>
     #   </div>
-    #   <%= ajax_section :pagination => "" do %>
+    #   <%= ajax_section :id => "global" do %>
     #     <%= yield %>
     #   <% end %>
     #
     # Options:
-    # [:+pagination+]
-    #   Changes the pagination name, which is used for requesting new content, and to uniquely identify the
+    # [:+id+]
+    #   Changes the AJAX section name, which is used for requesting new content, and to uniquely identify the
     #   wrapping div tag. The name passed here should be the same as the pagination name used in the controller
-    #   respond_to block. Defaults to "page".
+    #   respond_to block. Defaults to "global".
+    #
+    # [:+pagination+]
+    #   Deprecated. Alias for name.
     #
     # [:+render+]
-    #   Changes the partial which is rendered. Defaults to +options [:pagination]+. The partial should generally
+    #   Changes the partial which is rendered. Defaults to +options [:name]+. The partial should generally
     #   be the same as that given in the controller respond_to block, unless you are doing something strange. If a
     #   block is passed to the function, this option is ignored. You can also pass options instead to render other
     #   files, in which case, the behaviour is the same as the render method in views.
@@ -83,9 +86,9 @@ module AjaxPagination
     #   the link simply creates a cool AJAX effect on the current page.
     #
     def ajax_section(options = {})
-      pagination = options[:pagination] || 'page' # by default the name of the pagination is 'page'
-      partial = options[:render] || pagination # default partial rendered is the name of the pagination
-      divoptions = { :id => "#{pagination}_paginated_section", :class => "paginated_section" }
+      section_id = options[:id] || options[:pagination] || 'global' # by default the name of the section is 'global'
+      partial = options[:render] || section_id # default partial rendered is the name of the section
+      divoptions = { :id => "#{section_id}", :class => "paginated_section" }
       data = {};
       if options.has_key? :history
         data[:history] = (options[:history] != false)
@@ -116,7 +119,7 @@ module AjaxPagination
     # A loading image is also displayed above the content. Only one loading zone is allowed. The rest are ignored.
     #
     # Use this tag in your partial, wrapped around all the content you want to disable. For example, if you are
-    # displaying pagination links which you do not want to disable, as well as content you wish to disable,
+    # displaying AJAX links which you do not want to disable, as well as content you wish to disable,
     # your partial might contain:
     #
     #   <%= will_paginate @objects, :params => { :pagination => nil } %>
@@ -131,19 +134,39 @@ module AjaxPagination
       end
     end
 
+    # Used to wrap ordinary links, which will be treated as AJAX links. Only ordinary links are altered.
+    # If the link contains a data-remote, data-method, data-confirm attribute, it will not be ajaxified by this container.
+    #
+    # Instead of using ajax_link_to for every link, the following can be used:
+    #
+    # ajax_links :section_id => "global" do
+    #   link_to "My link", link_url
+    #   link_to "Back", back_url
+    # end
+    #
+    # This allows a :section_id option to apply to all links within the block, instead of specifying the same option
+    # on each link. The default :section_id is "global" if not otherwise specified.
+    #
+    def ajax_links(options = {})
+      section_id = options['section_id'] || 'global'
+      content_tag :div, "data-pagination" => section_id, :class => "ajaxpagination" do
+        yield
+      end
+    end
+
     # modifies the html options, so that it calls AJAX Pagination. This method adds the appropriate parameters to make an AJAX call via
     # AJAX Pagination, using jquery-ujs.
     #
-    # More specifically, it ensures the following attributes are defined :remote => true, "data-type" => 'html', :pagination => ?.
-    # The pagination attribute must be defined, or else it defaults to the empty string "".
+    # More specifically, it ensures the following attributes are defined :remote => true, "data-type" => 'html', :section_id => ?.
+    # The section_id attribute must be defined, or else it defaults to the empty string "global".
     # This link always sets data-remote to true - setting to false is not allowed, since AJAX Pagination would not be triggered.
     #
     # Below is an alternative way to create an ajax link instead of ajax_link_to
     #
-    #   <%= link_to "Name", posts_url, ajax_options :pagination => "page" %>
+    #   <%= link_to "Name", posts_url, ajax_options :section_id => "page" %>
     #
     def ajax_options(html_options = {})
-      html_options["data-pagination".to_sym] = html_options.delete(:pagination) || html_options.delete("data-pagination") || "" # renames the option pagination to data-pagination
+      html_options["data-pagination".to_sym] = html_options.delete(:section_id) || html_options.delete("data-section_id") || html_options.delete(:pagination) || html_options.delete("data-pagination") || "global" # renames the option pagination to data-pagination
       html_options[:remote] = true
       html_options["data-type".to_sym] ||= html_options.delete("data-type") || 'html'
       html_options
@@ -156,7 +179,7 @@ module AjaxPagination
     # The example below creates a link "Name", which when clicked, will load posts_url into the section of the page named
     # "page" using AJAX.
     #
-    #   <%= ajax_link_to "Name", posts_url, :pagination => "page" %>
+    #   <%= ajax_link_to "Name", posts_url, :section_id => "page" %>
     #
     def ajax_link_to(*args, &block)
       if block_given? # inject new html_options argument and call link_to
@@ -172,11 +195,11 @@ module AjaxPagination
 
     # Wrapper for form_tag, following are equivalent:
     #
-    #   <%= ajax_form_tag posts_url, :method => "post", :class => "myclass", :pagination => "page" do %>
+    #   <%= ajax_form_tag posts_url, :method => "post", :class => "myclass", :section_id => "page" do %>
     #     ...
     #   <% end %>
     #
-    #   <%= form_tag posts_url, ajax_options :method => "post", :class => "myclass", :pagination => "page" do %>
+    #   <%= form_tag posts_url, ajax_options :method => "post", :class => "myclass", :section_id => "page" do %>
     #     ...
     #   <% end %>
     #
@@ -191,17 +214,17 @@ module AjaxPagination
 
     # Wrapper for form_for. The following are equivalent
     #
-    #   <%= ajax_form_for @post, :method => "post", :html => {:class => "myclass", :pagination => "menu"} do %>
+    #   <%= ajax_form_for @post, :method => "post", :html => {:class => "myclass", :section_id => "menu"} do %>
     #     ...
     #   <% end %>
     #
-    #   <%= form_for @post, :method => "post", :html => ajax_options({:class => "myclass", :pagination => "menu"}) do %>
+    #   <%= form_for @post, :method => "post", :html => ajax_options({:class => "myclass", :section_id => "menu"}) do %>
     #     ...
     #   <% end %>
     #
     # Please be aware that in the second alternative, you should never set :remote => false manually, eg:
     #
-    #   <%= form_tag @post, :remote => false, :html => ajax_options(:pagination => "menu") do %><!-- Never Do This!!! -->
+    #   <%= form_tag @post, :remote => false, :html => ajax_options(:section_id => "menu") do %><!-- Never Do This!!! -->
     #
     # This will prevent AJAX Pagination from being called.
     #

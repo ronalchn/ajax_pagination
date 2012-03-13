@@ -6,7 +6,7 @@ class ChangelogController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      ajax_respond(format)
+      ajax_respond format, :section_id => "page"
     end
   end
 end

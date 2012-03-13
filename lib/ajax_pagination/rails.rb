@@ -15,12 +15,5 @@ module AjaxPagination
       end
     end
 
-    initializer 'ajax_pagination.redirect_filter' do
-      if AjaxPagination.redirect_after_filter == true
-        ActiveSupport.on_load(:action_controller) do
-          after_filter :ajax_pagination_redirect
-        end
-      end
-    end
   end
 end

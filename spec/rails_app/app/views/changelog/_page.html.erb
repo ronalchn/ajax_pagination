@@ -1,4 +1,4 @@
-<%= will_paginate @changelogs, :params => { :pagination => nil } %>
+<%= will_paginate @changelogs %>
 <%= ajax_loadzone do %>
   <% @changelogs.each do |changelog| %>
     <%= content_tag :div, :style => "border-bottom: 1px solid black;" do %>
@@ -7,4 +7,4 @@
     <% end %>
   <% end %>
 <% end %>
-<%= will_paginate @changelogs, :params => { :pagination => nil } %>
+<%= will_paginate @changelogs %>

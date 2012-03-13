@@ -33,7 +33,7 @@ describe 'paginating with javascript on', :js => true do
       visit("http://localhost:#{SERVERSLOWPORT}/changelog")
       sleep(2)
       page.should have_selector('#changelogpagetitle')
-      find('#_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
@@ -42,12 +42,12 @@ describe 'paginating with javascript on', :js => true do
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
       sleep(2)
       page.should have_selector('#postspagetitle')
-      find('#page_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       sleep(0.5) # failed once on travis rbx without sleep
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
-      find('#upcomingpage_paginated_section').find('.next_page').click
+      find('#upcomingpage').find('.next_page').click
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
@@ -57,18 +57,18 @@ describe 'paginating with javascript on', :js => true do
     retry_exceptions do
       # warmup images
       visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-      find('#page_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       sleep(3)
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
-      find('#page_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       sleep(3)
 
       visit("http://localhost:#{SERVERSLOWPORT}/changelog")
-      find('#page_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
       sleep(1.5)
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
-      find('#page_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
     end
   end
@@ -165,8 +165,8 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'submits ajax_form_for form via POST and DELETE link' do
     retry_exceptions do
-      visit("http://localhost:#{SERVERPORT}")
-      find('#signin').click
+      visit("http://localhost:#{SERVERPORT}/")
+      find('#signin').click if !page.has_selector?('#signout')
       click_link("Posts")
       sleep(1)
       page.should have_content("New Post")
@@ -186,6 +186,7 @@ describe 'paginating with javascript on', :js => true do
 
       count = ajaxCount
       click_link("Destroy");
+      sleep(2)
       page.driver.browser.switch_to.alert.accept
       sleep(2)
       page.should have_content("Post destroyed.")

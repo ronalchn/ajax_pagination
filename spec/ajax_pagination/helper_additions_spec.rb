@@ -15,7 +15,7 @@ describe AjaxPagination::HelperAdditions do
   end
   describe 'ajax_section' do
     it 'should render partial requested, default of page with no arguments' do
-      @view.should_receive(:render).with('page')
+      @view.should_receive(:render).with('global')
       @view.ajax_section
       @view.should_receive(:render).with('page2')
       @view.ajax_section :pagination => 'page2' # renders the partial named :pagination if :partial not defined

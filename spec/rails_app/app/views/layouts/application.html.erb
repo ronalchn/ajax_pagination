@@ -31,8 +31,8 @@ $(document).ready(function () {
   <%= render :template => "sessions/count" %>
 <% end %>
 </div>
-<h1><%= ajax_link_to "AJAX Pagination Example Application", "broken link", :pagination => "" %><!-- note the broken link is intentional, for testing purposes --></h1>
-<div class="ajaxpagination menu" data-pagination="">
+<h1><%= ajax_link_to "AJAX Pagination Example Application", "broken link", :section_id => "global" %><!-- note the broken link is intentional, for testing purposes --></h1>
+<div class="ajaxpagination menu" data-pagination="global">
   <ul>
     <li><%= link_to "Home", root_url %></li>
     <li><%= link_to "Posts", posts_url %></li>
@@ -42,7 +42,7 @@ $(document).ready(function () {
     <li><%= link_to "About", pages_about_url %></li>
   </ul>
 </div>
-<%= ajax_section :pagination => "", :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
+<%= ajax_section :reload => {:urlpart => "path", :urlregex => "^.*$"}, :loadzone => true do %>
   <%= render :template => "layouts/flash" %>
 <% end %>
 </body>

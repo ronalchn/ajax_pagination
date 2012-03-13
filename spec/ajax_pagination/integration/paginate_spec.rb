@@ -14,18 +14,18 @@ describe 'paginating with javascript on', :type => :request, :driver => :seleniu
   it 'works with nested and multiple paginated sections' do
     visit("http://localhost:#{SERVERPORT}/changelog")
     page.should have_selector('.previous_page.disabled')
-    find('#page_paginated_section').find('.next_page').click
+    find('#page').find('.next_page').click
     page.should have_no_selector('.previous_page.disabled')
     find('#signin').click
     visit("http://localhost:#{SERVERPORT}/posts")
-    page.should have_selector('#page_paginated_section .previous_page.disabled')
-    find('#page_paginated_section').find('.next_page').click
+    page.should have_selector('#page .previous_page.disabled')
+    find('#page').find('.next_page').click
     sleep(1)
-    page.should have_no_selector('#page_paginated_section .previous_page.disabled')
-    page.should have_selector('#upcomingpage_paginated_section .previous_page.disabled')
-    find('#upcomingpage_paginated_section').find('.next_page').click
+    page.should have_no_selector('#page .previous_page.disabled')
+    page.should have_selector('#upcomingpage .previous_page.disabled')
+    find('#upcomingpage').find('.next_page').click
     sleep(1)
-    page.should have_no_selector('#upcomingpage_paginated_section .previous_page.disabled')
-    page.should have_no_selector('#page_paginated_section .previous_page.disabled')
+    page.should have_no_selector('#upcomingpage .previous_page.disabled')
+    page.should have_no_selector('#page .previous_page.disabled')
   end
 end

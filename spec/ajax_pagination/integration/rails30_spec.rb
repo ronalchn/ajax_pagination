@@ -18,7 +18,7 @@ describe 'rails3.0 support', :type => :request, :driver => :selenium do
       click_link 'Changelog'
       sleep(2)
       page.should have_selector('#changelogpagetitle')
-      find('#_paginated_section').find('.next_page').click
+      find('#page').find('.next_page').click
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
