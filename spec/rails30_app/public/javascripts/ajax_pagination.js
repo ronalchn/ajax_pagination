@@ -44,19 +44,19 @@ jQuery(document).ready(function () {
       ////// $.ajax_pagination API //////
       ///////////////////////////////////
       // selector function for pagination object
-      $.ajax_pagination = function (pagination_name) {
-        return new pagination_object(pagination_name);
+      $.ajax_pagination = function (section_id) {
+        return new ajax_section_object(section_id);
       };
-      $.ajax_pagination.version = '0.6.0';
+      $.ajax_pagination.version = '0.6.1.alpha';
       $.ajax_pagination.enabled = true;
-      function pagination_object(pagination_name) {
+      function ajax_section_object(section_id) {
         this.get = function(url,options) {
           if (options === undefined) options = {};
           if (options.history === undefined) options.history = true;
-          swapPage(pagination_name,url,options.history);
+          swapPage(section_id,url,options.history);
         }
         this.exists = function() {
-          return $('#' + pagination_name).length == 1;
+          return $('#' + section_id).length == 1;
         }
       }
       /////////////////////////////
@@ -66,42 +66,44 @@ jQuery(document).ready(function () {
       var pagination_url = location.href; // url we came from, so we can see transitions of the url
       var history_state = {ajax_pagination_set:true}; // current history state
 
-      function display_pagination_loader(pagination_name) {
-        var paginated_section = getSection(pagination_name);
-        if (pagination_loader_state[pagination_name] === undefined) { // show loader if not already shown
-          if ($.rails.fire(getSection(pagination_name),"ajaxp:loading")) {
-            var paginated_content;
-            if (paginated_section.hasClass("paginated_content")) paginated_content = paginated_section; // if the whole section is a loading zone
-            else paginated_content = paginated_section.children(".paginated_content").first(); // don't want to support multiple loader images
-            var height = paginated_content.height();
+      function display_pagination_loader(section_id) {
+        var ajax_section = getSection(section_id);
+        if (pagination_loader_state[section_id] === undefined) { // show loader if not already shown
+          // get the ajax_loadzone DOM element
+          var ajax_loadzone;
+          if (ajax_section.hasClass("ajax_loadzone")) ajax_loadzone = ajax_section; // if the whole section is a loading zone
+          else ajax_loadzone = ajax_section.children(".ajax_loadzone").first(); // don't want to support multiple loader images
+
+          if ($.rails.fire(getSection(section_id),"ajaxp:loading",[ajax_loadzone.get(0)])) {
+            var height = ajax_loadzone.height();
             // setup loading look
             var img = document.createElement("IMG");
-            if (paginated_section.data("pagination") !== undefined && paginated_section.data("pagination").image !== undefined) img.src = paginated_section.data("pagination").image;
+            if (ajax_section.data("pagination") !== undefined && ajax_section.data("pagination").image !== undefined) img.src = ajax_section.data("pagination").image;
             else img.src = "/images/ajax-loader.gif";
             var margin = Math.round(height>400?50:(height/8));
             $(img).addClass('ajaxpagination-loader');
             var div = document.createElement("DIV");
             $(div).addClass('ajaxpagination-loadzone');
             $(div).append("<div class=\"margin-top\" />").append(img);
-            paginated_content.wrapInner("<div class=\"ajaxpagination-oldcontent\" />");
-            paginated_content.append(div);
+            ajax_loadzone.wrapInner("<div class=\"ajaxpagination-oldcontent\" />");
+            ajax_loadzone.append(div);
           }
         }
-        if ($.rails.fire(getSection(pagination_name),"ajaxp:focus")) {
-          // scroll to top of paginated_section if it is not visible
-          if ($(document).scrollTop() > paginated_section.offset().top - 20) {
-            $(document).scrollTop(paginated_section.offset().top - 20);
+        if ($.rails.fire(getSection(section_id),"ajaxp:focus")) {
+          // scroll to top of ajax_section if it is not visible
+          if ($(document).scrollTop() > ajax_section.offset().top - 20) {
+            $(document).scrollTop(ajax_section.offset().top - 20);
           }
         }
       }
-      function getSection(pagination_name) {
-        var id = "#" + pagination_name; // element id we are looking for
+      function getSection(section_id) {
+        var id = "#" + section_id; // element id we are looking for
         return $(id);
       }
       function getSectionName(section) {
           var id = section.attr("id");
           if (id === undefined) return undefined; // no name
-          return id; // id = pagination_name
+          return id; // id = section_id
       }
       function getSectionNames(sections) {
         var names = new Array();
@@ -120,9 +122,9 @@ jQuery(document).ready(function () {
         return false; // doesn't intersect
       }
       // whether change of state is a reload
-      function isReload(pagination_name,from,to) {
+      function isReload(section_id,from,to) {
         if (from == to) return true; // same url - always a reload
-        var section = getSection(pagination_name);
+        var section = getSection(section_id);
         if (section.length == 0) return false;
 
         // if data-pagination is not defined, then no reload can be detected
@@ -154,25 +156,25 @@ jQuery(document).ready(function () {
       }
       // when this function is used beforeSend of an AJAX request, will use the resulting content in a section of the page
       // this event handler has the same arguments as for jquery and jquery-ujs, except it also takes the name of the section to put the content into as first argument
-      // adapter functions will be used to reconcile the differences in arguments, this is required because jquery and jquery-ujs has different ways to get the pagination_name argument
-      function beforeSendHandler(pagination_name,jqXHR,settings) {
-        var id = "#" + pagination_name; // element id we are looking for
+      // adapter functions will be used to reconcile the differences in arguments, this is required because jquery and jquery-ujs has different ways to get the section_id argument
+      function beforeSendHandler(section_id,jqXHR,settings) {
+        var id = "#" + section_id; // element id we are looking for
         var requesturl = settings.url;
-        var countid = $('[id="' + pagination_name + '"]').length;
+        var countid = $('[id="' + section_id + '"]').length;
         if (countid != 1) { // something wrong, cannot find unique section to load page into
           
-            alert("AJAX Pagination UNIQUE_SECTION_NOT_FOUND:\nExpected one pagination section called " + pagination_name + ", found " + countid);
+            alert("AJAX Pagination UNIQUE_SECTION_NOT_FOUND:\nExpected one section with id of " + section_id + ", found " + countid);
           
           return false; // continue AJAX normally
         }
-        if (!$.rails.fire(getSection(pagination_name),"ajaxp:beforeSend",[jqXHR,settings])) return false;
-        display_pagination_loader(pagination_name);
+        if (!$.rails.fire(getSection(section_id),"ajaxp:beforeSend",[jqXHR,settings])) return false;
+        display_pagination_loader(section_id);
         // register callbacks for other events
         jqXHR.done(function(data, textStatus, jqXHR) {
-          if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
+          if (requesturl != pagination_loader_state[section_id]) return; // ignore stale content
           if (jqXHR.status == 200 && jqXHR.getResponseHeader('Location') !== null) { // special AJAX redirect
             var redirecturl = jqXHR.getResponseHeader('Location');
-            swapPage(pagination_name,redirecturl);
+            swapPage(section_id,redirecturl);
             pagination_url = redirecturl;
             History.replaceState(history_state,document.title,redirecturl); // state not changed
             return;
@@ -190,7 +192,7 @@ jQuery(document).ready(function () {
           if (content.length>0) {
             content = content.html();
             
-              alert("AJAX Pagination EXTRA_CONTENT_DISCARDED:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_respond :pagination => \"" + pagination_name + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
+              alert("AJAX Pagination EXTRA_CONTENT_DISCARDED:\nExtra content returned by AJAX request ignored. Only a portion of the page content returned by the server was required. To fix this, explicitly call ajax_respond :section_id => \"" + section_id + "\" to render only the partial view required. This warning can be turned off in the ajax_pagination initializer file.");
             
           }
           else { // otherwise use all the content, including any scripts - we consider scripts specifically returned in the partial probably should be re-run
@@ -199,76 +201,67 @@ jQuery(document).ready(function () {
             else content = page.html(); // otherwise include the whole html snippet
           }
 
-          if ($.rails.fire(getSection(pagination_name),"ajaxp:done",[content])) $(id).html(content);
+          if ($.rails.fire(getSection(section_id),"ajaxp:done",[content])) $(id).html(content);
 
-          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+          delete pagination_loader_state[section_id]; // not waiting for page anymore
 
-          $.rails.fire(getSection(pagination_name),"ajaxp:loaded");
+          $.rails.fire(getSection(section_id),"ajaxp:loaded");
         });
         jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
-          if (requesturl != pagination_loader_state[pagination_name]) return; // ignore stale content
-          if ($.rails.fire(getSection(pagination_name),"ajaxp:fail",[jqXHR.responseText])) $(id).html(jqXHR.responseText);
+          if (requesturl != pagination_loader_state[section_id]) return; // ignore stale content
+          if ($.rails.fire(getSection(section_id),"ajaxp:fail",[jqXHR.responseText])) $(id).html(jqXHR.responseText);
 
-          delete pagination_loader_state[pagination_name]; // not waiting for page anymore
+          delete pagination_loader_state[section_id]; // not waiting for page anymore
 
-          $.rails.fire(getSection(pagination_name),"ajaxp:loaded");
+          $.rails.fire(getSection(section_id),"ajaxp:loaded");
         });
         return true;
       }
-      function swapPage(pagination_name, requesturl, history) { // swaps the page at pagination_name to that from requesturl (used by History.popState, therefore no remote link has been clicked)
+      function swapPage(section_id, requesturl, history) { // swaps the page at section_id to that from requesturl (used by History.popState, therefore no remote link has been clicked)
         if (history === undefined) history = false;
         // send our own ajax request, and tie it into the beforeSendHandler used for jquery-ujs as well
-        if (!$.rails.fire(getSection(pagination_name),"ajaxp:before",[requesturl,undefined])) return false;
-        $.ajax({url: requesturl, data: {pagination:pagination_name},
+        if (!$.rails.fire(getSection(section_id),"ajaxp:before",[requesturl,undefined])) return false;
+        $.ajax({url: requesturl, data: {pagination:section_id},
           dataType: 'html',
           beforeSend: function (jqXHR,settings) {
-            var result = beforeSendHandler(pagination_name,jqXHR,settings);
+            var result = beforeSendHandler(section_id,jqXHR,settings);
             if (result) {
-              if (history) pushHistory(pagination_name,settings.url);
-              pagination_loader_state[pagination_name] = settings.url; // remember which page number we are waiting for
+              if (history) pushHistory(section_id,settings.url);
+              pagination_loader_state[section_id] = settings.url; // remember which page number we are waiting for
             }
             return result;
           }
         });
       }
-      function pushHistory(pagination_name,url) {
-        var data = $("#" + pagination_name).data("pagination");
+      function pushHistory(section_id,url) {
+        var data = $("#" + section_id).data("pagination");
         if (data === undefined || data.history === undefined || data.history) { // check that history is not disabled
           // construct visible url
           var data = $.deparam.querystring($.url(url).attr('query'));
           delete data['pagination'];
           pagination_url = $.param.querystring(url,data,2);
-          if (isReload(pagination_name,url,location.href)) History.replaceState(history_state,document.title,pagination_url);
+          if (isReload(section_id,url,location.href)) History.replaceState(history_state,document.title,pagination_url);
           else { // not just a reload of current page, so do actual pushState
             // change current history state, and push it on
             if (history_state.ajax_pagination === undefined) history_state.ajax_pagination = new Array();
-            var fieldname = "_" + pagination_name;
+            var fieldname = "_" + section_id;
             if (history_state.ajax_pagination[fieldname] === undefined) history_state.ajax_pagination[fieldname]=1;
             else history_state.ajax_pagination[fieldname]++;
             History.pushState(history_state,document.title,pagination_url); // push state
           }
         }
       }
-      // these special containers are for convenience only, to apply the required data-remote, data-pagination attributes to all links inside
+      // these special containers are for convenience only, to apply the required data-remote, data-ajax_section_id attributes to all links inside
       $(document).on("click", ".ajaxpagination a", function(e) {
         // ignore if already selected by jquery-ujs
         if ($(this).filter($.rails.linkClickSelector).length>0) return true; // continue with jquery-ujs - this behaviour is necessary because we do not know if the jquery-ujs handler executes before or after this handler
-        // find out what data-pagination should be set to
+        // find out what data-ajax_section_id should be set to
         var pagination_container = $(this).closest(".ajaxpagination"); // container of links (use to check for data-pagination first)
-        var pagination_name = pagination_container.data('pagination');
-        if (pagination_name === undefined) {
-          pagination_name = $(this).closest(".paginated_section").attr("id"); // if data-pagination not present, search up the tree for a suitable section
-          if (pagination_name == null) {
-            
-              alert("AJAX Pagination MISSING_REFERENCE:\nNo pagination section id given for link, and none could be implicitly assigned, AJAX cancelled for this request");
-            
-            return true; // pagination not set up properly
-          }
-        }
+        var section_id = pagination_container.data('ajax_section_id');
         
-        // set data-remote, data-pagination
+        // set data-remote, data-ajax_section_id
         $(this).attr({'data-remote':'true'}); // needs to be set so that the jquery-ujs selectors work
-        $(this).data({'remote':'true','pagination':pagination_name}); // needs to be set because attributes only read into jquery's data memory once
+        $(this).data({'remote':'true','ajax_section_id':section_id}); // needs to be set because attributes only read into jquery's data memory once
         if ($(this).data('type') === undefined) { // to be moved to ajax:before filter when https://github.com/rails/jquery-ujs/pull/241 is successful, and jquery-rails minimum version updated
           $(this).data('type','html'); // AJAX Pagination requests return html be default
         }
@@ -280,24 +273,24 @@ jQuery(document).ready(function () {
         return false;
       });
       $(document).on("ajax:before","a, " + $.rails.inputChangeSelector, function() {
-        var pagination_name = $(this).data('pagination');
-        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
-        $(this).data('params',$.extend($(this).data('params'),{'pagination':pagination_name})); // add data-pagination to the params data
-        return $.rails.fire(getSection(pagination_name),"ajaxp:before",[this.href,$(this).data('method')]);
+        var section_id = $(this).data('ajax_section_id');
+        if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
+        $(this).data('params',$.extend($(this).data('params'),{'pagination':section_id})); // add data-pagination to the params data
+        return $.rails.fire(getSection(section_id),"ajaxp:before",[this.href,$(this).data('method')]);
       });
       $(document).on("ajax:before","form", function() {
-        var pagination_name = $(this).data('pagination');
-        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
+        var section_id = $(this).data('ajax_section_id');
+        if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
         // alter action to include pagination parameter in the GET part of the action url
-        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:pagination_name}));
-        return $.rails.fire(getSection(pagination_name),"ajaxp:before",[$(this).attr('action'),$(this).data('method')]);
+        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:section_id}));
+        return $.rails.fire(getSection(section_id),"ajaxp:before",[$(this).attr('action'),$(this).data('method')]);
       });
       $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
-        var pagination_name = $(this).data('pagination');
-        if (pagination_name === undefined) return true; // this is not an AJAX Pagination AJAX request
-        if (beforeSendHandler(pagination_name,jqXHR,settings)) {
-          pushHistory(pagination_name,settings.url);
-          pagination_loader_state[pagination_name] = settings.url;
+        var section_id = $(this).data('ajax_section_id');
+        if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
+        if (beforeSendHandler(section_id,jqXHR,settings)) {
+          pushHistory(section_id,settings.url);
+          pagination_loader_state[section_id] = settings.url;
         }
         return true;
       });
@@ -332,11 +325,11 @@ jQuery(document).ready(function () {
         }
         history_state = state; // we can update our view of the state now
 
-        changedsections.sort(); // sort the pagination_names stored in array
+        changedsections.sort(); // sort the section_ids stored in array
         for (var i = 0; i < changedsections.length; i++) {
           var section = getSection(changedsections[i]);
           if (section.length == 0) continue; // no longer exists on page (meaning it does not need reloading)
-          var parentsections = getSectionNames(section.parents(".paginated_section"));
+          var parentsections = getSectionNames(section.parents(".ajax_section"));
           parentsections.sort();
           // check for intersection
           if (!intersects(changedsections,parentsections)) { // no intersection, load new content in this section
@@ -350,21 +343,21 @@ jQuery(document).ready(function () {
       History.Adapter.trigger(window,"popstate"); // update stuff on page load
 
       // trigger a loaded event on each section on initial page load
-      $.rails.fire($(".paginated_section"),"ajaxp:loaded");
+      $.rails.fire($(".ajax_section"),"ajaxp:loaded");
     }
     else {
       // AJAX Pagination is disabled, we need to tidy up a few things to keep things working
 
       // remove remote attribute globally
-      $("a[data-pagination]").removeData('remote');
-      $("a[data-pagination]").removeAttr('data-remote');
-      $("form[data-pagination]").removeData('remote');
-      $("form[data-pagination]").removeAttr('data-remote');
+      $("a[data-ajax_section_id]").removeData('remote');
+      $("a[data-ajax_section_id]").removeAttr('data-remote');
+      $("form[data-ajax_section_id]").removeData('remote');
+      $("form[data-ajax_section_id]").removeAttr('data-remote');
 
       // set an event handler to remove the remote attribute if new content is loaded with AJAX Pagination
-      $(document).children().add(".paginated_section").delegate("a, input, form","click.rails change.rails submit.rails", function(event) {
+      $(document).children().add(".ajax_section").delegate("a, input, form","click.rails change.rails submit.rails", function(event) {
         var element = $(event.target);
-        if (element.data('pagination') === undefined) return true;
+        if (element.data('ajax_section_id') === undefined) return true;
         else {
           element.removeData('remote');
           element.removeAttr('data-remote');

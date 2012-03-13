@@ -33,11 +33,8 @@ module AjaxPagination
     # Options:
     # [:+id+]
     #   Changes the AJAX section name, which is used for requesting new content, and to uniquely identify the
-    #   wrapping div tag. The name passed here should be the same as the pagination name used in the controller
+    #   wrapping div tag. This section id will be referred to in the controller
     #   respond_to block. Defaults to "global".
-    #
-    # [:+pagination+]
-    #   Deprecated. Alias for name.
     #
     # [:+render+]
     #   Changes the partial which is rendered. Defaults to +options [:name]+. The partial should generally
@@ -86,9 +83,9 @@ module AjaxPagination
     #   the link simply creates a cool AJAX effect on the current page.
     #
     def ajax_section(options = {})
-      section_id = options[:id] || options[:pagination] || 'global' # by default the name of the section is 'global'
+      section_id = options[:id] || 'global' # by default the name of the section is 'global'
       partial = options[:render] || section_id # default partial rendered is the name of the section
-      divoptions = { :id => "#{section_id}", :class => "paginated_section" }
+      divoptions = { :id => "#{section_id}", :class => "ajax_section" }
       data = {};
       if options.has_key? :history
         data[:history] = (options[:history] != false)
@@ -100,7 +97,7 @@ module AjaxPagination
       data[:image] = asset_path options[:image] if options[:image].class.to_s == "String"
       divoptions["data-pagination"] = data.to_json if !data.empty?
       if options[:loadzone]
-        divoptions[:class] = "paginated_section paginated_content"
+        divoptions[:class] = "ajax_section ajax_loadzone"
         divoptions[:style] = "position: relative;"
       end
       content_tag :div, divoptions do
@@ -130,7 +127,7 @@ module AjaxPagination
     #   <% end %>
     #
     def ajax_loadzone()
-      content_tag :div, :class => "paginated_content", :style => "position: relative;" do
+      content_tag :div, :class => "ajax_loadzone", :style => "position: relative;" do
         yield
       end
     end
@@ -150,7 +147,7 @@ module AjaxPagination
     #
     def ajax_links(options = {})
       section_id = options[:section_id] || 'global'
-      content_tag :div, "data-pagination" => section_id, :class => ((Array(options[:class]) || []) + ["ajaxpagination"]).join(" ") do
+      content_tag :div, "data-ajax_section_id" => section_id, :class => ((Array(options[:class]) || []) + ["ajaxpagination"]).join(" ") do
         yield
       end
     end
@@ -167,7 +164,7 @@ module AjaxPagination
     #   <%= link_to "Name", posts_url, ajax_options :section_id => "page" %>
     #
     def ajax_options(html_options = {})
-      html_options["data-pagination".to_sym] = html_options.delete(:section_id) || html_options.delete("data-section_id") || html_options.delete(:pagination) || html_options.delete("data-pagination") || "global" # renames the option pagination to data-pagination
+      html_options["data-ajax_section_id".to_sym] = html_options.delete(:section_id) || "global" # renames the option section_id to data-ajax_section_id
       html_options[:remote] = true
       html_options["data-type".to_sym] ||= html_options.delete("data-type") || 'html'
       html_options

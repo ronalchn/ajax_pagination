@@ -21,14 +21,6 @@ describe 'javascript warnings', :js => true do
     page.should have_content("Disabled")
   end
 
-  it 'warns about missing reference' do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
-    find("#missingreferencelink").click
-    alertmsg = page.driver.browser.switch_to.alert.text
-    alertmsg.should include("MISSING_REFERENCE")
-    page.driver.browser.switch_to.alert.accept
-  end
-
   it 'warns about reference to more than one section of same id' do
     visit("http://localhost:#{SERVERPORT}/pages/warnings")
     find("#doublesectionlink").click

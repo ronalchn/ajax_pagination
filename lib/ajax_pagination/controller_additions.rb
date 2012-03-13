@@ -7,9 +7,6 @@ module AjaxPagination
       # [:+section_id+]
       #   The AJAX section name which should be matched to invoke AJAX Pagination response. Defaults to "global".
       #
-      # [:+pagination+]
-      #   Deprecated. Alias for section_id.
-      #
       # [:+render+]
       #   Overrides default render behaviour for AJAX Pagination, which is to render the partial with name matching the section_id option,
       #   or if it does not exist, renders the default template
@@ -17,7 +14,7 @@ module AjaxPagination
       def ajax_respond(options = {});
         # instead of defining default render normally, we save an unbound reference to original function in case it was already defined, since we want to retain the original behaviour, and add to it (if the method is redefined after, this new behaviour is lost, but at least we don't remove others' behaviour - note that this also allows multiple invocations of this with different parameters)
         default_render = self.instance_method(:default_render) # get a reference to original method
-        section_id = options[:section_id] || options[:pagination] || "global"
+        section_id = options[:section_id] || "global"
         view = options[:render] || nil
         define_method(:default_render) do |*args|
           if ajax_section && ajax_section == section_id && request.format == "html" # override if calling AJAX Pagination
@@ -77,9 +74,6 @@ module AjaxPagination
     #   Changes the AJAX section name triggering this response. Triggered when ajax_section == options [:section_id].
     #   Defaults to "global"
     #
-    # [:+pagination+]
-    #   Deprecated. Alias for section_id
-    #
     # [:+render+]
     #   Changes the default template/partial that is rendered by this response. The value can be any object,
     #   and is rendered directly. The render behaviour is the same as the render method in controllers. If this option is not used,
@@ -95,11 +89,11 @@ module AjaxPagination
     #     end
     #
     def ajax_respond(format,options = {})
-      if ajax_section == (options[:section_id] || options[:pagination] || 'global').to_s
+      if ajax_section == (options[:section_id] || 'global').to_s
         if options[:render]
           view = options[:render] # render non partial
         elsif lookup_context.find_all(params[:controller] + "/_" + ajax_section).any?
-          view = {:partial => ajax_section} # render partial of the same name as pagination
+          view = {:partial => ajax_section} # render partial of the same name as section_id
         else # render usual view
           view = {}
         end

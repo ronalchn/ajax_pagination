@@ -7,7 +7,7 @@ module SetAjaxSection
 end
 
 describe AjaxPagination::ControllerAdditions do
-  def stub_pagination(name)
+  def stub_ajax_section(name)
     @controller.stub!(:params).and_return({:pagination => name, :controller => "dummycontroller"})
     @controller.ajax_section = name
   end
@@ -33,40 +33,40 @@ describe AjaxPagination::ControllerAdditions do
   end
 
   describe 'ajax_respond' do
-    it 'should not render when pagination parameter not defined' do
+    it 'should not render when section_id parameter not defined' do
       @controller.ajax_respond(@formatter).should be_false
-      @controller.ajax_respond(@formatter, :pagination => :page).should be_false
-      @controller.ajax_respond(@formatter, :pagination => 'page').should be_false
-      @controller.ajax_respond(@formatter, :pagination => 'page2').should be_false
+      @controller.ajax_respond(@formatter, :section_id => :page).should be_false
+      @controller.ajax_respond(@formatter, :section_id => 'page').should be_false
+      @controller.ajax_respond(@formatter, :section_id => 'page2').should be_false
       @formatter.html.should == 0
     end
-    it 'should render when pagination parameter matches' do
-      stub_pagination('global')
+    it 'should render when section_id parameter matches' do
+      stub_ajax_section('global')
       @controller.ajax_respond(@formatter).should be_true
       @formatter.html.should == 1 # detects html function was called once (but checking also calls the function) ...
-      stub_pagination('page')
-      @controller.ajax_respond(@formatter, :pagination => :page).should be_true
+      stub_ajax_section('page')
+      @controller.ajax_respond(@formatter, :section_id => :page).should be_true
       @formatter.html.should == 3 # ... which is why the next check should be 2 more html function calls
-      @controller.ajax_respond(@formatter, :pagination => 'page').should be_true
+      @controller.ajax_respond(@formatter, :section_id => 'page').should be_true
       @formatter.html.should == 5
-      stub_pagination('pageX')
-      @controller.ajax_respond(@formatter, :pagination => 'pageX').should be_true
+      stub_ajax_section('pageX')
+      @controller.ajax_respond(@formatter, :section_id => 'pageX').should be_true
       @formatter.html.should == 7
       stub_lookup_context(['matching_partial_found'])
-      @controller.ajax_respond(@formatter, :pagination => 'pageX').should be_true
+      @controller.ajax_respond(@formatter, :section_id => 'pageX').should be_true
       @formatter.html.should == 9
-      stub_pagination('global')
+      stub_ajax_section('global')
       @controller.ajax_respond(@formatter).should be_true
       @formatter.html.should == 11
 
     end
-    it 'should not render when pagination parameter does not match' do
-      stub_pagination('notpage')
+    it 'should not render when section_id parameter does not match' do
+      stub_ajax_section('notpage')
       @controller.ajax_respond(@formatter).should be_false
-      @controller.ajax_respond(@formatter, :pagination => :page).should be_false
-      @controller.ajax_respond(@formatter, :pagination => 'page').should be_false
-      stub_pagination('notpageX')
-      @controller.ajax_respond(@formatter, :pagination => 'pageX').should be_false
+      @controller.ajax_respond(@formatter, :section_id => :page).should be_false
+      @controller.ajax_respond(@formatter, :section_id => 'page').should be_false
+      stub_ajax_section('notpageX')
+      @controller.ajax_respond(@formatter, :section_id => 'pageX').should be_false
       @formatter.html.should == 0
     end
   end
@@ -75,26 +75,26 @@ describe AjaxPagination::ControllerAdditions do
     it 'should display partial when format is not html' do
       @controller.ajax_section_displayed?.should be_true
     end
-    it 'should display partial when format is html but pagination is not defined' do
+    it 'should display partial when format is html but section_id is not defined' do
       stub_request_format_html(true)
       @controller.ajax_section_displayed?.should be_true
     end
-    it 'should display partial when .html?pagination=pagename' do
+    it 'should display partial when .html?section_id=pagename' do
       stub_request_format_html(true)
-      stub_pagination('global')
+      stub_ajax_section('global')
       @controller.ajax_section_displayed?.should be_true
-      stub_pagination('page2')
+      stub_ajax_section('page2')
       @controller.ajax_section_displayed?('page2').should be_true
-      stub_pagination('page3')
+      stub_ajax_section('page3')
       @controller.ajax_section_displayed?(:page3).should be_true
     end
     it 'should not display partial when .html?pagination!=pagename' do
       stub_request_format_html(true)
-      stub_pagination('notpage')
+      stub_ajax_section('notpage')
       @controller.ajax_section_displayed?.should be_false
-      stub_pagination('notpage2')
+      stub_ajax_section('notpage2')
       @controller.ajax_section_displayed?('page2').should be_false
-      stub_pagination('notpage3')
+      stub_ajax_section('notpage3')
       @controller.ajax_section_displayed?(:page3).should be_false
     end
   end

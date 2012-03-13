@@ -35,10 +35,3 @@ This page gives examples of the warnings that may be given, from AJAX Pagination
   <p><%= ajax_link_to "Load stuff in section named \"double\"", pages_warnings_path, :section_id => "double", :id => "doublesectionlink" %></p>
 <% end %>
 
-<%= content_tag :div, :class => "paginated_section", :style => "display: inline-block; width: 300px; height: 100px; border: 1px solid black; margin: 10px; padding: 10px; vertical-align: middle;" do %>
-  <%= content_tag :div, :class => "ajaxpagination" do %>
-    <p>If a link does not reference a section into which content can be loaded, AJAX will be cancelled, and the link will load in the whole window.</p>
-    <p>This warning/behaviour is deprecated.</p>
-    <p><%= link_to "Link without reference to any section", pages_warnings_path, :id => "missingreferencelink" %></p>
-  <% end %>
-<% end %>

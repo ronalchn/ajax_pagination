@@ -18,11 +18,11 @@ describe AjaxPagination::HelperAdditions do
       @view.should_receive(:render).with('global')
       @view.ajax_section
       @view.should_receive(:render).with('page2')
-      @view.ajax_section :pagination => 'page2' # renders the partial named :pagination if :partial not defined
+      @view.ajax_section :id => 'page2' # renders the partial named :id if :partial not defined
       @view.should_receive(:render).with('page3')
       @view.ajax_section :render => 'page3' # if partial defined, renders partial
       @view.should_receive(:render).with('pageX')
-      @view.ajax_section :pagination => 'page10', :render => 'pageX' # even if pagination also defined as different value
+      @view.ajax_section :id => 'page10', :render => 'pageX' # even if id also defined as different value
     end
   end
   describe 'ajax_loadzone' do
