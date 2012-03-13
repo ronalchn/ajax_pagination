@@ -22,9 +22,9 @@ task :travis do
   system("(cd spec/rails30_app/ && bundle exec rails generate ajax_pagination:assets --force)")
   Bundler.with_clean_env do
     # startup test servers
-    system("(cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
-    system("(cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
-    system("(cd spec/rails30_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{r30serverport})") # daemonized rails server
+    system("(export BUNDLE_GEMFILE=`pwd`/spec/rails_app/Gemfile; cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
+    system("(export BUNDLE_GEMFILE=`pwd`/spec/rails_app/Gemfile; cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{serverslowport})") # daemonized rails server
+    system("(export BUNDLE_GEMFILE=`pwd`/spec/rails30_app/Gemfile; cd spec/rails30_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test AJAX_DELAY=1.5 bundle exec rails server -d --port=#{r30serverport})") # daemonized rails server
   end
   system("bundle exec rake spec")
   unless $?.exitstatus == 0
