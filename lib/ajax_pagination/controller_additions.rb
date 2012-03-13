@@ -42,8 +42,8 @@ module AjaxPagination
       end
 
       base.before_filter do
-        @_ajax_section = request.GET[:pagination] || params[:pagination]
-        params.delete(:pagination) if request.get?
+        @_ajax_section = request.GET[:ajax_section] || params[:ajax_section]
+        params.delete(:ajax_section) if request.get?
       end
     end
 

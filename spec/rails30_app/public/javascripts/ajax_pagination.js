@@ -221,7 +221,7 @@ jQuery(document).ready(function () {
         if (history === undefined) history = false;
         // send our own ajax request, and tie it into the beforeSendHandler used for jquery-ujs as well
         if (!$.rails.fire(getSection(section_id),"ajaxp:before",[requesturl,undefined])) return false;
-        $.ajax({url: requesturl, data: {pagination:section_id},
+        $.ajax({url: requesturl, data: {ajax_section:section_id},
           dataType: 'html',
           beforeSend: function (jqXHR,settings) {
             var result = beforeSendHandler(section_id,jqXHR,settings);
@@ -238,7 +238,7 @@ jQuery(document).ready(function () {
         if (data === undefined || data.history === undefined || data.history) { // check that history is not disabled
           // construct visible url
           var data = $.deparam.querystring($.url(url).attr('query'));
-          delete data['pagination'];
+          delete data['ajax_section'];
           pagination_url = $.param.querystring(url,data,2);
           if (isReload(section_id,url,location.href)) History.replaceState(history_state,document.title,pagination_url);
           else { // not just a reload of current page, so do actual pushState
@@ -275,14 +275,14 @@ jQuery(document).ready(function () {
       $(document).on("ajax:before","a, " + $.rails.inputChangeSelector, function() {
         var section_id = $(this).data('ajax_section_id');
         if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
-        $(this).data('params',$.extend($(this).data('params'),{'pagination':section_id})); // add data-pagination to the params data
+        $(this).data('params',$.extend($(this).data('params'),{'ajax_section':section_id})); // add data-pagination to the params data
         return $.rails.fire(getSection(section_id),"ajaxp:before",[this.href,$(this).data('method')]);
       });
       $(document).on("ajax:before","form", function() {
         var section_id = $(this).data('ajax_section_id');
         if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
         // alter action to include pagination parameter in the GET part of the action url
-        $(this).attr('action',$.param.querystring($(this).attr('action'),{pagination:section_id}));
+        $(this).attr('action',$.param.querystring($(this).attr('action'),{ajax_section:section_id}));
         return $.rails.fire(getSection(section_id),"ajaxp:before",[$(this).attr('action'),$(this).data('method')]);
       });
       $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
