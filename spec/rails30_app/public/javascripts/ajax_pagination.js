@@ -47,7 +47,7 @@ jQuery(document).ready(function () {
       $.ajax_pagination = function (pagination_name) {
         return new pagination_object(pagination_name);
       };
-      $.ajax_pagination.version = '0.6.0.alpha';
+      $.ajax_pagination.version = '0.6.0';
       $.ajax_pagination.enabled = true;
       function pagination_object(pagination_name) {
         this.get = function(url,options) {

@@ -3,9 +3,9 @@
 
 [Wiki](https://github.com/ronalchn/ajax_pagination/wiki) | [RDoc](http://rdoc.info/gems/ajax_pagination/frames) | [Changelog](https://github.com/ronalchn/ajax_pagination/blob/master/CHANGELOG.md)
 
-Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.
+Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Use this to ajaxify your site navigation. Degrades gracefully when javascript is disabled.
 
-Basically, there is a helper function to use to create a section in your webpage, where content can be changed. Links can reference the section, and thus load new content into it.
+Each webpage can have multiple ajax_section containers, whether they are side by side, or even nested. Links can reference an ajax_section to load new content into the section using AJAX. Watch as the URL in the browser address bar updates, with fully working back/forward buttons.
 
 For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pagination/wiki/Introduction-and-Background).
 
@@ -40,8 +40,8 @@ To use this on Rails 3.0, or without using the asset pipeline, read [Installatio
 In the ActionView, use ajax_section to declare a section, and ajax_link_to to create a link loading content into the section:
 
 ```erb
-<%= ajax_link_to "Link", link_url, :pagination => "section_name" %>
-<%= ajax_section :pagination => "section_name", :render => "mypartial" %>
+<%= ajax_link_to "Link", link_url, :section_id => "section_name" %>
+<%= ajax_section :id => "section_name", :render => "mypartial" %>
 ```
 
 Then, in the ActionController, use ajax_respond to render only the partial when an AJAX request is made:
@@ -52,7 +52,7 @@ Class ObjectsController < ApplicationController
     ...
     respond_to do |format|
       format.html # index.html.erb
-      ajax_respond format, :pagination => "section_name", :render => "_mypartial"
+      ajax_respond format, :section_id => "section_name", :render => "_mypartial"
     end
   end
   ...

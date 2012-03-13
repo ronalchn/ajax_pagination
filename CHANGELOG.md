@@ -1,12 +1,16 @@
-## v0.6.0.alpha
+## v0.6.0
 The :pagination option no longer makes as much sense, now that the sections are called ajax_section. Also, this gem is as much about site navigation as pagination. This is the reason for some of the following changes.
-* Further name changes made - :pagination option now called :section_id option in AJAX Pagination methods (with exception of ajax_section method), :pagination still works, but deprecated
+
+* Further name changes made - :pagination option now called :section_id option in AJAX Pagination methods (with exception of ajax_section method), :pagination still works, but is now deprecated.
+
 **It is suggested to grep :pagination and rename to :section_id**
+
 * ajax_section :pagination option now called :id option, :pagination still works, but deprecated
 * New :section_id, ajax_section :id options now defaults to "global" in all methods - this is backwards incompatible
 * Added ajax_links helper method, to replace the magic container (a div container with class of ajaxpagination).
 * div containers of class pagination are no longer magic containers
 * Added ajax_section method in ActionController - which is set to the only section that should be displayed in an AJAX request. It is nil for normal requests.
+
 **Avoid using data-pagination, or inspecting params[:pagination] directly. These will be changed in the next version. Instead, use the helper methods provided.**
 
 ## v0.5.1
