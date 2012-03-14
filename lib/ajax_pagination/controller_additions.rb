@@ -29,7 +29,7 @@ module AjaxPagination
         default_render = self.instance_method(:default_render) # get a reference to original method
         section_id = options[:section_id] || "global"
         view = options[:render] || nil
-        view = { :action => view } if view.class == String
+        view = { :action => view } if view.kind_of? String
         only = options[:only] ? Array(options[:only]) : nil
         except = Array(options[:except]) || []
         define_method(:default_render) do |*args|

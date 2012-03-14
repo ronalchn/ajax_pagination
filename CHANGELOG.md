@@ -1,4 +1,4 @@
-## v0.6.2-alpha
+## v0.6.2.alpha
 * Added :except and :only options to the ajax_respond class method (to specify actions which trigger responding to AJAX request)
 
 ## v0.6.1
