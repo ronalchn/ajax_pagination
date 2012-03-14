@@ -6,6 +6,7 @@
 * one set of internally used data-pagination attributes has been renamed to data-ajax_section_id.
 * The ?pagination= querystring parameter has been renamed to ajax_section.
 * Fixed Travis CI tests to start up WEBrick servers with the correct rails version.
+* Removed deprecated methods - from v0.6.0
 
 ## v0.6.0
 The :pagination option no longer makes as much sense, now that the sections are called ajax_section. Also, this gem is as much about site navigation as pagination. This is the reason for some of the following changes.
