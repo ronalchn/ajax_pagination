@@ -1,0 +1,4 @@
+<p>You are on page <%= params[:page] ||= 1 %>.</p>
+
+<p><%= ajax_link_to "Reload whole page just to refresh this content", pages_warnings_path(:page => (params[:page].to_i+1)), :section_id => "page", :id => "fullpagelink" %></p>
+

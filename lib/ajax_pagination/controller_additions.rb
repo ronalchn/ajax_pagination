@@ -2,7 +2,13 @@ module AjaxPagination
   # This module is automatically added to all controllers
   module ControllerAdditions
     module ClassMethods
-      # Adds default render behaviour for AJAX requests for a section with matching a certain name. By default, this name is the empty string. However, it can be changed.
+      # Adds default render behaviour for AJAX requests for a section with matching a certain name. By default,
+      # this name is the empty string. However, it can be changed.
+      #
+      # An AJAX request for the matched section will render a partial, which by default, is the template named
+      # "_#{ajax_section_name}", or if it does not exist, the view template matching the controller/action name.
+      # By default there is no layout used.
+      #
       # Options:
       # [:+section_id+]
       #   The AJAX section name which should be matched to invoke AJAX Pagination response. Defaults to "global".
@@ -11,13 +17,24 @@ module AjaxPagination
       #   Overrides default render behaviour for AJAX Pagination, which is to render the partial with name matching the section_id option,
       #   or if it does not exist, renders the default template
       #
+      # [:+only+]
+      #   The actions that may trigger this render behaviour for AJAX requests. If an action is not included, it will
+      #   not trigger this behaviour.
+      #
+      # [:+except+]
+      #   Actions which will not trigger this render behaviour for AJAX requests.
+      #
       def ajax_respond(options = {});
         # instead of defining default render normally, we save an unbound reference to original function in case it was already defined, since we want to retain the original behaviour, and add to it (if the method is redefined after, this new behaviour is lost, but at least we don't remove others' behaviour - note that this also allows multiple invocations of this with different parameters)
         default_render = self.instance_method(:default_render) # get a reference to original method
         section_id = options[:section_id] || "global"
         view = options[:render] || nil
+        view = { :action => view } if view.class == String
+        only = options[:only] ? Array(options[:only]) : nil
+        except = Array(options[:except]) || []
         define_method(:default_render) do |*args|
-          if ajax_section && ajax_section == section_id && request.format == "html" # override if calling AJAX Pagination
+          if ajax_section && ajax_section == section_id && request.format == "html" && (only.nil? || only.include?(action_name)) && (!except.include?(action_name))
+            # AJAX response overriding normal default_render behaviour
             unless view
               if lookup_context.find_all(controller_path + "/_" + ajax_section).any?
                 view = { :partial => ajax_section } # render partial, layout is off

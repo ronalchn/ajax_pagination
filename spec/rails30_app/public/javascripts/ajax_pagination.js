@@ -2,7 +2,7 @@
 //= require jquery.url
 
 /* 
- * AJAX Pagination v0.6.1.alpha: Ajaxifying your navigation
+ * AJAX Pagination v0.6.1: Ajaxifying your navigation
  * https://github.com/ronalchn/ajax_pagination
  * 
  * Copyright (c) 2012 Ronald Ping Man Chan
@@ -47,7 +47,7 @@ jQuery(document).ready(function () {
       $.ajax_pagination = function (section_id) {
         return new ajax_section_object(section_id);
       };
-      $.ajax_pagination.version = '0.6.1.alpha';
+      $.ajax_pagination.version = '0.6.1';
       $.ajax_pagination.enabled = true;
       function ajax_section_object(section_id) {
         this.get = function(url,options) {

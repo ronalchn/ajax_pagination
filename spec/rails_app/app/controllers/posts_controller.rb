@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  ajax_respond :section_id => 'page'
+  ajax_respond :section_id => 'page', :only => "index" # tests that :only option is not excluding index action
   # GET /posts
   # GET /posts.json
   def index
