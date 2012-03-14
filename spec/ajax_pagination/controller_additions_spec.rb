@@ -4,11 +4,13 @@ module SetAjaxSection
   def ajax_section= (name)
     @_ajax_section = name
   end
+  def controller_path
+    "dummycontroller"
+  end
 end
 
 describe AjaxPagination::ControllerAdditions do
   def stub_ajax_section(name)
-    @controller.stub!(:params).and_return({:pagination => name, :controller => "dummycontroller"})
     @controller.ajax_section = name
   end
   def stub_request_format_html(bool)

@@ -2,7 +2,7 @@
 //= require jquery.url
 
 /* 
- * AJAX Pagination: Ajaxifying your navigation
+ * AJAX Pagination v0.6.1.alpha: Ajaxifying your navigation
  * https://github.com/ronalchn/ajax_pagination
  * 
  * Copyright (c) 2012 Ronald Ping Man Chan

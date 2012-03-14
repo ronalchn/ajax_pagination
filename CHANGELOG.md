@@ -2,6 +2,7 @@
 * the ajaxp:done event now sends an extra argument - the ajax_loadzone DOM element. This makes it easier for the event handler to make animations involving the loadzone. If it does not exist, null is returned.
 * one set of internally used data-pagination attributes has been renamed to data-ajax_section_id.
 * the ?pagination= querystring parameter has been renamed to ajax_section.
+* Fixed Travis CI tests to start up WEBrick servers with the correct rails version.
 
 ## v0.6.0
 The :pagination option no longer makes as much sense, now that the sections are called ajax_section. Also, this gem is as much about site navigation as pagination. This is the reason for some of the following changes.

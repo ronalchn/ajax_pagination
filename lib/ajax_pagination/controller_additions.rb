@@ -19,7 +19,7 @@ module AjaxPagination
         define_method(:default_render) do |*args|
           if ajax_section && ajax_section == section_id && request.format == "html" # override if calling AJAX Pagination
             unless view
-              if lookup_context.find_all("#{params[:controller]}/_#{ajax_section}").any?
+              if lookup_context.find_all(controller_path + "/_" + ajax_section).any?
                 view = { :partial => ajax_section } # render partial, layout is off
               else
                 view = { :layout => false } # render default view, but turn off layout
@@ -42,8 +42,11 @@ module AjaxPagination
       end
 
       base.before_filter do
-        @_ajax_section = request.GET[:ajax_section] || params[:ajax_section]
-        params.delete(:ajax_section) if request.get?
+        # simply manipulating querystring will not get ajax response (in production mode)
+        if request.xhr? || Rails.env == 'development'
+          @_ajax_section = request.GET[:ajax_section] || params[:ajax_section]
+          params.delete(:ajax_section) if request.get?
+        end
       end
     end
 
@@ -92,7 +95,7 @@ module AjaxPagination
       if ajax_section == (options[:section_id] || 'global').to_s
         if options[:render]
           view = options[:render] # render non partial
-        elsif lookup_context.find_all(params[:controller] + "/_" + ajax_section).any?
+        elsif lookup_context.find_all(controller_path + "/_" + ajax_section).any?
           view = {:partial => ajax_section} # render partial of the same name as section_id
         else # render usual view
           view = {}
@@ -156,7 +159,7 @@ module AjaxPagination
     # This filter should not affect other uses, because only AJAX calls trigger this. In addition, a ?pagination= parameter is required.
     # Therefore other AJAX libraries or usage otherwise should not be affected.
     def ajax_pagination_redirect
-      if request.xhr? && ajax_section && response.status==302 # alter redirect response so that it can be detected by the client javascript
+      if ajax_section && response.status==302 # alter redirect response so that it can be detected by the client javascript
         response.status = 200 # change response to OK, location header is preserved, so AJAX can get the new page manually
       end
     end
