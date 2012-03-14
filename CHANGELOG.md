@@ -1,4 +1,4 @@
-## v0.6.1.alpha
+## v0.6.1
 * the ajaxp:done event now sends an extra argument - the ajax_loadzone DOM element. This makes it easier for the event handler to make animations involving the loadzone. If it does not exist, null is returned.
 * one set of internally used data-pagination attributes has been renamed to data-ajax_section_id.
 * the ?pagination= querystring parameter has been renamed to ajax_section.
