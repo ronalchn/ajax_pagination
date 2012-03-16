@@ -1,4 +1,4 @@
-## v0.6.2.alpha
+## v0.6.2
 * Added :except and :only options to the ajax_respond class method (to specify actions which trigger responding to AJAX request)
 * Converted ajax_section method to return symbol instead of string, and using symbols for both sections and actions internally (strings passed into methods will be converted into symbols)
 * Rewrote ajax_respond class method to add default_render behaviour which checks for AJAX requests in a more efficient way

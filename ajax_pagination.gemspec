@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Ronald Ping Man Chan"]
   s.email       = ["ronalchn@gmail.com"]
   s.homepage    = "https://github.com/ronalchn/ajax_pagination"
-  s.summary     = %q{Handles AJAX pagination, changing the content when certain links are followed.}
-  s.description = %q{Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Each webpage can have multiple page containers, each with a different set of pagination links. The page containers can be nested. Degrades gracefully when javascript is disabled.}
+  s.summary     = %q{Handles AJAX site navigation, loads content into ajax_section containers using AJAX links.}
+  s.description = %q{Loads page content into AJAX sections with AJAX links, handling the details for you, load content with javascript into designated page containers. Supports multiple and/or nested AJAX sections. Designed to be easy to use, customizable, supports browser history robustly, supports AJAX forms and has many more features. Degrades gracefully when javascript is disabled.}
 
   s.rubyforge_project = "ajax_pagination"
 
