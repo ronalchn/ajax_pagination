@@ -29,7 +29,7 @@ describe 'paginating with javascript on', :js => true do
     end
   end
   it 'displays a loading image with nested and multiple paginated sections' do
-    retry_exceptions do
+    retry_exceptions(5) do
       visit("http://localhost:#{SERVERSLOWPORT}/changelog")
       sleep(2)
       page.should have_selector('#changelogpagetitle')
