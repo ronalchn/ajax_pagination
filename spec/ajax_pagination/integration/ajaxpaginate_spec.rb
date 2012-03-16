@@ -9,7 +9,7 @@ describe 'paginating with javascript on', :js => true do
 
   it 'displays a loading image' do
     retry_exceptions do
-      # following 3 lines to warm up loading image
+      # following lines to warm up loading image
       visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
       sleep(3)
       click_link 'Changelog'
@@ -30,6 +30,12 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'displays a loading image with nested and multiple paginated sections' do
     retry_exceptions(5) do
+      # following lines to warm up
+      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      sleep(3)
+      click_link 'Changelog'
+      sleep(3)
+
       visit("http://localhost:#{SERVERSLOWPORT}/changelog")
       sleep(2)
       page.should have_selector('#changelogpagetitle')
@@ -37,6 +43,8 @@ describe 'paginating with javascript on', :js => true do
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
+
+      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
       find('#signin').click
       sleep(2)
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
