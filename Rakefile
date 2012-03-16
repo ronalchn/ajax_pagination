@@ -9,11 +9,6 @@ task :travis do
   r30serverport = IO.read(File.expand_path("../spec/R30PORT",__FILE__)).strip # port number that we are using
 
   system("cp spec/rails_app/db/development.sqlite3 spec/rails_app/db/test.sqlite3") # take a copy of the development database
-  system("mkdir -p spec/rails_app/vendor/assets/javascripts") # directory to plonk javascripts from dependent gems
-  # obtain jquery javascript assets (this is because sprockets cannot find these files otherwise, when going through nested bundles)
-  # Note that the spec/rails_app/vendor directory is .gitignore because these are generated files
-  system("cp `bundle show jquery-rails`/vendor/assets/javascripts/* spec/rails_app/vendor/assets/javascripts/")
-  system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails_app/vendor/assets/javascripts/")
 
   Bundler.with_clean_env do
     # startup test servers
