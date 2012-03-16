@@ -2,7 +2,7 @@ require "spec_helper"
 
 module SetAjaxSection
   def ajax_section= (name)
-    @_ajax_section = name
+    @_ajax_section = name.to_sym
   end
   def controller_path
     "dummycontroller"

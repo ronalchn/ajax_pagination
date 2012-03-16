@@ -26,28 +26,47 @@ module AjaxPagination
       #
       def ajax_respond(options = {});
         # instead of defining default render normally, we save an unbound reference to original function in case it was already defined, since we want to retain the original behaviour, and add to it (if the method is redefined after, this new behaviour is lost, but at least we don't remove others' behaviour - note that this also allows multiple invocations of this with different parameters)
-        default_render = self.instance_method(:default_render) # get a reference to original method
         section_id = options[:section_id] || "global"
-        view = options[:render] || nil
+        section = section_id.to_sym
+        view = options[:render] || {}
         view = { :action => view } if view.kind_of? String
         only = options[:only] ? Array(options[:only]) : nil
         except = Array(options[:except]) || []
-        define_method(:default_render) do |*args|
-          if ajax_section && ajax_section == section_id && request.format == "html" && (only.nil? || only.include?(action_name)) && (!except.include?(action_name))
-            # AJAX response overriding normal default_render behaviour
-            unless view
-              if lookup_context.find_all(controller_path + "/_" + ajax_section).any?
-                view = { :partial => ajax_section } # render partial, layout is off
+
+        if @_ajax_respond.nil? # has this method been called before?
+          @_ajax_respond = {}
+          _ajax_respond = @_ajax_respond # create reference to class instance variable
+          # create default_render intercepting method (if not already defined)
+          default_render = self.instance_method(:default_render) # get a reference to original method
+
+          define_method(:default_render) do |*args|
+            action = action_name.to_sym
+            render = nil # nil means call original default_render method
+            if ajax_section && _ajax_respond.has_key?(ajax_section) && request.format == "html"
+              # might override render... let's find out
+              if _ajax_respond[ajax_section][1].has_key?(action)
+                render = _ajax_respond[ajax_section][1][action] # use action-specific render hash for this ajax_section (can still be nil)
               else
-                view = { :layout => false } # render default view, but turn off layout
+                render = _ajax_respond[ajax_section][0] # use default render hash for this ajax_section (can still be nil)
               end
             end
-            respond_to do |format|
-              ajax_respond format, :section_id => section_id, :render => view
+            if !render.nil?
+              # AJAX response overriding normal default_render behaviour
+              respond_to do |format|
+                ajax_respond format, :section_id => ajax_section, :render => render
+              end
+            else # otherwise do what would have been done
+              default_render.bind(self).call(*args) # call original method of the same name
             end
-          else # otherwise do what would have been done
-            default_render.bind(self).call(*args) # call original method of the same name
           end
+        end
+
+        @_ajax_respond[section] ||= [nil,{}]
+        if only.nil?
+          except.each {|x| @_ajax_respond[section][1][x.to_sym] = @_ajax_respond[section][0] unless @_ajax_respond[section][1].has_key? x.to_sym } # sets excluded actions to old default (if not already set)
+          @_ajax_respond[section][0] = view # creates default for all other actions
+        else
+          @_ajax_respond[section][1] = Hash[(only - except).map { |x| [x.to_sym,view] }] # sets specific actions to view render options
         end
       end
     end
@@ -61,7 +80,8 @@ module AjaxPagination
       base.before_filter do
         # simply manipulating querystring will not get ajax response (in production mode)
         if request.xhr? || Rails.env == 'development'
-          @_ajax_section = request.GET[:ajax_section] || params[:ajax_section]
+          @_ajax_section = (request.GET[:ajax_section] || params[:ajax_section])
+          @_ajax_section = @_ajax_section.to_sym unless @_ajax_section.nil?
           params.delete(:ajax_section) if request.get?
         end
       end
@@ -109,11 +129,12 @@ module AjaxPagination
     #     end
     #
     def ajax_respond(format,options = {})
-      if ajax_section == (options[:section_id] || 'global').to_s
-        if options[:render]
-          view = options[:render] # render non partial
-        elsif lookup_context.find_all(controller_path + "/_" + ajax_section).any?
-          view = {:partial => ajax_section} # render partial of the same name as section_id
+      if ajax_section == (options[:section_id] || 'global').to_sym
+        render = options[:render] || {}
+        if !render.empty?
+          view = render # render non partial
+        elsif lookup_context.find_all(controller_path + "/_" + ajax_section.to_s).any?
+          view = {:partial => ajax_section.to_s} # render partial of the same name as section_id
         else # render usual view
           view = {}
         end
@@ -160,7 +181,7 @@ module AjaxPagination
     #
     # The heavy computation will only be performed on posts which will be displayed when AJAX Pagination only wants a partial.
     def ajax_section_displayed?(section_id = :global)
-      (ajax_section.nil?) || (ajax_section == section_id.to_s)
+      (ajax_section.nil?) || (ajax_section == section_id.to_sym)
     end
 
     # This after_filter method is automatically included by AJAX Paginate, and does not need to be included manually. However,
