@@ -2,6 +2,7 @@
 * Added :except and :only options to the ajax_respond class method (to specify actions which trigger responding to AJAX request)
 * Converted ajax_section method to return symbol instead of string, and using symbols for both sections and actions internally (strings passed into methods will be converted into symbols)
 * Rewrote ajax_respond class method to add default_render behaviour which checks for AJAX requests in a more efficient way
+* Rename ajax_section_displayed? to ajax_section?, for brevity.
 
 ## v0.6.1
 * The ajaxp:done event now sends an extra argument - the ajax_loadzone DOM element. This makes it easier for the event handler to make animations involving the loadzone. If it does not exist, null is returned.

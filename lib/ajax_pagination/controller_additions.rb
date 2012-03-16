@@ -151,6 +151,8 @@ module AjaxPagination
     # if the format is html, and the ajax_section parameter is set. If it is set, then it will return whether
     # ajax_section == section_id (the name of the section, which defaults to page).
     #
+    # In effect, this method returns (ajax_section.nil? || ajax_section == section_id.to_sym)
+    #
     # This method is a convenience function so that the controller does not need to perform heavy computation which might only
     # be required if only a certain section is displayed (for an AJAX request).
     #
@@ -159,13 +161,13 @@ module AjaxPagination
     # 
     #   class PostsController < ApplicationController
     #     def index
-    #       if ajax_section_displayed? :page do
+    #       if ajax_section? :page do
     #         @posts = Post.published
     #         @posts.each do |post|
     #           post.heavycomputation
     #         end
     #       end
-    #       if current_user.is_admin && ajax_section_displayed? :upcomingpage do
+    #       if current_user.is_admin && ajax_section? :upcomingpage do
     #         @upcomingposts = Post.upcoming
     #         @upcomingposts.each do |post|
     #           post.heavycomputation
@@ -180,7 +182,7 @@ module AjaxPagination
     #   end
     #
     # The heavy computation will only be performed on posts which will be displayed when AJAX Pagination only wants a partial.
-    def ajax_section_displayed?(section_id = :global)
+    def ajax_section?(section_id = :global)
       (ajax_section.nil?) || (ajax_section == section_id.to_sym)
     end
 
