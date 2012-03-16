@@ -15,11 +15,6 @@ task :travis do
   system("cp `bundle show jquery-rails`/vendor/assets/javascripts/* spec/rails_app/vendor/assets/javascripts/")
   system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails_app/vendor/assets/javascripts/")
 
-  # recreate assets for rails 3.0 app - delete them first
-  system("mkdir -p spec/rails30_app/public/javascripts")
-  system("cp `bundle show jquery-rails`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
-  system("cp `bundle show jquery-historyjs`/vendor/assets/javascripts/* spec/rails30_app/public/javascripts/")
-  system("(cd spec/rails30_app/ && bundle exec rails generate ajax_pagination:assets --force)")
   Bundler.with_clean_env do
     # startup test servers
     system("(export BUNDLE_GEMFILE=`pwd`/spec/rails_app/Gemfile; cd spec/rails_app/ && (bundle | grep -e 'Your bundle .*$') && RAILS_ENV=test bundle exec rails server -d --port=#{serverport})") # daemonized rails server
