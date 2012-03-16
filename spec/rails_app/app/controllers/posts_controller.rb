@@ -9,7 +9,7 @@ class PostsController < ApplicationController
       format.html # index.html.erb
       format.json { render :json => @posts }
       ajax_respond format, :section_id => :upcomingpage
-      ajax_respond format, :section_id => "", :render => { :layout => "ajax" }
+      ajax_respond format, :section_id => "global", :render => { :layout => "ajax" }
     end
   end
 
