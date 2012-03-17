@@ -1,5 +1,6 @@
-## v0.6.3.alpha
+## v0.6.3
 * Internal spec build changes
+* ajax_pagination.js now requires other javascript dependencies, so developers no longer need to require dependencies as well in application manifest anymore (note, it can still be required - sprockets should ensure only 1 copy of each js file is included)
 
 ## v0.6.2
 * Added :except and :only options to the ajax_respond class method (to specify actions which trigger responding to AJAX request)

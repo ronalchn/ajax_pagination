@@ -1,3 +1,3 @@
 module AjaxPagination
-  VERSION = "0.6.3.alpha"
+  VERSION = "0.6.3"
 end

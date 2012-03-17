@@ -18,13 +18,10 @@ Assuming, you are using the asset pipeline, add to your Gemfile:
 
 and run the bundle install command.
 
-Then add to your asset manifests,
+Then add ajax_pagination to your asset manifests,
 
 ```js
 // app/assets/javascripts/application.js
-//= require jquery
-//= require jquery_ujs
-//= require history
 //= require ajax_pagination
 ```
 
@@ -34,7 +31,7 @@ Then add to your asset manifests,
  */
 ```
 
-To use this on Rails 3.0, or without using the asset pipeline, read [Installation without the Asset Pipeline](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-the-Asset-Pipeline) guide.
+To use this on Rails 3.0, or without using the asset pipeline, read the [Installation without the Asset Pipeline](https://github.com/ronalchn/ajax_pagination/wiki/Installing-without-the-Asset-Pipeline) guide.
 
 ## Basic Usage
 In the ActionView, use ajax_section to declare a section, and ajax_link_to to create a link loading content into the section:
