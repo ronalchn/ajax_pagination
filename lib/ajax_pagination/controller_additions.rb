@@ -80,7 +80,7 @@ module AjaxPagination
       base.before_filter do
         # simply manipulating querystring will not get ajax response (in production mode)
         if request.xhr? || Rails.env == 'development'
-          @_ajax_section = (request.GET[:ajax_section] || params[:ajax_section])
+          @_ajax_section = request.GET[:ajax_section]
           @_ajax_section = @_ajax_section.to_sym unless @_ajax_section.nil?
           params.delete(:ajax_section) if request.get?
         end

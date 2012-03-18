@@ -275,18 +275,50 @@ jQuery(document).ready(function () {
         $.rails.handleRemote($(this));
         return false;
       });
-      $(document).on("ajax:before","a, " + $.rails.inputChangeSelector, function() {
+      $(document).on("ajax:before","a", function() {
         var section_id = $(this).data('ajax_section_id');
         if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
-        $(this).data('params',$.extend($(this).data('params'),{'ajax_section':section_id})); // add data-pagination to the params data
-        return $.rails.fire(getSection(section_id),"ajaxp:before",[this.href,$(this).data('method')]);
+        var url = this.href;
+        if ($.rails.fire(getSection(section_id),"ajaxp:before",[url,$(this).data('method')])) {
+          var ajaxurl = $.param.querystring(url,{ajax_section:section_id});
+          $(this).attr('href',ajaxurl);
+          $(this).delay(0,"ajaxp").queue("ajaxp",function(next) { // delay causes function to execute after jquery_ujs event finishes
+            if (ajaxurl == this.href) $(this).attr('href',url); // restore original url (mainly so that the status bar shows a nicer url)
+            next();
+          }).dequeue("ajaxp");
+          return true;
+        }
+        else return false;
+      });
+      $(document).on("ajax:before",$.rails.inputChangeSelector, function() {
+        var section_id = $(this).data('ajax_section_id');
+        if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
+        var url = $(this).data('url');
+        if ($.rails.fire(getSection(section_id),"ajaxp:before",[url,$(this).data('method')])) {
+          var ajaxurl = $.param.querystring(url,{ajax_section:section_id});
+          $(this).data('url',ajaxurl);
+          $(this).delay(0,"ajaxp").queue("ajaxp",function(next) { // delay causes function to execute after jquery_ujs event finishes
+            if (ajaxurl == $(this).data('url')) $(this).data('url',url); // restore original url
+            next();
+          }).dequeue("ajaxp");
+          return true;
+        }
+        else return false;
       });
       $(document).on("ajax:before","form", function() {
         var section_id = $(this).data('ajax_section_id');
         if (section_id === undefined) return true; // this is not an AJAX Pagination AJAX request
-        // alter action to include pagination parameter in the GET part of the action url
-        $(this).attr('action',$.param.querystring($(this).attr('action'),{ajax_section:section_id}));
-        return $.rails.fire(getSection(section_id),"ajaxp:before",[$(this).attr('action'),$(this).data('method')]);
+        var url = $(this).attr('action');
+        if ($.rails.fire(getSection(section_id),"ajaxp:before",[url,$(this).data('method')])) {
+          var ajaxurl = $.param.querystring(url,{ajax_section:section_id});
+          $(this).attr('action',ajaxurl);
+          $(this).delay(0,"ajaxp").queue("ajaxp",function(next) { // delay causes function to execute after jquery_ujs event finishes
+            if (ajaxurl == $(this).attr('action')) $(this).attr('action',url); // restore original url (mainly so that the status bar shows a nicer url)
+            next();
+          }).dequeue("ajaxp");
+          return true;
+        }
+        else return false;
       });
       $(document).on("ajax:beforeSend","a, form, " + $.rails.inputChangeSelector, function (e,jqXHR,settings) {
         var section_id = $(this).data('ajax_section_id');
