@@ -204,27 +204,31 @@ describe 'paginating with javascript on', :js => true do
   # This spec does not work in rbx on travis.
   # Tested to work in rbx-1.2.4 on local machine. Also works using MRI ruby on travis.
   it 'submits ajax_form_for form via PUT link' do
-    visit("http://localhost:#{SERVERPORT}")
-    find('#signin').click
-    sleep(2)
-    visit("http://localhost:#{SERVERPORT}/posts/2")
-    click_link("Edit");
-    sleep(2)
-    within(".edit_post") do
-      fill_in 'Content', :with => 'some supercontent'
+    retry_exceptions do
+      visit("http://localhost:#{SERVERPORT}")
+      find('#signin').click
+      sleep(2)
+      visit("http://localhost:#{SERVERPORT}/posts/2")
+      click_link("Edit");
+      sleep(2)
+      within(".edit_post") do
+        fill_in 'Content', :with => 'some supercontent'
+      end
+      count = ajaxCount
+      click_button("Update Post");
+      sleep(3)
+      # page.should have_content("Post was successfully updated.") # does not work in rbx on travis (????)
+      page.should have_content("some supercontent")
+      ajaxCount.should == count + 1
     end
-    count = ajaxCount
-    click_button("Update Post");
-    sleep(3)
-    # page.should have_content("Post was successfully updated.") # does not work in rbx on travis (????)
-    page.should have_content("some supercontent")
-    ajaxCount.should == count + 1
   end
   it 'changes title' do
-    visit("http://localhost:#{SERVERPORT}")
-    title = page.evaluate_script("document.title") # because what is between the <title> tags and what is shown in the window title can differ (document.title gets set by javascript)
-    click_link("About");
-    page.should have_selector('#aboutpagetitle') # ensures loading was via AJAX Pagination
-    page.evaluate_script("document.title").should_not == title
+    retry_exceptions do
+      visit("http://localhost:#{SERVERPORT}")
+      title = page.evaluate_script("document.title") # because what is between the <title> tags and what is shown in the window title can differ (document.title gets set by javascript)
+      click_link("About");
+      page.should have_selector('#aboutpagetitle') # ensures loading was via AJAX Pagination
+      page.evaluate_script("document.title").should_not == title
+    end
   end
 end
