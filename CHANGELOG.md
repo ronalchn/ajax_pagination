@@ -1,3 +1,8 @@
+## v0.6.4.alpha
+* Fix inputchangeselector bug (this feature still untested)
+* Ensure ?ajax_section parameter in querystring (request.GET) - so as not to pollute POST or similar data.
+* Timer in custom queue should revert URL, removing ajax_section parameter from link href attribute (action for forms), so that mouse hover shows original url in status bar
+
 ## v0.6.3
 * Internal spec build changes
 * ajax_pagination.js now requires other javascript dependencies, so developers no longer need to require dependencies as well in application manifest anymore (note, it can still be required - sprockets should ensure only 1 copy of each js file is included)
