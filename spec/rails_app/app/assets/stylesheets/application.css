@@ -13,13 +13,17 @@
  *= require_tree .
 */
 
+.menu ul {
+  padding: 0px;
+}
+
 .menu ul li {
   display: inline-block;
   border: 1px solid black;
 }
 .menu ul li a {
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 #alert {
