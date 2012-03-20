@@ -43,13 +43,23 @@ describe 'paginating with javascript on', :js => true do
       page.should have_selector('.ajaxpagination-loader')
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
-
-      retry_exceptions do # has trouble finding sign-in link (rbx slow? or ...?)
-        visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
-        find('#signin').click
-      end
-
+    end
+    retry_exceptions(10) do |i| # has trouble finding sign-in link (rbx slow? or ...?)
       sleep(2)
+      case i%4
+      when 0
+        visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      when 1
+        visit("http://localhost:#{SERVERSLOWPORT}/pages/about") # goes to welcome page
+      when 2
+        visit("http://localhost:#{SERVERSLOWPORT}/changelog") # goes to welcome page
+      when 3
+        visit("http://localhost:#{SERVERSLOWPORT}/posts") # goes to welcome page
+      end
+      find('#signin').click
+      sleep(2)
+    end
+    retry_exceptions do
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
       sleep(2)
       page.should have_selector('#postspagetitle')

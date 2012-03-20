@@ -34,7 +34,7 @@ module Retryable
   def retry_exceptions(n = 3)
     i=0
     begin
-      yield
+      yield i
     rescue
       retry if (i += 1) < n
       raise # if not retrying then raise
