@@ -83,9 +83,9 @@ module AjaxPagination
     #   the link simply creates a cool AJAX effect on the current page.
     #
     def ajax_section(options = {})
-      section_id = options[:id] || 'global' # by default the name of the section is 'global'
+      section_id = (options[:id] || 'global').to_s # by default the name of the section is 'global'
       partial = options[:render] || section_id # default partial rendered is the name of the section
-      divoptions = { :id => "#{section_id}", :class => "ajax_section" }
+      divoptions = { :id => section_id, :class => "ajax_section" }
       data = {};
       if options.has_key? :history
         data[:history] = (options[:history] != false)
@@ -146,7 +146,7 @@ module AjaxPagination
     # on each link. The default :section_id is "global" if not otherwise specified.
     #
     def ajax_links(options = {})
-      section_id = options[:section_id] || 'global'
+      section_id = (options[:section_id] || 'global').to_s
       content_tag :div, "data-ajax_section_id" => section_id, :class => ((Array(options[:class]) || []) + ["ajaxpagination"]).join(" ") do
         yield
       end
@@ -164,9 +164,9 @@ module AjaxPagination
     #   <%= link_to "Name", posts_url, ajax_options :section_id => "page" %>
     #
     def ajax_options(html_options = {})
-      html_options["data-ajax_section_id".to_sym] = html_options.delete(:section_id) || "global" # renames the option section_id to data-ajax_section_id
+      html_options["data-ajax_section_id".to_sym] = (html_options.delete(:section_id) || "global").to_s # renames the option section_id to data-ajax_section_id
       html_options[:remote] = true
-      html_options["data-type".to_sym] ||= html_options.delete("data-type") || 'html'
+      html_options["data-type".to_sym] ||= (html_options.delete("data-type") || 'html').to_s
       html_options
     end
 
