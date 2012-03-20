@@ -14,7 +14,7 @@ This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follo
 ## Demonstration Video
 <table>
     <tr>
-        <td>
+        <td width="200">
           <a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif" width="176" height="120"></a>
         </td>
         <td>
