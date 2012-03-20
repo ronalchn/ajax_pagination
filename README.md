@@ -14,10 +14,10 @@ This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follo
 ## Demonstration Video
 <table border="0">
     <tr>
-        <td width="200">
+        <td width="176" border="0">
           <a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif" width="176" height="120"></a>
         </td>
-        <td valign="top">
+        <td valign="top" border="0">
           To see this gem in action, watch the <a href="http://ronalchn.github.com/ajax_pagination/">demonstration video</a>, as shown left. It shows a built-in animation on loading, fully working history and AJAX requests which can perform POST and DELETE requests, whether via a link or a form submission and redirects.
         </td>
     </tr>
