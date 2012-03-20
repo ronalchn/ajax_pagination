@@ -13,7 +13,7 @@ This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follo
 
 ## Demonstration Video
 <div style="float: left;">
-[![Demonstration video](http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif)](http://ronalchn.github.com/ajax_pagination/)
+  <a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif"></a>
 </div>
 To see this gem in action, watch the [demonstration video](http://ronalchn.github.com/ajax_pagination/), as shown left.
 
