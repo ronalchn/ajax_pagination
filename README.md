@@ -12,16 +12,17 @@ For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pag
 This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follow the general installation instructions. Otherwise, use the ajax_pagination:assets generator, which puts the assets into the public/ directory.
 
 ## Demonstration Video
-<table style="border: 0px; width: 100%;">
+<table>
     <tr>
         <td>
           <a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif" style="float: left;"></a>
         </td>
-        <td style="vertical-align: top;">
+        <td>
           To see this gem in action, watch the <a href="http://ronalchn.github.com/ajax_pagination/">demonstration video</a>, as shown left. It shows a built-in animation on loading, fully working history and AJAX requests which can perform POST and DELETE requests, whether via a link or a form submission and redirects.
         </td>
     </tr>
 </table>
+
 
 ## Installation
 Assuming, you are using the asset pipeline, add to your Gemfile:
