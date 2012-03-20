@@ -18,7 +18,7 @@ describe AjaxPagination::HelperAdditions do
       @view.should_receive(:render).with('global')
       @view.ajax_section
       @view.should_receive(:render).with('page2')
-      @view.ajax_section :id => 'page2' # renders the partial named :id if :partial not defined
+      @view.ajax_section :id => :page2 # renders the partial named :id if :partial not defined
       @view.should_receive(:render).with('page3')
       @view.ajax_section :render => 'page3' # if partial defined, renders partial
       @view.should_receive(:render).with('pageX')
