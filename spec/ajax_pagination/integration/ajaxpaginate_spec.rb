@@ -29,7 +29,7 @@ describe 'paginating with javascript on', :js => true do
     end
   end
   it 'displays a loading image with nested and multiple paginated sections' do
-    retry_exceptions(5) do
+    retry_exceptions do
       # following lines to warm up
       visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
       sleep(3)
@@ -44,8 +44,11 @@ describe 'paginating with javascript on', :js => true do
       sleep(1.5)
       page.should have_no_selector('.ajaxpagination-loader')
 
-      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
-      find('#signin').click
+      retry_exceptions do # has trouble finding sign-in link (rbx slow? or ...?)
+        visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+        find('#signin').click
+      end
+
       sleep(2)
       visit("http://localhost:#{SERVERSLOWPORT}/posts")
       sleep(2)
