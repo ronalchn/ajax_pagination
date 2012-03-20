@@ -12,8 +12,16 @@ For more, see [Introduction and Background](https://github.com/ronalchn/ajax_pag
 This gem requires Rails 3.0+. When using the asset pipeline in Rails 3.1+, follow the general installation instructions. Otherwise, use the ajax_pagination:assets generator, which puts the assets into the public/ directory.
 
 ## Demonstration Video
-<a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif" style="float: left;"></a>
-To see this gem in action, watch the [demonstration video](http://ronalchn.github.com/ajax_pagination/), as shown left.
+<table>
+    <tr>
+        <td>
+          <a href="http://ronalchn.github.com/ajax_pagination/"><img src="http://ronalchn.github.com/ajax_pagination/videos/ajaxpaginationdemo.gif" style="float: left;"></a>
+        </td>
+        <td>
+          To see this gem in action, watch the [demonstration video](http://ronalchn.github.com/ajax_pagination/), as shown left.
+        </td>
+    </tr>
+</table>
 
 ## Installation
 Assuming, you are using the asset pipeline, add to your Gemfile:
