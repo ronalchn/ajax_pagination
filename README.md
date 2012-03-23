@@ -3,7 +3,7 @@
 
 [Wiki](https://github.com/ronalchn/ajax_pagination/wiki) | [RDoc](http://rdoc.info/gems/ajax_pagination/frames) | [Changelog](https://github.com/ronalchn/ajax_pagination/blob/master/CHANGELOG.md)
 
-Handles AJAX pagination for you, by hooking up the links you want to load content with javascript in designated page containers. Use this to ajaxify your site navigation. Degrades gracefully when javascript is disabled.
+Loads page content into AJAX sections with AJAX links, handling the details for you, load content with javascript into designated page containers. Supports multiple and/or nested AJAX sections. Designed to be easy to use, customizable, supports browser history robustly, supports AJAX forms and has many more features. Degrades gracefully when javascript is disabled.
 
 Each webpage can have multiple ajax_section containers, whether they are side by side, or even nested. Links can reference an ajax_section to load new content into the section using AJAX. Watch as the URL in the browser address bar updates, with fully working back/forward buttons.
 
