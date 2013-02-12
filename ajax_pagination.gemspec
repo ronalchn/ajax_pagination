@@ -23,9 +23,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "will_paginate"
-  s.add_development_dependency "capybara"
+  s.add_development_dependency 'ffi', '~> 1.0.11'
+  s.add_development_dependency 'thor', '~> 0.14.4'
+  s.add_development_dependency "capybara", '~> 1.1'
 
-  s.add_runtime_dependency "rails", '>= 3.0'
+  s.add_runtime_dependency "rails", '~> 3.2.0'
   s.add_runtime_dependency "jquery-rails", '>= 1.0.17' # require jQuery 1.7+
   s.add_runtime_dependency "jquery-historyjs"
 
