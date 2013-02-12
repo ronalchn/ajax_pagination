@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'disabled with javascript', :js => true do
   before :each do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/warnings")
     find("#disablehistoryjslink").click
     page.driver.browser.switch_to.alert.accept
   end

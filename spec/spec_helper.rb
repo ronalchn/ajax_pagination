@@ -28,6 +28,7 @@ SERVERPORT = IO.read(File.expand_path("../PORT",__FILE__)).strip # port number t
 SERVERSLOWPORT = IO.read(File.expand_path("../SLOWPORT",__FILE__)).strip # a port with artificially slowed down loading
 
 R30SERVERPORT = IO.read(File.expand_path("../R30PORT",__FILE__)).strip # port number for rails 3.0 app
+SERVERIP = "0.0.0.0"
 
 module Retryable
   # retry code n times

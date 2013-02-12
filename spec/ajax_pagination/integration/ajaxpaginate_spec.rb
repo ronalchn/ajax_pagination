@@ -10,12 +10,12 @@ describe 'paginating with javascript on', :js => true do
   it 'displays a loading image' do
     retry_exceptions do
       # following lines to warm up loading image
-      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}") # goes to welcome page
       sleep(3)
       click_link 'Changelog'
       sleep(3)
 
-      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}") # goes to welcome page
       page.should have_no_selector('.ajaxpagination-loader')
       sleep(1.5)
       click_link 'About'
@@ -31,12 +31,12 @@ describe 'paginating with javascript on', :js => true do
   it 'displays a loading image with nested and multiple paginated sections' do
     retry_exceptions do
       # following lines to warm up
-      visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}") # goes to welcome page
       sleep(3)
       click_link 'Changelog'
       sleep(3)
 
-      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/changelog")
       sleep(2)
       page.should have_selector('#changelogpagetitle')
       find('#page').find('.next_page').click
@@ -48,19 +48,19 @@ describe 'paginating with javascript on', :js => true do
       sleep(2)
       case i%4
       when 0
-        visit("http://localhost:#{SERVERSLOWPORT}") # goes to welcome page
+        visit("http://#{SERVERIP}:#{SERVERSLOWPORT}") # goes to welcome page
       when 1
-        visit("http://localhost:#{SERVERSLOWPORT}/pages/about") # goes to welcome page
+        visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/pages/about") # goes to welcome page
       when 2
-        visit("http://localhost:#{SERVERSLOWPORT}/changelog") # goes to welcome page
+        visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/changelog") # goes to welcome page
       when 3
-        visit("http://localhost:#{SERVERSLOWPORT}/posts") # goes to welcome page
+        visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/posts") # goes to welcome page
       end
       find('#signin').click
       sleep(2)
     end
     retry_exceptions do
-      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/posts")
       sleep(2)
       page.should have_selector('#postspagetitle')
       find('#page').find('.next_page').click
@@ -77,29 +77,29 @@ describe 'paginating with javascript on', :js => true do
   it 'shows the configured loading image' do
     retry_exceptions do
       # warmup images
-      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/changelog")
       find('#page').find('.next_page').click
       sleep(3)
-      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/posts")
       find('#page').find('.next_page').click
       sleep(3)
 
-      visit("http://localhost:#{SERVERSLOWPORT}/changelog")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/changelog")
       find('#page').find('.next_page').click
       page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/myajax-loader.gif']")
       sleep(1.5)
-      visit("http://localhost:#{SERVERSLOWPORT}/posts")
+      visit("http://#{SERVERIP}:#{SERVERSLOWPORT}/posts")
       find('#page').find('.next_page').click
       page.should have_xpath("//img[@class='ajaxpagination-loader' and @src = '/assets/ajax-loader.gif']")
     end
   end
   it 'works with browser back and forward buttons' do
-    visit("http://localhost:#{SERVERPORT}/pages/about") # warmup serverport
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/about") # warmup serverport
     sleep(3)
     page.should have_selector('#aboutpagetitle')
 
     # actual test
-    visit("http://localhost:#{SERVERPORT}/changelog")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/changelog")
     sleep(1)
     page.should have_selector('#changelogpagetitle')
     click_link 'About'
@@ -120,7 +120,7 @@ describe 'paginating with javascript on', :js => true do
     page.should have_selector('#aboutpagetitle')
   end
   it 'has correct reload behaviour on history' do
-    visit("http://localhost:#{SERVERPORT}/pages/about")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/about")
     sleep(3) # rbx has long warmup time
     page.should have_selector('#aboutpagetitle')
     click_link 'Readme' # History will have [about,readme]
@@ -133,7 +133,7 @@ describe 'paginating with javascript on', :js => true do
     page.should have_selector('#aboutpagetitle')
   end
   it 'has correct reload behaviour when jumping between history with the same url' do
-    visit("http://localhost:#{SERVERPORT}/pages/about")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/about")
     sleep(3) # allow warmup time (zzz... rbx)
     page.should have_selector('#aboutpagetitle')
     click_link 'Readme' # History will have [about,readme]
@@ -151,15 +151,15 @@ describe 'paginating with javascript on', :js => true do
     find("#aboutpagetitle").text.should == "ReloadReferenceToken" # hasn't reloaded if token is still there
   end
   it 'displays error pages within div' do
-    visit("http://localhost:#{SERVERPORT}") # goes to welcome page
+    visit("http://#{SERVERIP}:#{SERVERPORT}") # goes to welcome page
     sleep(1)
     click_link("AJAX Pagination Example Application")
-    page.current_url.should == "http://localhost:#{SERVERPORT}/broken%20link"
+    page.current_url.should == "http://#{SERVERIP}:#{SERVERPORT}/broken%20link"
     page.should have_content("AJAX Pagination Example Application")
     page.should have_content("No route matches")
   end
   it 'changes url to match redirection' do
-    visit("http://localhost:#{SERVERPORT}")
+    visit("http://#{SERVERIP}:#{SERVERPORT}")
     sleep(1)
     click_link("Posts")
     sleep(1)
@@ -170,14 +170,14 @@ describe 'paginating with javascript on', :js => true do
     page.current_url.should == myurl
   end
   it 'submits ajax_form_tag form via post' do
-    visit("http://localhost:#{SERVERPORT}/pages/about")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/about")
     count = page.find("#submits").html.to_i
     click_button("Submit")
     page.should have_content("#{count+1} submit")
     page.should have_selector('#aboutpagetitle') # ensures loading was via AJAX Pagination
   end
   it 'history does not change if :history => false' do
-    visit("http://localhost:#{SERVERPORT}/pages/about")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/about")
     myurl = page.current_url # to get the canonical url
     count = page.find("#submits").html.to_i
     click_button("Submit")
@@ -186,13 +186,13 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'submits ajax_form_for form via POST and DELETE link' do
     retry_exceptions do
-      visit("http://localhost:#{SERVERPORT}/")
+      visit("http://#{SERVERIP}:#{SERVERPORT}/")
       find('#signin').click if !page.has_selector?('#signout')
       click_link("Posts")
       sleep(1)
       page.should have_content("New Post")
       myurl = page.current_url # to get the canonical url
-      visit("http://localhost:#{SERVERPORT}/posts/new")
+      visit("http://#{SERVERIP}:#{SERVERPORT}/posts/new")
       sleep(1)
       within("#new_post") do
         fill_in 'Title', :with => 'very unique title for test'
@@ -218,10 +218,10 @@ describe 'paginating with javascript on', :js => true do
   # Tested to work in rbx-1.2.4 on local machine. Also works using MRI ruby on travis.
   it 'submits ajax_form_for form via PUT link' do
     retry_exceptions do
-      visit("http://localhost:#{SERVERPORT}")
+      visit("http://#{SERVERIP}:#{SERVERPORT}")
       find('#signin').click
       sleep(2)
-      visit("http://localhost:#{SERVERPORT}/posts/2")
+      visit("http://#{SERVERIP}:#{SERVERPORT}/posts/2")
       click_link("Edit");
       sleep(2)
       within(".edit_post") do
@@ -237,7 +237,7 @@ describe 'paginating with javascript on', :js => true do
   end
   it 'changes title' do
     retry_exceptions do
-      visit("http://localhost:#{SERVERPORT}")
+      visit("http://#{SERVERIP}:#{SERVERPORT}")
       title = page.evaluate_script("document.title") # because what is between the <title> tags and what is shown in the window title can differ (document.title gets set by javascript)
       click_link("About");
       page.should have_selector('#aboutpagetitle') # ensures loading was via AJAX Pagination

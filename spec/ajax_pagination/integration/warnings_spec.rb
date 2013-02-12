@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'javascript warnings', :js => true do
   it 'warns about excess page content' do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/warnings")
     find("#fullpagelink").click
     sleep(0.5)
     alertmsg = page.driver.browser.switch_to.alert.text
@@ -12,7 +12,7 @@ describe 'javascript warnings', :js => true do
   end
 
   it 'warns about missing dependencies' do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/warnings")
     find("#disablehistoryjslink").click
     sleep(0.5)
     alertmsg = page.driver.browser.switch_to.alert.text
@@ -22,7 +22,7 @@ describe 'javascript warnings', :js => true do
   end
 
   it 'warns about reference to more than one section of same id' do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/warnings")
     find("#doublesectionlink").click
     alertmsg = page.driver.browser.switch_to.alert.text
     alertmsg.should include("UNIQUE_SECTION_NOT_FOUND")
@@ -30,7 +30,7 @@ describe 'javascript warnings', :js => true do
   end
 
   it 'warns about reference to section which does not exist' do
-    visit("http://localhost:#{SERVERPORT}/pages/warnings")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/pages/warnings")
     find("#nosectionlink").click
     alertmsg = page.driver.browser.switch_to.alert.text
     alertmsg.should include("UNIQUE_SECTION_NOT_FOUND")

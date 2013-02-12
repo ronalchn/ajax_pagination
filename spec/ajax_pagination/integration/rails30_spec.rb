@@ -4,7 +4,7 @@ describe 'rails3.0 support', :type => :request, :driver => :selenium do
   include Retryable
   it 'displays a loading image' do
     retry_exceptions do
-      visit("http://localhost:#{R30SERVERPORT}") # goes to welcome page
+      visit("http://#{SERVERIP}:#{R30SERVERPORT}") # goes to welcome page
       page.should have_no_selector('.ajaxpagination-loader')
       sleep(1.5)
       click_link 'About'
@@ -25,7 +25,7 @@ describe 'rails3.0 support', :type => :request, :driver => :selenium do
     end
   end
   it 'submits ajax_form_tag form via post' do
-    visit("http://localhost:#{R30SERVERPORT}/pages/about")
+    visit("http://#{SERVERIP}:#{R30SERVERPORT}/pages/about")
     count = page.find("#submits").html.to_i
     click_button("Submit")
     sleep(1.5)

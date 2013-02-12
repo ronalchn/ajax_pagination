@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'paginating with javascript on', :type => :request, :driver => :selenium, :js => true do
   it 'works' do
-    visit("http://localhost:#{SERVERPORT}") # goes to welcome page
+    visit("http://#{SERVERIP}:#{SERVERPORT}") # goes to welcome page
     page.should have_no_selector('#aboutpagetitle')
     click_link 'About'
     page.should have_selector('#aboutpagetitle')
@@ -12,12 +12,12 @@ describe 'paginating with javascript on', :type => :request, :driver => :seleniu
     page.should have_no_selector('#aboutpagetitle')
   end
   it 'works with nested and multiple paginated sections' do
-    visit("http://localhost:#{SERVERPORT}/changelog")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/changelog")
     page.should have_selector('.previous_page.disabled')
     find('#page').find('.next_page').click
     page.should have_no_selector('.previous_page.disabled')
     find('#signin').click
-    visit("http://localhost:#{SERVERPORT}/posts")
+    visit("http://#{SERVERIP}:#{SERVERPORT}/posts")
     page.should have_selector('#page .previous_page.disabled')
     find('#page').find('.next_page').click
     sleep(1)
