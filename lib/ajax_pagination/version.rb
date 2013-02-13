@@ -5,5 +5,5 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 module AjaxPagination
-  VERSION = "0.6.4.alpha"
+  VERSION = "0.6.5"
 end

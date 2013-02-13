@@ -1,4 +1,7 @@
-## v0.6.4.alpha
+## v0.6.5
+* Fixed release version
+
+## v0.6.4
 * Fix inputchangeselector bug (this feature still untested)
 * Ensure ?ajax_section parameter in querystring (request.GET) - so as not to pollute POST or similar data.
 * Timer in custom queue should revert URL, removing ajax_section parameter from link href attribute (action for forms), so that mouse hover shows original url in status bar
