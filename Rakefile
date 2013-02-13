@@ -19,9 +19,9 @@ task :travis do
   system("bundle exec rake spec")
   success = ($?.exitstatus == 0)
   
-  system("kill -9 $(cat ~`pwd`/spec/rails_app/tmp/pids/server_#{serverport}.pid)")
-  system("kill -9 $(cat ~`pwd`/spec/rails_app/tmp/pids/server_#{serverslowport}.pid)")
-  system("kill -9 $(cat ~`pwd`/spec/rails30_app/tmp/pids/server_#{r30serverport}.pid)")
+  system("kill -9 $(cat `pwd`/spec/rails_app/tmp/pids/server_#{serverport}.pid)")
+  system("kill -9 $(cat `pwd`/spec/rails_app/tmp/pids/server_#{serverslowport}.pid)")
+  system("kill -9 $(cat `pwd`/spec/rails30_app/tmp/pids/server_#{r30serverport}.pid)")
   #system("kill -9 `lsof -i :#{serverport} -t`") # kills rails server
   #system("kill -9 `lsof -i :#{serverslowport} -t`") # kills rails server
   #system("kill -9 `lsof -i :#{r30serverport} -t`") # kills rails server

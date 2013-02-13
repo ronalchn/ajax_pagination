@@ -3,7 +3,7 @@
 <head>
   <title><%= (params[:controller] + " " + params[:action]).titleize %> - RailsApp</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
+  <%= javascript_include_tag "application" if Rails.application.assets.find_asset('jquery.js') %><%# because RackTest (for specs) cannot find jquery asset %>
   <%= csrf_meta_tags %>
 </head>
 <body>
