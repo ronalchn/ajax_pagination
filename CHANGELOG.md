@@ -2,6 +2,9 @@
 * Fix inputchangeselector bug (this feature still untested)
 * Ensure ?ajax_section parameter in querystring (request.GET) - so as not to pollute POST or similar data.
 * Timer in custom queue should revert URL, removing ajax_section parameter from link href attribute (action for forms), so that mouse hover shows original url in status bar
+* Fixed build problems using newer versions of gems - particularly changes in Rack and Capybara
+* UTF8 encoding fixed in URL
+* Relicensed as MPL - reasoning is that I do not want to release as MIT or similar free license because of the potential for a fork to close the source. I also do not want to use GPL because it is too strong. LGPL was also a little iffy. MPL means that this gem can be easily used in any application, whether open or closed source, but keeps any modifications to this gem open source.
 
 ## v0.6.3
 * Internal spec build changes

@@ -121,8 +121,12 @@ If you do not submit a pull request, your modifications will not be merged into 
 ## License
 Copyright © 2012 Ronald Ping Man Chan
 
-If you want to use this program under a different license, please contact me.
-All pull requests to my repository will be assumed to assign to me non-exclusive rights for perpertual usage for any use whatsoever for those modifications to Ronald Ping Man Chan. If you do not have the power to assign that right, do not submit a pull request. This allows me to release the software under a more permissible license in the future if I want.
-Ronald
+The source code in this gem is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. All source code, unless otherwise specified, is released under the MPL v2.
 
-The software is released under LGPL. This means that this Gem can be used in any software (proprietary or otherwise), by using the gem command for installation. However, the gem cannot be included directly in proprietary software (eg. as a plugin), without distributions of the software being under LGPL. Distribution of this Gem may only be released under a license LGPL is compatible with.
+The following is my interpretation of what the MPL means. However, this should not be taken as legal advice, and I accept no liability for any damages due to using this information.
+
+This gem is released under the Mozilla Public License, which means that it can be included in any open or closed source application. The MPL is copyleft, which means modifications to the gem can only be released if those modifications are also open source. However the MPL considers source file as the boundary between source licensed under the MPL, and source which may be under another license, allowing this gem to be readily used in applications which may be released under a different license.
+
+For the purposes of this license, minified javascript is an executable form, since it is not the preferred form for modifications, and thus, concatenation of javascript assets with other javascript files which may be under different licenses to improve browser loading speed is permitted.
+
+
