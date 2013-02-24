@@ -114,9 +114,7 @@ However, if you are already using them (especially if using a different version)
 The other javascript dependencies rely on gems: jquery-rails, and jquery-historyjs. So if they are used, AJAX Pagination should play well with other gems using the libraries.
 
 ## Development
-You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination, however, please be aware that submitting a pull request is assumed to grant to me non-exclusive, perpetual rights to the use of the software for any use whatsoever. This allows me to release the software under a more permissible license in the future if I want.
-
-If you do not submit a pull request, your modifications will not be merged into the codebase.
+You are welcome to submit pull requests on GitHub at https://github.com/ronalchn/ajax_pagination. Code merged will be distributed under the MPLv2 license detailed below.
 
 ## License
 Copyright © 2012 Ronald Ping Man Chan
